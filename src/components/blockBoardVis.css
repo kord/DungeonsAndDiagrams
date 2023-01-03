@@ -1,0 +1,31 @@
+.block-board-vis {
+    --board-height: 7;
+    --board-width: 7;
+
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(var(--board-height), 40px);
+    grid-template-rows: repeat(var(--board-width), 40px);
+
+}
+
+.block-square {
+    width: 40px;
+    height: 40px;
+}
+
+.block-square--present {
+    background-color: whitesmoke;
+}
+
+.block-square--absent {
+    background-color: darkgray;
+}
+
+.block-square--1neighbour {
+
+}
+
+.block-square--with-longest-path{
+    background-color: red;
+}
