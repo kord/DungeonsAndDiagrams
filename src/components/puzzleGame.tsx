@@ -31,6 +31,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         spec: generateBoard({
             size: this.state.size,
             style: 'block',
+            toroidalEmbedding: false,
             no2x2: true,
             uniqueDiameter: true,
         })
@@ -38,9 +39,9 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-                <input onChange={this.setWidth} value={this.state.size.width}/>
-                &nbsp;
                 <input onChange={this.setHeight} value={this.state.size.height}/>
+                &nbsp;
+                <input onChange={this.setWidth} value={this.state.size.width}/>
                 <button onClick={this.regen}>Regen</button>
                 {this.state.spec ? <BlockBoardVis spec={this.state.spec}/> : <div/>}
             </>

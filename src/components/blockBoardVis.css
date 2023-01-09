@@ -23,7 +23,7 @@
 }
 
 .block-square--1neighbour {
-
+    background-color: palegreen;
 }
 
 .block-square--with-longest-path{

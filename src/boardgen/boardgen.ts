@@ -18,6 +18,7 @@ type BoardStyle = 'block' | 'thin edges';
 type BoardgenRules = {
     size: Size,
     style: BoardStyle,
+    toroidalEmbedding: boolean,
 
     no2x2: boolean,
     uniqueDiameter: boolean,
@@ -35,18 +36,17 @@ export function loc2Str(loc: Location) {
     return `${loc.x},${loc.y}`;
 }
 
-function unconstrainedGridGraph(size: Size) {
+function unconstrainedGridGraph(size: Size, toroidalEmbedding: boolean) {
     let graph = new Graph({allowSelfLoops: false, type: 'undirected'});
     locations(size).forEach(loc => {
         const cur = loc2Str(loc);
         graph.addNode(cur);
     });
 
-
-    const neighbours = neighbourFunc(size);
+    const neighbours = neighbourFunc(size, toroidalEmbedding);
     locations(size).forEach(loc => {
         const cur = loc2Str(loc);
-        neighbours(loc, true).forEach(n => graph.addEdge(cur, loc2Str(n)));
+        neighbours(loc).forEach(n => graph.updateEdge(cur, loc2Str(n)));
     });
 
     // Now we have a graph with all of the grid nodes and all edges between neighbours.
@@ -63,20 +63,23 @@ export function locations(size: Size): Location[] {
     return ret;
 }
 
-let neighbourFunc = (size: Size) => {
+let neighbourFunc = (size: Size, toroidalEmbedding = false) => {
     // toLargerOnly allows us to avoid duplicate generating the undirected edges, only edges proceeding to "larger"
     // nodes are returned.
-    return (loc: Location, toLargerOnly = false) => {
-        let candidates = toLargerOnly ?
-            [
-                {x: loc.x, y: loc.y + 1},
-                {x: loc.x + 1, y: loc.y},
-            ] :
+    return (loc: Location, ) => {
+        let candidates =
             [
                 {x: loc.x, y: loc.y + 1},
                 {x: loc.x + 1, y: loc.y},
                 {x: loc.x, y: loc.y - 1},
                 {x: loc.x - 1, y: loc.y}
+            ];
+        if (toroidalEmbedding) candidates =
+            [
+                {x: loc.x, y: (loc.y + 1) % size.height},
+                {x: (loc.x + 1) % size.width, y: loc.y},
+                {x: loc.x, y: (loc.y - 1)%size.height},
+                {x: (loc.x - 1)%size.width, y: loc.y}
             ];
         return candidates.filter(
             (loc: Location) => loc.x >= 0 && loc.y >= 0 && loc.x < size.width && loc.y < size.height);
@@ -84,7 +87,7 @@ let neighbourFunc = (size: Size) => {
 }
 
 function findBlockBoard(rules: BoardgenRules): Graph {
-    const g = unconstrainedGridGraph(rules.size);
+    const g = unconstrainedGridGraph(rules.size, rules.toroidalEmbedding);
 
     // With a block style board, we make nodes inaccessible until we're happy.
 

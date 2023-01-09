@@ -43,7 +43,7 @@ export class BlockBoardVis extends Component<BlockGraphProps, BlockGraphState> {
             <div className={'block-board-vis'} style={st}>
                 {locations(size).map(loc =>
                     <div className={this.classNames1(loc)} key={loc2Str(loc)}>
-                        {this.props.spec.graph.hasNode(loc2Str(loc)) ? this.props.spec.graph.degree(loc2Str(loc)) : ''}
+                        {/*{this.props.spec.graph.hasNode(loc2Str(loc)) ? this.props.spec.graph.degree(loc2Str(loc)) : ''}*/}
                     </div>
                 )}
             </div>
