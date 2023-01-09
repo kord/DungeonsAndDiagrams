@@ -1,12 +1,18 @@
 import React, {Component} from 'react';
-import {BlockBoard, generateBoard, Size} from "../boardgen/boardgen";
+import {BlockBoard, generateBoard} from "../boardgen/boardgen";
 import {BlockBoardVis} from "./blockBoardVis";
+import {Size} from "../boardgen/types";
+import {BlockBoardVis2} from "./blockBoardVis2";
 
 export type PuzzleGameProps = {};
 
 type PuzzleGameState = {
     size: Size,
     spec?: BlockBoard,
+    no2x2: boolean,
+    uniqueDiameter: boolean,
+    wrapX: boolean,
+    wrapY: boolean,
 };
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
@@ -14,9 +20,13 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         super(props);
         this.state = {
             size: {
-                height: 12,
-                width: 12,
+                height: 5,
+                width: 5,
             },
+            no2x2: false,
+            uniqueDiameter: false,
+            wrapX: false,
+            wrapY: true,
         };
     }
 
@@ -27,23 +37,52 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState({size: {width: +event.target.value, height: this.state.size.height}});
     }
 
+    setCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, checked} = event.target;
+        let newstate = {[name as keyof PuzzleGameState]: checked};
+        // @ts-ignore
+        this.setState(newstate);
+    }
+
     regen = () => this.setState({
         spec: generateBoard({
             size: this.state.size,
+            wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
+
             style: 'block',
-            toroidalEmbedding: false,
-            no2x2: true,
-            uniqueDiameter: true,
+            no2x2: this.state.no2x2,
+            uniqueDiameter: this.state.uniqueDiameter,
         })
     });
 
     render() {
         return (<>
+                <label>
+                    no2x2
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'no2x2'} checked={this.state.no2x2}/>
+                </label>
+                <label>
+                    uniqueDiameter
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'uniqueDiameter'} checked={this.state.uniqueDiameter}/>
+                </label>
+                <label>
+                    WrapX
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapX'} checked={this.state.wrapX}/>
+                </label>
+                <label>
+                    WrapY
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapY'} checked={this.state.wrapY}/>
+                </label>
                 <input onChange={this.setHeight} value={this.state.size.height}/>
                 &nbsp;
                 <input onChange={this.setWidth} value={this.state.size.width}/>
                 <button onClick={this.regen}>Regen</button>
+
+                {this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}
+                <br/>
                 {this.state.spec ? <BlockBoardVis spec={this.state.spec}/> : <div/>}
+
+
             </>
         );
     }

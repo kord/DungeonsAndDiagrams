@@ -1,7 +1,10 @@
 import React, {Component, CSSProperties} from 'react';
 import './blockBoardVis.css';
-import {BlockBoard, loc2Str, Location, locations} from "../boardgen/boardgen";
+import {BlockBoard, loc2Str, locations} from "../boardgen/boardgen";
 import classNames from "classnames";
+import {render} from 'graphology-canvas';
+import forceLayout from "graphology-layout-force";
+import {Location} from "../boardgen/types";
 
 export type BlockGraphProps = {
     spec: BlockBoard,
@@ -9,9 +12,39 @@ export type BlockGraphProps = {
 type BlockGraphState = {};
 
 export class BlockBoardVis extends Component<BlockGraphProps, BlockGraphState> {
+    canvasRef: React.RefObject<HTMLCanvasElement>;
+
     constructor(props: BlockGraphProps) {
         super(props);
+        this.canvasRef = React.createRef();
         this.state = {};
+    }
+
+    // TODO: Sort this out
+    // https://codesandbox.io/s/eloquent-albattani-1ymeyj?file=/src/index.ts
+    //
+    drawCanvas = () => {
+        const graph = this.props.spec.graph;
+
+        forceLayout.assign(graph, 50);
+        //
+        // {
+        //     const sensibleSettings = forceAtlas2.inferSettings(graph);
+        //     forceAtlas2.assign(graph, {
+        //         iterations: 5000,
+        //         settings: sensibleSettings
+        //     });
+        // }
+
+        const context = this.canvasRef.current?.getContext('2d')
+
+        if (context) {
+            // context.strokeStyle = 'black'
+            // context.strokeText('hi', 50, 50,)
+            render(graph, context, {batchSize: 500, width: 300})
+
+            // render(graph, context, {width: 300});
+        }
     }
 
     classNames1 = (loc: Location) => {
@@ -33,20 +66,32 @@ export class BlockBoardVis extends Component<BlockGraphProps, BlockGraphState> {
 
 
     render() {
-        const {size} = this.props.spec;
+        const {size, wrap} = this.props.spec.rules;
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
+            '--side-color': wrap.wrapX ? 'white' : 'black',
+            '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;
 
-        return (
-            <div className={'block-board-vis'} style={st}>
-                {locations(size).map(loc =>
-                    <div className={this.classNames1(loc)} key={loc2Str(loc)}>
-                        {/*{this.props.spec.graph.hasNode(loc2Str(loc)) ? this.props.spec.graph.degree(loc2Str(loc)) : ''}*/}
+        // --side-color: black;
+        // --top-bottom-color: black;
+
+        return (<>
+
+                <div className={'block-board-vis'} style={st}>
+                    <div className={'block-board-vis__grid'}>
+                        {locations(size).flat().map(loc =>
+                            <div className={this.classNames1(loc)} key={loc2Str(loc)}>
+                                {/*{this.props.spec.graph.hasNode(loc2Str(loc)) ? this.props.spec.graph.degree(loc2Str(loc)) : ''}*/}
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </div>
+                <br/>
+                <canvas height={300} width={300} ref={this.canvasRef}/>
+                <button onClick={this.drawCanvas}>Draw</button>
+            </>
         );
     }
 }

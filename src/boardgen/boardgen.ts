@@ -2,50 +2,101 @@ import {countConnectedComponents} from 'graphology-components';
 import Graph from 'graphology';
 import {bidirectional} from 'graphology-shortest-path/unweighted';
 import {diameter} from "graphology-metrics/graph";
-
-export type Size = {
-    height: number,
-    width: number,
-}
-
-export type Location = {
-    x: number,
-    y: number,
-};
+import {Location, Size} from "./types";
 
 type BoardStyle = 'block' | 'thin edges';
 
-type BoardgenRules = {
-    size: Size,
-    style: BoardStyle,
-    toroidalEmbedding: boolean,
+interface WrapRules {
+    wrapX: boolean,
+    wrapY: boolean
+}
+export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: false};
 
-    no2x2: boolean,
+type BoardgenRules = {
+    // How big is the board.
+    size: Size,
+    // Which style of board is being generated.
+    style: BoardStyle,
+
+    // Prevents generation of boards without a unique pair of max-distance nodes.
     uniqueDiameter: boolean,
+
+    // Are the nodes connected across the top or sides of the board?
+    wrap: WrapRules,
+
+    // Prevents any 2x2 block of nodes from being generated.
+    // This is ignored in the 'thin edges' BoardStyle.
+    no2x2: boolean,
+
 
 }
 
 export type BlockBoard = {
-    size: Size,
+    rules: BoardgenRules,
     graph: Graph,
     // degrees[n] is an array of all nodes that each have precisely n edges.
     degrees: Array<Array<string>>,
     maxDistancePairs: Array<Array<string>>,
+    restarts: number,
 }
+
+
+function generateBoard(rules: BoardgenRules) {
+    let g: Graph;
+    let rejected = true;
+    let rejects = 0;
+
+    const rejection = (g: Graph) => (
+        (rules.no2x2 && has2x2Block(g, rules.size)) ||
+        (rules.uniqueDiameter && !hasSingleLongestPath(g)));
+
+    while (rejected) {
+        rejected = false;
+
+        switch (rules.style) {
+            case "block":
+                g = findBlockBoard(rules);
+                break;
+            case "thin edges":
+                g = findThinEdgesBoard(rules);
+        }
+
+        if (rejection(g)) {
+            rejected = true;
+            rejects += 1;
+        }
+    }
+
+    let degrees: Array<Array<string>> = [[], [], [], [], []];
+    g!.forEachNode(n => degrees[g.degree(n)].push(n));
+
+    let maxDistancePairs = longestPathTerminalPairs(g!);
+
+    console.log(`Rejected: ${rejects}`);
+    return {
+        rules: rules,
+        graph: g!,
+        degrees: degrees,
+        maxDistancePairs: maxDistancePairs,
+        restarts: rejects,
+    } as BlockBoard;
+
+}
+
 
 export function loc2Str(loc: Location) {
     return `${loc.x},${loc.y}`;
 }
 
-function unconstrainedGridGraph(size: Size, toroidalEmbedding: boolean) {
-    let graph = new Graph({allowSelfLoops: false, type: 'undirected'});
-    locations(size).forEach(loc => {
+function unconstrainedGridGraph(size: Size, wrapRules: WrapRules) {
+    const graph = new Graph({type: 'undirected', allowSelfLoops: false});
+    locations(size).flat().forEach(loc => {
         const cur = loc2Str(loc);
-        graph.addNode(cur);
+        graph.addNode(cur, {x: loc.x, y: loc.y});
     });
 
-    const neighbours = neighbourFunc(size, toroidalEmbedding);
-    locations(size).forEach(loc => {
+    const neighbours = gridNeighbourFunc(size, wrapRules);
+    locations(size).flat().forEach(loc => {
         const cur = loc2Str(loc);
         neighbours(loc).forEach(n => graph.updateEdge(cur, loc2Str(n)));
     });
@@ -54,41 +105,39 @@ function unconstrainedGridGraph(size: Size, toroidalEmbedding: boolean) {
     return graph;
 }
 
-export function locations(size: Size): Location[] {
+export function locations(size: Size): Location[][] {
     let ret = [];
-    for (let i = 0; i < size.width; i += 1) {
-        for (let j = 0; j < size.height; j += 1) {
-            ret.push({x: i, y: j});
+    for (let j = 0; j < size.height; j += 1) {
+        const row = [];
+        for (let i = 0; i < size.width; i += 1) {
+            row.push({x: i, y: j});
         }
+        ret.push(row);
     }
     return ret;
 }
 
-let neighbourFunc = (size: Size, toroidalEmbedding = false) => {
+let gridNeighbourFunc = (size: Size, wrapRules: WrapRules) => {
     // toLargerOnly allows us to avoid duplicate generating the undirected edges, only edges proceeding to "larger"
     // nodes are returned.
-    return (loc: Location, ) => {
+    const {wrapX, wrapY} = wrapRules;
+    return (loc: Location) => {
         let candidates =
             [
                 {x: loc.x, y: loc.y + 1},
-                {x: loc.x + 1, y: loc.y},
                 {x: loc.x, y: loc.y - 1},
+                {x: loc.x + 1, y: loc.y},
                 {x: loc.x - 1, y: loc.y}
             ];
-        if (toroidalEmbedding) candidates =
-            [
-                {x: loc.x, y: (loc.y + 1) % size.height},
-                {x: (loc.x + 1) % size.width, y: loc.y},
-                {x: loc.x, y: (loc.y - 1)%size.height},
-                {x: (loc.x - 1)%size.width, y: loc.y}
-            ];
+        if (wrapX) candidates = candidates.map(loc => ({x: loc.x % size.width, y: loc.y}))
+        if (wrapY) candidates = candidates.map(loc => ({x: loc.x, y: loc.y % size.height}))
         return candidates.filter(
             (loc: Location) => loc.x >= 0 && loc.y >= 0 && loc.x < size.width && loc.y < size.height);
     }
 }
 
 function findBlockBoard(rules: BoardgenRules): Graph {
-    const g = unconstrainedGridGraph(rules.size, rules.toroidalEmbedding);
+    const g = unconstrainedGridGraph(rules.size, rules.wrap);
 
     // With a block style board, we make nodes inaccessible until we're happy.
 
@@ -123,8 +172,45 @@ function findBlockBoard(rules: BoardgenRules): Graph {
     return g;
 }
 
+function shuffle(array: Array<any>) {
+    let currentIndex = array.length, randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
+function findThinEdgesBoard(rules: BoardgenRules): Graph {
+    const g = unconstrainedGridGraph(rules.size, rules.wrap);
+
+    // With an edges style board, we make edges inaccessible until we're happy.
+
+    const edges = g.edges().map(s => s);
+    const edgeOrder = shuffle(edges);
+
+    // Consider removing each edge in turn, in a random order.
+    edgeOrder.forEach(e => {
+        const nodes = g.extremities(e);
+        g.dropEdge(e);
+        // We have to return it if the graph splits due to the removal.
+        if (countConnectedComponents(g) > 1) g.addEdge(nodes[0], nodes[1]);
+    });
+
+    return g;
+}
+
 function has2x2Block(g: Graph, size: Size) {
-    return locations(size).some(loc => {
+    return locations(size).flat().some(loc => {
         const block = [
             {x: loc.x, y: loc.y},
             {x: loc.x + 1, y: loc.y},
@@ -135,46 +221,6 @@ function has2x2Block(g: Graph, size: Size) {
     })
 }
 
-
-function generateBoard(rules: BoardgenRules) {
-    let g: Graph;
-    let rejected = true;
-    let rejects = 0;
-
-    const rejection = (g: Graph) => (
-        (rules.no2x2 && has2x2Block(g, rules.size))
-        ||
-        (rules.uniqueDiameter && !hasSingleLongestPath(g)));
-
-    while (rejected) {
-        rejected = false;
-
-        if (rules.style === 'block') {
-            g = findBlockBoard(rules);
-        } else {
-            throw new Error('block only, so far')
-        }
-
-        if (rejection(g)) {
-            rejected = true;
-            rejects += 1;
-        }
-    }
-
-    let degrees: Array<Array<string>> = [[], [], [], [], []];
-    g!.forEachNode(n => degrees[g.degree(n)].push(n));
-
-    let maxDistancePairs = longestPathTerminalPairs(g!);
-
-    console.log(`Rejected: ${rejects}`);
-    return {
-        size: rules.size,
-        graph: g!,
-        degrees: degrees,
-        maxDistancePairs: maxDistancePairs
-    } as BlockBoard;
-
-}
 
 function hasSingleLongestPath(g: Graph) {
     const graphWidth = diameter(g);
