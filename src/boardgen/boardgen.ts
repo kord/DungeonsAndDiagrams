@@ -28,6 +28,7 @@ type BoardgenRules = {
 export type BlockBoard = {
     size: Size,
     graph: Graph,
+    // degrees[n] is an array of all nodes that each have precisely n edges.
     degrees: Array<Array<string>>,
     maxDistancePairs: Array<Array<string>>,
 }
@@ -122,13 +123,13 @@ function findBlockBoard(rules: BoardgenRules): Graph {
     return g;
 }
 
-function has2x2(g: Graph, size: Size) {
+function has2x2Block(g: Graph, size: Size) {
     return locations(size).some(loc => {
         const block = [
             {x: loc.x, y: loc.y},
             {x: loc.x + 1, y: loc.y},
-            {x: loc.x, y: loc.y + 1},
             {x: loc.x + 1, y: loc.y + 1},
+            {x: loc.x, y: loc.y + 1},
         ];
         return block.every(l => g.hasNode(loc2Str(l)));
     })
@@ -141,7 +142,7 @@ function generateBoard(rules: BoardgenRules) {
     let rejects = 0;
 
     const rejection = (g: Graph) => (
-        (rules.no2x2 && has2x2(g, rules.size))
+        (rules.no2x2 && has2x2Block(g, rules.size))
         ||
         (rules.uniqueDiameter && !hasSingleLongestPath(g)));
 
@@ -163,7 +164,7 @@ function generateBoard(rules: BoardgenRules) {
     let degrees: Array<Array<string>> = [[], [], [], [], []];
     g!.forEachNode(n => degrees[g.degree(n)].push(n));
 
-    let maxDistancePairs = longestPaths(g!);
+    let maxDistancePairs = longestPathTerminalPairs(g!);
 
     console.log(`Rejected: ${rejects}`);
     return {
@@ -197,7 +198,7 @@ function hasSingleLongestPath(g: Graph) {
     return maxFound;
 }
 
-function longestPaths(g: Graph) {
+function longestPathTerminalPairs(g: Graph) {
     let leafs = g.nodes().filter(n => g.degree(n) === 1);
 
     let maxDistancePairs = new Array<string[]>();
