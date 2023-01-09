@@ -9,6 +9,7 @@ export type PuzzleGameProps = {};
 type PuzzleGameState = {
     size: Size,
     spec?: BlockBoard,
+    block: boolean,
     no2x2: boolean,
     uniqueDiameter: boolean,
     wrapX: boolean,
@@ -23,6 +24,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 height: 5,
                 width: 5,
             },
+            block: false,
             no2x2: false,
             uniqueDiameter: false,
             wrapX: false,
@@ -49,7 +51,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             size: this.state.size,
             wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
 
-            style: 'thin edges',
+            style: this.state.block ? 'block' : 'thin edges',
             no2x2: this.state.no2x2,
             uniqueDiameter: this.state.uniqueDiameter,
         })
@@ -58,12 +60,17 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     render() {
         return (<>
                 <label>
+                    block
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'block'} checked={this.state.block}/>
+                </label>
+                <label>
                     no2x2
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'no2x2'} checked={this.state.no2x2}/>
                 </label>
                 <label>
                     uniqueDiameter
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'uniqueDiameter'} checked={this.state.uniqueDiameter}/>
+                    <input type={'checkbox'} onChange={this.setCheckbox} name={'uniqueDiameter'}
+                           checked={this.state.uniqueDiameter}/>
                 </label>
                 <label>
                     WrapX

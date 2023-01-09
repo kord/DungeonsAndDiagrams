@@ -10,6 +10,7 @@ interface WrapRules {
     wrapX: boolean,
     wrapY: boolean
 }
+
 export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: false};
 
 type BoardgenRules = {
@@ -47,7 +48,7 @@ function generateBoard(rules: BoardgenRules) {
     let rejects = 0;
 
     const rejection = (g: Graph) => (
-        (rules.no2x2 && has2x2Block(g, rules.size)) ||
+        (rules.no2x2 && rules.style == "block" && has2x2Block(g, rules.size)) ||
         (rules.uniqueDiameter && !hasSingleLongestPath(g)));
 
     while (rejected) {
