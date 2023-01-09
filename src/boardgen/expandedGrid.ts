@@ -84,7 +84,6 @@ function SpecksOnly(size: Size) {
 function nodeRowInfo(rowNum: number, size: Size) {
     const ret = [];
     for (let i = 0; i < size.width; i += 1) {
-        console.log((i - 1) % size.width)
         ret.push(new VerticalEdgeInfo([{x: i, y: rowNum}, {x: (i - 1 + size.width) % size.width, y: rowNum}], i == 0));
         ret.push(new NodeInfo({x: i, y: rowNum}));
     }

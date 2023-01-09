@@ -49,7 +49,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             size: this.state.size,
             wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
 
-            style: 'block',
+            style: 'thin edges',
             no2x2: this.state.no2x2,
             uniqueDiameter: this.state.uniqueDiameter,
         })
