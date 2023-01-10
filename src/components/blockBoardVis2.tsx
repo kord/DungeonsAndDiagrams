@@ -75,7 +75,7 @@ export class BlockBoardVis2 extends Component<BlockGraphProps, BlockGraphState> 
 
     // export type GridComponent = NodeInfo | HorizontalEdgeInfo | VerticalEdgeInfo | Speck;
 
-    gridComponent = (info: GridComponent) => {
+    gridComponent = (info: GridComponent, key: number) => {
         const {rules, graph, maxDistancePairs, degrees} = this.props.spec
 
         let cl: string = '';
@@ -139,7 +139,7 @@ export class BlockBoardVis2 extends Component<BlockGraphProps, BlockGraphState> 
             }
 
         }
-        return <div className={cl}/>
+        return <div className={cl} key={key}/>
     }
 
     render() {
@@ -153,7 +153,7 @@ export class BlockBoardVis2 extends Component<BlockGraphProps, BlockGraphState> 
         return (<>
                 <div className={'block-board-vis2'} style={st}>
                     <div className={'block-board-vis__grid2'}>
-                        {expandedGrid(size).map(this.gridComponent)}
+                        {expandedGrid(size).map((c, i) => this.gridComponent(c, i))}
                     </div>
                 </div>
 

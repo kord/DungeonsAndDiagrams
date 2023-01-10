@@ -7,7 +7,7 @@
     --top-bottom-color: black;
 
     --square-size: 40px;
-    --gap: 5px;
+    --gap: 4px;
     --gap-width: calc((var(--board-width) - 1) * var(--gap));
     --square-width: calc((var(--board-width)) * var(--square-size));
 
@@ -34,7 +34,7 @@
     --top-bottom-color: black;
 
     --square-size: 40px;
-    --gap: 5px;
+    --gap: 4px;
     --gap-width: calc((var(--board-width) - 1) * var(--gap));
     --square-width: calc((var(--board-width)) * var(--square-size));
 
@@ -70,7 +70,7 @@
 }
 
 .block-square--1neighbour {
-    background-color: palegreen;
+    background-color: #bbfabb;
 }
 
 .block-square--with-longest-path {
@@ -103,7 +103,6 @@
 }
 
 .speck--3path-available, .speck--4path-available {
-
     background-color: white;
 }
 

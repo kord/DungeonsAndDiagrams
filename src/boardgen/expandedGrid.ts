@@ -43,6 +43,8 @@ export class VerticalEdgeInfo {
     }
 }
 
+// Specks are the little square dots where the lines separating grid squares avoid touching each other.
+// They're a nuisance, but needed for the thing to look halfway decent.
 export class Speck {
     myType = 'Speck';
     public readonly relevantEdges: Edge[];
@@ -102,6 +104,9 @@ export function expandedGrid(size: Size) {
     // Bottom edge-row same as the top.
     ret.push(edgeRowInfo(0, size));
 
+    // The construction of the specks is easier to do all at once instead of interleaved with the other things.
+    // After making them here, we slot them into the slots prepared in edgeRowInfo and nodeRowInfo as the string
+    // 'speck' in the right order placement.
     const specks = SpecksOnly(size);
 
     const realret: GridComponent[] = [];
