@@ -21,14 +21,14 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         super(props);
         this.state = {
             size: {
-                height: 5,
-                width: 5,
+                height: 8,
+                width: 8,
             },
             block: false,
             no2x2: false,
-            uniqueDiameter: false,
+            uniqueDiameter: true,
             wrapX: false,
-            wrapY: true,
+            wrapY: false,
         };
     }
 
