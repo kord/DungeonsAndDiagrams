@@ -50,7 +50,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         spec: generateBoard({
             size: this.state.size,
             wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
-
             style: this.state.block ? 'block' : 'thin edges',
             no2x2: this.state.no2x2,
             uniqueDiameter: this.state.uniqueDiameter,

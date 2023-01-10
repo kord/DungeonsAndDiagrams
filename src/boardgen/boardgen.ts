@@ -13,7 +13,7 @@ interface WrapRules {
 
 export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: false};
 
-type BoardgenRules = {
+export type BoardgenRules = {
     // How big is the board.
     size: Size,
     // Which style of board is being generated.
