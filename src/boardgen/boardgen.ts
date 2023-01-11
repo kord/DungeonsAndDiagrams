@@ -1,17 +1,17 @@
 import {countConnectedComponents} from 'graphology-components';
 import Graph from 'graphology';
-import {bidirectional} from 'graphology-shortest-path/unweighted';
-import {diameter} from "graphology-metrics/graph";
 import {Location, Size} from "./types";
+import {has2x2Block, hasSingleLongestPath, longestPathTerminalPairs} from "./graphProperties";
+import {consolidateNodes, gridNeighbourFunc, loc2Str, locations, locFromStr, shuffle} from "./graphUtils";
 
-type BoardStyle = 'block' | 'thin edges';
+type BoardStyle = 'block' | 'thin edges' | 'blank';
 
-interface WrapRules {
+export interface WrapRules {
     wrapX: boolean,
     wrapY: boolean
 }
 
-export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: false};
+export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: true};
 
 export type BoardgenRules = {
     // How big is the board.
@@ -20,53 +20,115 @@ export type BoardgenRules = {
     style: BoardStyle,
 
     // Prevents generation of boards without a unique pair of max-distance nodes.
-    uniqueDiameter: boolean,
+    uniqueDiameter?: boolean,
 
     // Are the nodes connected across the top or sides of the board?
     wrap: WrapRules,
 
     // Prevents any 2x2 block of nodes from being generated.
     // This is ignored in the 'thin edges' BoardStyle.
-    no2x2: boolean,
+    no2x2?: boolean,
 
+    // Always ensure that the board's nodes remain in a single connected component.
+    singleConnectedComponent?: boolean,
+}
 
+export const defaultBoardgenRules: BoardgenRules = {
+    size: {width: 8, height: 8},
+    style: "block",
+    wrap: {wrapX: false, wrapY: false},
+    uniqueDiameter: false,
+    no2x2: true,
+    singleConnectedComponent: true,
+}
+
+// Some quantitative property tracked for every row and every column of a grid.
+type Linestats = {
+    rows: Array<number>,
+    cols: Array<number>,
 }
 
 export type BlockBoard = {
+    // The rules that were used to generate this board.
     rules: BoardgenRules,
     graph: Graph,
     // degrees[n] is an array of all nodes that each have precisely n edges.
     degrees: Array<Array<string>>,
     maxDistancePairs: Array<Array<string>>,
+    presentNodeCounts: Linestats,
+    presentEdgeCounts: Linestats,
+    absentNodeCounts: Linestats,
+    absentEdgeCounts: Linestats,
     restarts: number,
 }
 
+// TODO
+function getLineStats(g: Graph, size: Size) {
+    let presentNodeCounts = [], presentEdgeCounts = [], absentNodeCounts = [], absentEdgeCounts = [];
+    for (let i = 0; i < size.height; i++) {
+        presentNodeCounts.push()
+    }
 
-function generateBoard(rules: BoardgenRules) {
+    const dummy = {rows: [], cols: []};
+
+    return {
+        presentNodeCounts: dummy,
+        presentEdgeCounts: dummy,
+        absentNodeCounts: dummy,
+        absentEdgeCounts: dummy,
+    }
+}
+
+
+export function generateBoard(rules: BoardgenRules) {
     let g: Graph;
+    // let throneresult = installThroneRooms(g, rules);
+
     let rejected = true;
     let rejects = 0;
-
     const rejection = (g: Graph) => (
         (rules.no2x2 && rules.style == "block" && has2x2Block(g, rules.size)) ||
         (rules.uniqueDiameter && !hasSingleLongestPath(g)));
-
     while (rejected) {
         rejected = false;
+        g = unconstrainedGridGraph(rules.size, rules.wrap);
 
         switch (rules.style) {
             case "block":
-                g = findBlockBoard(rules);
+                g = findBlockBoard(g, rules);
                 break;
             case "thin edges":
-                g = findThinEdgesBoard(rules);
+                g = findThinEdgesBoard(g, rules);
+                break;
+            case 'blank':
+                break;
         }
 
-        if (rejection(g)) {
+        if (rules.style != 'blank' && rejection(g!)) {
             rejected = true;
             rejects += 1;
         }
+
+        if (rejects > 500) {
+            console.error('Too many rejects!!!');
+            // Return whatever we have though.
+            break;
+        }
     }
+
+
+    // {
+    //     const rando = (n: number) => Math.floor(Math.random() * n);
+    //     const maxTries = 500;
+    //     let attempts = 0;
+    //     while (attempts < maxTries) {
+    //         if (installThroneRoom(g,
+    //             {x: rando(size.width - 2), y: rando(size.height - 2)},
+    //             size,
+    //             'block')) break;
+    //         attempts++;
+    //     }}
+
 
     let degrees: Array<Array<string>> = [[], [], [], [], []];
     g!.forEachNode(n => degrees[g.degree(n)].push(n));
@@ -79,15 +141,11 @@ function generateBoard(rules: BoardgenRules) {
         graph: g!,
         degrees: degrees,
         maxDistancePairs: maxDistancePairs,
+        ...getLineStats(g!, rules.size),
         restarts: rejects,
     } as BlockBoard;
-
 }
 
-
-export function loc2Str(loc: Location) {
-    return `${loc.x},${loc.y}`;
-}
 
 function unconstrainedGridGraph(size: Size, wrapRules: WrapRules) {
     const graph = new Graph({type: 'undirected', allowSelfLoops: false});
@@ -106,43 +164,9 @@ function unconstrainedGridGraph(size: Size, wrapRules: WrapRules) {
     return graph;
 }
 
-export function locations(size: Size): Location[][] {
-    let ret = [];
-    for (let j = 0; j < size.height; j += 1) {
-        const row = [];
-        for (let i = 0; i < size.width; i += 1) {
-            row.push({x: i, y: j});
-        }
-        ret.push(row);
-    }
-    return ret;
-}
-
-let gridNeighbourFunc = (size: Size, wrapRules: WrapRules) => {
-    // toLargerOnly allows us to avoid duplicate generating the undirected edges, only edges proceeding to "larger"
-    // nodes are returned.
-    const {wrapX, wrapY} = wrapRules;
-    return (loc: Location) => {
-        let candidates =
-            [
-                {x: loc.x, y: loc.y + 1},
-                {x: loc.x, y: loc.y - 1},
-                {x: loc.x + 1, y: loc.y},
-                {x: loc.x - 1, y: loc.y}
-            ];
-        if (wrapX) candidates = candidates.map(loc => ({x: loc.x % size.width, y: loc.y}))
-        if (wrapY) candidates = candidates.map(loc => ({x: loc.x, y: loc.y % size.height}))
-        return candidates.filter(
-            (loc: Location) => loc.x >= 0 && loc.y >= 0 && loc.x < size.width && loc.y < size.height);
-    }
-}
-
-function findBlockBoard(rules: BoardgenRules): Graph {
-    const g = unconstrainedGridGraph(rules.size, rules.wrap);
-
+function findBlockBoard(g: Graph, rules: BoardgenRules): Graph {
     // With a block style board, we make nodes inaccessible until we're happy.
 
-    // Don't delete leaf nodes.
     const nodes = g.nodes().map(s => s);
     const finished = [];
     const getRandomNode = () => Math.floor(Math.random() * nodes.length);
@@ -173,27 +197,7 @@ function findBlockBoard(rules: BoardgenRules): Graph {
     return g;
 }
 
-function shuffle(array: Array<any>) {
-    let currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-}
-
-function findThinEdgesBoard(rules: BoardgenRules): Graph {
-    const g = unconstrainedGridGraph(rules.size, rules.wrap);
-
+function findThinEdgesBoard(g: Graph, rules: BoardgenRules): Graph {
     // With an edges style board, we make edges inaccessible until we're happy.
 
     const edges = g.edges().map(s => s);
@@ -210,59 +214,44 @@ function findThinEdgesBoard(rules: BoardgenRules): Graph {
     return g;
 }
 
-function has2x2Block(g: Graph, size: Size) {
-    return locations(size).flat().some(loc => {
-        const block = [
-            {x: loc.x, y: loc.y},
-            {x: loc.x + 1, y: loc.y},
-            {x: loc.x + 1, y: loc.y + 1},
-            {x: loc.x, y: loc.y + 1},
-        ];
-        return block.every(l => g.hasNode(loc2Str(l)));
-    })
-}
-
-
-function hasSingleLongestPath(g: Graph) {
-    const graphWidth = diameter(g);
-
-    let leafs = g.nodes().filter(n => g.degree(n) === 1);
-
-    let maxFound = false;
-
-    for (let i = 0; i < leafs.length; i++) {
-        for (let j = i + 1; j < leafs.length; j++) {
-            const source = leafs[i];
-            const destination = leafs[j];
-            const path = bidirectional(g, source, destination);
-
-            if (path!.length > graphWidth) {
-                if (maxFound) return false;
-                maxFound = true;
-            }
+// Grab a bunch of grid locations in a rectangle.
+function gridBlock(loc: Location, size: Size) {
+    const {height, width} = size;
+    const ret = [];
+    for (let j = loc.y; j < loc.y + height; j += 1) {
+        for (let i = loc.x; i < loc.x + width; i += 1) {
+            ret.push({x: i, y: j} as Location);
         }
     }
-    return maxFound;
+    return ret;
 }
 
-function longestPathTerminalPairs(g: Graph) {
-    let leafs = g.nodes().filter(n => g.degree(n) === 1);
+// Take a grid graph and merge a group of sizexsize nodes whose top-left element is at loc, then remove all but one
+// of the neighbouring edges so it's connected to the main.
+// eg. ..... (1,1) size 2 .....
+//     .....              .ox..
+//     .....      ==>     .xx..
+//     .....              .....
+//     .....              .....
+// o is now connected to all of the original block's members and the x nodes are purged.
+export function installThroneRoom(g: Graph, loc: Location, size: Size, boardStyle: BoardStyle): [Location, Location] | undefined {
+    let group = gridBlock(loc, size);
+    if (group.some(loc => !g.hasNode(loc2Str(loc)))) return undefined;
+    const representative = consolidateNodes(g, group.map(loc2Str));
+    const neighbours = g.neighbors(representative);
 
-    let maxDistancePairs = new Array<string[]>();
-    const graphWidth = diameter(g);
+    // Only one exit from the throne room.
+    const exitNode = neighbours.splice(Math.floor(Math.random() * neighbours.length), 1);
 
-    for (let i = 0; i < leafs.length; i++) {
-        for (let j = i + 1; j < leafs.length; j++) {
-            const source = leafs[i];
-            const destination = leafs[j];
-            const path = bidirectional(g, source, destination);
-
-            if (path!.length > graphWidth) {
-                maxDistancePairs.push([source, destination]);
-            }
-        }
+    if (boardStyle == 'block') {
+        neighbours.forEach(n => g.dropNode(n));
+        group.forEach(loc => g.mergeNode(loc2Str(loc)))
+    } else if (boardStyle == 'thin edges') {
+        neighbours.forEach(n => g.dropEdge(representative, n));
+    } else {
+        console.error('You forgot to tell installThroneRoom about a new BoardStyle')
     }
-    return maxDistancePairs;
+    const repString = locFromStr(representative);
+    if (!repString) return undefined;
+    return [loc, repString];
 }
-
-export {generateBoard};

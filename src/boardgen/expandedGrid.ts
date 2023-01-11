@@ -1,5 +1,5 @@
-import {locations} from "./boardgen";
 import {Location, Size} from "./types";
+import {locations} from "./graphUtils";
 
 
 // type GridComponentType = 'speck' | 'verticalEdge' | 'horizontalEdge' | 'node';

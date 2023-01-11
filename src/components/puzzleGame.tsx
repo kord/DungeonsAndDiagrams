@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {BlockBoard, generateBoard} from "../boardgen/boardgen";
+import {BlockBoard, defaultBoardgenRules, generateBoard} from "../boardgen/boardgen";
 import {BlockBoardVis} from "./blockBoardVis";
 import {Size} from "../boardgen/types";
 import {BlockBoardVis2} from "./blockBoardVis2";
@@ -20,15 +20,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     constructor(props: PuzzleGameProps) {
         super(props);
         this.state = {
-            size: {
-                height: 8,
-                width: 8,
-            },
-            block: false,
-            no2x2: false,
-            uniqueDiameter: true,
-            wrapX: false,
-            wrapY: false,
+            size: defaultBoardgenRules.size,
+            block: defaultBoardgenRules.style == 'block',
+            no2x2: !!defaultBoardgenRules.no2x2,
+            uniqueDiameter: !!defaultBoardgenRules.uniqueDiameter,
+            wrapX: defaultBoardgenRules.wrap.wrapX,
+            wrapY: defaultBoardgenRules.wrap.wrapY,
         };
     }
 
@@ -53,36 +50,58 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             style: this.state.block ? 'block' : 'thin edges',
             no2x2: this.state.no2x2,
             uniqueDiameter: this.state.uniqueDiameter,
+            singleConnectedComponent: true,
         })
     });
+
+    // regen = () => this.setState({
+    //     spec: generateBoard({
+    //         size: this.state.size,
+    //         wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
+    //         style: 'blank',
+    //     })
+    // });
+
+
+    something = () => {
+
+
+        const {graph} = this.state.spec!;
+        const size = this.state.spec!.rules.size;
+        // installThroneRooms(graph,3,
+        //     {height: 3, width: 3},
+        //     'block');
+        this.forceUpdate()
+    }
 
     render() {
         return (<>
                 <label>
-                    block
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'block'} checked={this.state.block}/>
+                    block
                 </label>
                 <label>
-                    no2x2
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'no2x2'} checked={this.state.no2x2}/>
+                    no2x2
                 </label>
                 <label>
-                    uniqueDiameter
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'uniqueDiameter'}
                            checked={this.state.uniqueDiameter}/>
+                    uniqueDiameter
                 </label>
                 <label>
-                    WrapX
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapX'} checked={this.state.wrapX}/>
+                    WrapX
                 </label>
                 <label>
-                    WrapY
                     <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapY'} checked={this.state.wrapY}/>
+                    WrapY
                 </label>
                 <input onChange={this.setHeight} value={this.state.size.height}/>
                 &nbsp;
                 <input onChange={this.setWidth} value={this.state.size.width}/>
                 <button onClick={this.regen}>Regen</button>
+                <button onClick={this.something}>Do Something</button>
 
                 {this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}
                 <br/>

@@ -1,10 +1,11 @@
 import React, {Component, CSSProperties} from 'react';
 import './blockBoardVis.css';
-import {BlockBoard, loc2Str, locations} from "../boardgen/boardgen";
+import {BlockBoard} from "../boardgen/boardgen";
 import classNames from "classnames";
 import {render} from 'graphology-canvas';
 import forceLayout from "graphology-layout-force";
 import {Location} from "../boardgen/types";
+import {loc2Str, locations} from "../boardgen/graphUtils";
 
 export type BlockGraphProps = {
     spec: BlockBoard,
