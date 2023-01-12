@@ -2,10 +2,10 @@ import Graph from "graphology";
 import {Size} from "./types";
 import {diameter} from "graphology-metrics/graph";
 import {bidirectional} from "graphology-shortest-path/unweighted";
-import {loc2Str, locations} from "./graphUtils";
+import {gridLocations, loc2Str} from "./graphUtils";
 
 export function has2x2Block(g: Graph, size: Size) {
-    return locations(size).flat().some(loc => {
+    return gridLocations(size).flat().some(loc => {
         const block = [
             {x: loc.x, y: loc.y},
             {x: loc.x + 1, y: loc.y},

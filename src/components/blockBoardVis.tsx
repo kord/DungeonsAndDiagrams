@@ -5,7 +5,7 @@ import classNames from "classnames";
 import {render} from 'graphology-canvas';
 import forceLayout from "graphology-layout-force";
 import {Location} from "../boardgen/types";
-import {loc2Str, locations} from "../boardgen/graphUtils";
+import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 
 export type BlockGraphProps = {
     spec: BlockBoard,
@@ -82,7 +82,7 @@ export class BlockBoardVis extends Component<BlockGraphProps, BlockGraphState> {
 
                 <div className={'block-board-vis'} style={st}>
                     <div className={'block-board-vis__grid'}>
-                        {locations(size).flat().map(loc =>
+                        {gridLocations(size).flat().map(loc =>
                             <div className={this.classNames1(loc)} key={loc2Str(loc)}>
                                 {/*{this.props.spec.graph.hasNode(loc2Str(loc)) ? this.props.spec.graph.degree(loc2Str(loc)) : ''}*/}
                             </div>

@@ -21,7 +21,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         super(props);
         this.state = {
             size: defaultBoardgenRules.size,
-            block: defaultBoardgenRules.style == 'block',
+            block: defaultBoardgenRules.boardStyle == 'block',
             no2x2: !!defaultBoardgenRules.no2x2,
             uniqueDiameter: !!defaultBoardgenRules.uniqueDiameter,
             wrapX: defaultBoardgenRules.wrap.wrapX,
@@ -47,7 +47,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         spec: generateBoard({
             size: this.state.size,
             wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
-            style: this.state.block ? 'block' : 'thin edges',
+            boardStyle: this.state.block ? 'block' : 'thin edges',
             no2x2: this.state.no2x2,
             uniqueDiameter: this.state.uniqueDiameter,
             singleConnectedComponent: true,

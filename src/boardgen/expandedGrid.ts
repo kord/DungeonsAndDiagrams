@@ -1,5 +1,5 @@
 import {Location, Size} from "./types";
-import {locations} from "./graphUtils";
+import {gridLocations} from "./graphUtils";
 
 
 // type GridComponentType = 'speck' | 'verticalEdge' | 'horizontalEdge' | 'node';
@@ -80,7 +80,7 @@ function edgeRowInfo(lowRow: number, size: Size) {
 
 function SpecksOnly(size: Size) {
     const ret = [];
-    return locations({height: size.height + 1, width: size.width + 1}).flat().map(loc => new Speck(loc, size));
+    return gridLocations({height: size.height + 1, width: size.width + 1}).flat().map(loc => new Speck(loc, size));
 }
 
 function nodeRowInfo(rowNum: number, size: Size) {

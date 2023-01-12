@@ -16,11 +16,11 @@ export function locFromStr(str: string | undefined): Location | undefined {
     return {x: l[0], y: l[1]};
 }
 
-export function locations(size: Size): Location[][] {
+export function gridLocations(size: Size, rootLoc: Location = {x: 0, y: 0}): Location[][] {
     let ret = [];
-    for (let j = 0; j < size.height; j += 1) {
+    for (let j = rootLoc.y; j < rootLoc.y + size.height; j++) {
         const row = [];
-        for (let i = 0; i < size.width; i += 1) {
+        for (let i = rootLoc.x; i < rootLoc.x + size.width; i++) {
             row.push({x: i, y: j});
         }
         ret.push(row);
@@ -63,7 +63,7 @@ export function shuffle(array: Array<any>) {
     return array;
 }
 
-// Remove all but the first node from the nodes list, shifting all of the edges from the removes nodes onto that
+// Remove all but the first node from the nodes list, shifting all of the edges from the removed nodes onto that
 // first one, who is now something like a representative of the group.
 export function consolidateNodes(g: Graph, nodes: string[]) {
     if (nodes.length == 0) {
