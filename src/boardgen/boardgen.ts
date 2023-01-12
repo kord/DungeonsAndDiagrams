@@ -1,7 +1,7 @@
 import {countConnectedComponents} from 'graphology-components';
 import Graph from 'graphology';
 import {Location, Size} from "./types";
-import {has2x2Block, hasSingleLongestPath} from "./graphProperties";
+import {has2x2Block, hasSingleLongestPath, longestPathTerminalPairs} from "./graphProperties";
 import {consolidateNodes, gridLocations, gridNeighbourFunc, loc2Str, locFromStr, shuffle} from "./graphUtils";
 
 type BoardStyle = 'block' | 'thin edges' | 'blank';
@@ -190,16 +190,15 @@ export function generateBoard(rules: BoardgenRules) {
 
     let degrees: Array<Array<string>> = [[], [], [], [], []];
     g!.forEachNode(n => degrees[g.degree(n)].push(n));
+    let maxDistancePairs = longestPathTerminalPairs(g!);
 
-    // let maxDistancePairs = longestPathTerminalPairs(g!);
 
     console.log(`Rejected: ${rejects}`);
     return {
         rules: rules,
         graph: g!,
         degrees: degrees,
-        // maxDistancePairs: maxDistancePairs,
-        maxDistancePairs: [],
+        maxDistancePairs: maxDistancePairs,
         ...getLineStats(g!, rules.size),
         restarts: rejects,
     } as BlockBoard;
