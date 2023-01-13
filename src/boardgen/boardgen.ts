@@ -1,4 +1,4 @@
-import {countConnectedComponents} from 'graphology-components';
+import {countConnectedComponents, cropToLargestConnectedComponent} from 'graphology-components';
 import Graph from 'graphology';
 import {Location, Size} from "./types";
 import {has2x2Block, hasSingleLongestPath, longestPathTerminalPairs} from "./graphProperties";
@@ -48,17 +48,20 @@ type Linestats = {
     cols: Array<number>,
 }
 
-export type BlockBoard = {
+export type BoardSpec = {
     // The rules that were used to generate this board.
     rules: BoardgenRules,
     graph: Graph,
     // degrees[n] is an array of all nodes that each have precisely n edges.
     degrees: Array<Array<string>>,
+    throneRooms: ThroneSpec[],
+
     maxDistancePairs: Array<Array<string>>,
     presentNodeCounts: Linestats,
     presentEdgeCounts: Linestats,
     absentNodeCounts: Linestats,
     absentEdgeCounts: Linestats,
+
     restarts: number,
 }
 
@@ -80,41 +83,9 @@ function getLineStats(g: Graph, size: Size) {
 }
 
 type ThroneSpec = {
-    throneRepresentative: Location,
+    topLeft: Location,
+    roomSize: Size,
     exitNode: Location,
-}
-
-function rebuildThroneRooms(g: Graph, roomSize: Size, thrones: ThroneSpec[]) {
-
-    console.log(thrones)
-    for (let t of thrones) {
-        const {throneRepresentative, exitNode} = t;
-        const room = unconstrainedGridGraph(roomSize, {wrapX: false, wrapY: false}, throneRepresentative);
-        console.log(`loc2Str(throneRepresentative): ${loc2Str(throneRepresentative)}`)
-        g.dropNode(loc2Str(throneRepresentative));
-
-        const neighboursOfExit = [
-            loc2Str({x: exitNode.x, y: exitNode.y + 1}),
-            loc2Str({x: exitNode.x, y: exitNode.y - 1}),
-            loc2Str({x: exitNode.x + 1, y: exitNode.y}),
-            loc2Str({x: exitNode.x - 1, y: exitNode.y}),
-        ];
-
-        room.forEachNode(n => {
-            g.addNode(n);
-            if (neighboursOfExit.includes(n)) {
-                console.log(`new edge is ${n} -> ${loc2Str(exitNode)}`)
-                try {
-                    g.addEdge(n, loc2Str(exitNode));
-                } catch (e) {
-                    console.error(`ERRPOR`)
-                }
-            }
-        });
-        room.forEachEdge((e, _, source, target) => {
-            g.updateEdge(source, target)
-        });
-    }
 }
 
 export function generateBoard(rules: BoardgenRules) {
@@ -133,16 +104,29 @@ export function generateBoard(rules: BoardgenRules) {
         }
     };
 
+    const requiredThroneCount = 2;
     let thrones = [];
+    let throneRejects = 0;
 
     g = unconstrainedGridGraph(rules.size, rules.wrap);
-    const rando = (n: number) => Math.floor(Math.random() * n);
-    thrones.push(
-        installThroneRoom(g, {
+    let lastSafeGraph = g.copy();
+
+    while (thrones.length < requiredThroneCount && throneRejects < 100) {
+        const rando = (n: number) => Math.floor(Math.random() * n);
+        let throneSpec = installThroneRoom(g, {
             x: rando(rules.size.width - 2),
             y: rando(rules.size.height - 2)
-        }, throneSize, rules.boardStyle)!);
+        }, throneSize, rules.boardStyle)!;
+        if (!throneSpec) {
+            throneRejects++;
+            g = lastSafeGraph;
+        } else {
+            thrones.push(throneSpec);
+            lastSafeGraph = g.copy();
+        }
+    }
 
+    console.log(`Build ${thrones.length} thrones`)
 
     // {
     //     const rando = (n: number) => Math.floor(Math.random() * n);
@@ -185,7 +169,7 @@ export function generateBoard(rules: BoardgenRules) {
         }
     }
 
-    rebuildThroneRooms(g!, throneSize, thrones)
+    rebuildThroneRooms(g!, thrones)
 
 
     let degrees: Array<Array<string>> = [[], [], [], [], []];
@@ -201,7 +185,8 @@ export function generateBoard(rules: BoardgenRules) {
         maxDistancePairs: maxDistancePairs,
         ...getLineStats(g!, rules.size),
         restarts: rejects,
-    } as BlockBoard;
+        throneRooms: thrones,
+    } as BoardSpec;
 }
 
 
@@ -313,8 +298,8 @@ function gridBlock(loc: Location, size: Size) {
 //     .....              .....
 //     .....              .....
 // o is now connected to all of the original block's members and the x nodes are purged.
-export function installThroneRoom(g: Graph, loc: Location, size: Size, boardStyle: BoardStyle): ThroneSpec | undefined {
-    let group = gridBlock(loc, size);
+export function installThroneRoom(g: Graph, loc: Location, roomSize: Size, boardStyle: BoardStyle): ThroneSpec | undefined {
+    let group = gridBlock(loc, roomSize);
     if (group.some(loc => !g.hasNode(loc2Str(loc)))) return undefined;
     const representative = consolidateNodes(g, group.map(loc2Str));
     const neighbours = g.neighbors(representative);
@@ -325,6 +310,8 @@ export function installThroneRoom(g: Graph, loc: Location, size: Size, boardStyl
     if (boardStyle == 'block') {
         neighbours.forEach(n => g.dropNode(n));
         // group.forEach(loc => g.mergeNode(loc2Str(loc)))
+        cropToLargestConnectedComponent(g);
+        if (!g.hasNode(representative)) return undefined;
     } else if (boardStyle == 'thin edges') {
         neighbours.forEach(n => g.dropEdge(representative, n));
     } else {
@@ -332,5 +319,38 @@ export function installThroneRoom(g: Graph, loc: Location, size: Size, boardStyl
     }
     const repString = locFromStr(representative);
     if (!repString) return undefined;
-    return {throneRepresentative: loc, exitNode: locFromStr(exitNode)!};
+    return {topLeft: loc, roomSize: roomSize, exitNode: locFromStr(exitNode)!};
+}
+
+function rebuildThroneRooms(g: Graph, thrones: ThroneSpec[]) {
+    for (let t of thrones) {
+        const {topLeft, exitNode, roomSize} = t;
+        const room = unconstrainedGridGraph(roomSize, {wrapX: false, wrapY: false}, topLeft);
+        console.log(`loc2Str(throneRepresentative): ${loc2Str(topLeft)}`)
+        g.dropNode(loc2Str(topLeft));
+
+        // We need to graft an edge between the room and its single exit, and that means finding out which of the
+        // exit's neighbours are in the room.
+        const neighboursOfExit = [
+            loc2Str({x: exitNode.x, y: exitNode.y + 1}),
+            loc2Str({x: exitNode.x, y: exitNode.y - 1}),
+            loc2Str({x: exitNode.x + 1, y: exitNode.y}),
+            loc2Str({x: exitNode.x - 1, y: exitNode.y}),
+        ];
+
+        room.forEachNode(n => {
+            g.addNode(n);
+            if (neighboursOfExit.includes(n)) {
+                console.log(`new edge is ${n} -> ${loc2Str(exitNode)}`)
+                try {
+                    g.addEdge(n, loc2Str(exitNode));
+                } catch (e) {
+                    console.error(`ERRPOR`)
+                }
+            }
+        });
+        room.forEachEdge((e, _, source, target) => {
+            g.updateEdge(source, target)
+        });
+    }
 }

@@ -1,7 +1,5 @@
 import React from 'react';
 import './App.css';
-import {BlockBoard, generateBoard} from "./boardgen/boardgen";
-import {BlockBoardVis} from "./components/blockBoardVis";
 import {PuzzleGame} from "./components/puzzleGame";
 
 function App() {

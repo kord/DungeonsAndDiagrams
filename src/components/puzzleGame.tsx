@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
-import {BlockBoard, defaultBoardgenRules, generateBoard} from "../boardgen/boardgen";
+import {BoardSpec, defaultBoardgenRules, generateBoard} from "../boardgen/boardgen";
 import {BlockBoardVis} from "./blockBoardVis";
 import {Size} from "../boardgen/types";
 import {BlockBoardVis2} from "./blockBoardVis2";
+import {ddGen, DDSpec} from "../boardgen/ddBoardgen";
 
 export type PuzzleGameProps = {};
 
 type PuzzleGameState = {
     size: Size,
-    spec?: BlockBoard,
+    spec?: BoardSpec,
     block: boolean,
     no2x2: boolean,
     uniqueDiameter: boolean,
@@ -65,6 +66,11 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     something = () => {
 
+        const spec: DDSpec = {
+            size: this.state.size,
+
+        }
+        ddGen(spec)
 
         const {graph} = this.state.spec!;
         const size = this.state.spec!.rules.size;
