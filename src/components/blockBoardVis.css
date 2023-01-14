@@ -73,6 +73,10 @@
     background-color: #bbfabb;
 }
 
+.block-square--treasure, .block-square--center {
+    background-color: gold;
+}
+
 .block-square--with-longest-path {
     background-color: #ffacac;
 }

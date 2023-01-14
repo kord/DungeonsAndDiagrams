@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
-import {BoardSpec, defaultBoardgenRules, generateBoard} from "../boardgen/boardgen";
-import {BlockBoardVis} from "./blockBoardVis";
+import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Size} from "../boardgen/types";
-import {BlockBoardVis2} from "./blockBoardVis2";
-import {ddGen, DDSpec} from "../boardgen/ddBoardgen";
+import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
+import {SimpleGridBoard} from "./simpleGridBoard";
 
 export type PuzzleGameProps = {};
 
 type PuzzleGameState = {
     size: Size,
-    spec?: BoardSpec,
+    spec?: DDBoardSpec,
     block: boolean,
     no2x2: boolean,
     uniqueDiameter: boolean,
@@ -44,16 +43,29 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState(newstate);
     }
 
-    regen = () => this.setState({
-        spec: generateBoard({
+    regen = () => {
+        const spec = {
             size: this.state.size,
-            wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
-            boardStyle: this.state.block ? 'block' : 'thin edges',
-            no2x2: this.state.no2x2,
-            uniqueDiameter: this.state.uniqueDiameter,
-            singleConnectedComponent: true,
-        })
-    });
+            throneSpec: {
+                attemptFirst: .8,
+                attemptSubsequent: 0.9,
+            }
+        } as DDBoardgenSpec;
+        const puz = generateDDBoard(spec);
+        this.setState({spec: puz})
+    }
+
+    //
+    // regen = () => this.setState({
+    //     spec: generateBoard({
+    //         size: this.state.size,
+    //         wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
+    //         boardStyle: this.state.block ? 'block' : 'thin edges',
+    //         no2x2: this.state.no2x2,
+    //         uniqueDiameter: this.state.uniqueDiameter,
+    //         singleConnectedComponent: true,
+    //     })
+    // });
 
     // regen = () => this.setState({
     //     spec: generateBoard({
@@ -66,7 +78,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     something = () => {
 
-        const spec: DDSpec = {
+        const spec: DDBoardgenSpec = {
             size: this.state.size,
             throneSpec: {
                 attemptFirst: .8,
@@ -74,14 +86,16 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             }
 
         }
-        ddGen(spec)
-
-        const {graph} = this.state.spec!;
-        const size = this.state.spec!.rules.size;
-        // installThroneRooms(graph,3,
-        //     {height: 3, width: 3},
-        //     'block');
-        this.forceUpdate()
+        // ddGen(spec)
+        //
+        // this.setState({spec: spec})
+        //
+        // const {graph} = this.state.spec!;
+        // const size = this.state.spec!.rules.size;
+        // // installThroneRooms(graph,3,
+        // //     {height: 3, width: 3},
+        // //     'block');
+        // this.forceUpdate()
     }
 
     render() {
@@ -113,9 +127,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <button onClick={this.regen}>Regen</button>
                 <button onClick={this.something}>Do Something</button>
 
-                {this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}
-                <br/>
-                {this.state.spec ? <BlockBoardVis spec={this.state.spec}/> : <div/>}
+
+                {this.state.spec ? <SimpleGridBoard spec={this.state.spec}/> : <div/>}
+
+                {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
+                {/*<br/>*/}
+                {/*{this.state.spec ? <BlockBoardVis spec={this.state.spec}/> : <div/>}*/}
 
 
             </>

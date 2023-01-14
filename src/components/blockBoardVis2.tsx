@@ -1,6 +1,6 @@
 import React, {Component, CSSProperties} from 'react';
 import './blockBoardVis.css';
-import {BoardSpec} from "../boardgen/boardgen";
+import {BoardSpecOld} from "../boardgen/boardgen";
 import classNames from "classnames";
 import {render} from 'graphology-canvas';
 import forceLayout from "graphology-layout-force";
@@ -16,7 +16,7 @@ import {
 import {loc2Str} from "../boardgen/graphUtils";
 
 type BlockGraphProps = {
-    spec: BoardSpec,
+    spec: BoardSpecOld,
 };
 type BlockGraphState = {};
 

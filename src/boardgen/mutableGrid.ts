@@ -1,4 +1,4 @@
-import {Location, Size} from "./types";
+import {Linestats, Location, Size} from "./types";
 import {gridLocations, gridNeighbourFunc} from "./graphUtils";
 
 // A class representing an arbitrary size grid of bools, with the handy feature that you can roll back changes
@@ -9,9 +9,9 @@ export class MutableGrid {
     private grid: boolean[][];
     private lastSafe: boolean[][];
 
-    constructor(public size: Size) {
-        this.grid = constantGrid(size);
-        this.lastSafe = constantGrid(size);
+    constructor(public size: Size, initialValue: boolean) {
+        this.grid = constantGrid(size, initialValue);
+        this.lastSafe = constantGrid(size, initialValue);
         this.currentlySafe = true;
         this.nf = gridNeighbourFunc(size, {wrapX: false, wrapY: false});
     }
@@ -33,8 +33,8 @@ export class MutableGrid {
     }
 
     markSafe() {
-        this.lastSafe = this.grid.map(row => row.map(b => b));
         this.currentlySafe = true;
+        this.lastSafe = this.grid.map(row => row.map(b => b));
     }
 
     revert() {
@@ -156,19 +156,40 @@ export class MutableGrid {
             ret.push(row.join(''));
         }
         console.log(ret.join('\n'));
+        console.log(`${this.componentSizes()} componentsizes.`)
         console.log(`${this.leaves().length} leaves.`)
+    }
+
+    // Get counts for the rows and columns having the given value.
+    profile(value: boolean): Linestats {
+        const rows = constantArray(this.size.height, 0);
+        const cols = constantArray(this.size.width, 0);
+
+        for (let j = 0; j < this.size.height; j++) {
+            for (let i = 0; i < this.size.width; i++) {
+                if (this.grid[j][i] === value) {
+                    rows[j]++;
+                    cols[i]++
+                }
+            }
+        }
+        return {rows: rows, cols: cols,}
     }
 }
 
 
-function constantGrid(size: Size, value = true): boolean[][] {
+export function constantArray<T>(size: number, value: T): T[] {
+    const row = [];
+    for (let i = 0; i < size; i++) {
+        row.push(value);
+    }
+    return row;
+}
+
+export function constantGrid<T>(size: Size, value: T): T[][] {
     const ret = [];
     for (let j = 0; j < size.height; j++) {
-        const row = [];
-        for (let i = 0; i < size.width; i++) {
-            row.push(value);
-        }
-        ret.push(row);
+        ret.push(constantArray(size.width, value));
     }
     return ret;
 }

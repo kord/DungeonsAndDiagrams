@@ -1,0 +1,96 @@
+
+.simple-grid-board {
+    --board-height: 7;
+    --board-width: 7;
+
+    --side-color: black;
+    --top-bottom-color: black;
+
+    --square-size: 40px;
+    --hint-height: 80px;
+    --gap: 4px;
+    --gap-width: calc((var(--board-width)) * var(--gap));
+    --square-width: calc((var(--board-width)) * var(--square-size));
+
+    width: calc(var(--hint-height) + var(--gap-width) + var(--square-width));
+    border-top: var(--gap) solid var(--top-bottom-color);
+    border-bottom: var(--gap) solid var(--top-bottom-color);
+    border-left: var(--gap) solid var(--side-color);
+    border-right: var(--gap) solid var(--side-color);
+
+}
+
+.simple-grid-board__grid {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: var(--hint-height) repeat(var(--board-width), var(--square-size));
+    grid-template-rows: var(--hint-height) repeat(var(--board-height), var(--square-size));
+}
+
+.simple-grid-board--topcorner {
+
+}
+
+.simple-grid-board__count {
+    background-color: #98e7ff;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.simple-grid-board__count--row {
+    text-align: center;
+    vertical-align: center;
+
+    /*margin-right: var(--gap);*/
+    /*position: relative;*/
+    /*right: var(--gap);*/
+    /*top: var(--gap);*/
+}
+
+.simple-grid-board__count--col {
+    text-align: center;
+    /*position: relative;*/
+    /*bottom: -20px;*/
+
+}
+
+.simple-grid-board__count--undersatisafied {
+    color: blue;
+}
+
+.simple-grid-board__count--satisafied {
+    color: green;
+}
+
+.simple-grid-board__count--oversatisafied {
+    color: red;
+}
+
+
+.block-square {
+    width: var(--square-size);
+    height: var(--square-size);
+}
+
+.block-square--present {
+    background-color: whitesmoke;
+}
+
+.block-square--absent {
+    background-color: darkgray;
+}
+
+.block-square--1neighbour {
+    background-color: #bbfabb;
+}
+
+.block-square--treasure, .block-square--center {
+    /*background-color: gold;*/
+    background-image: url("../assets/treasure-chest-svgrepo-com.svg");
+    background-size: contain;
+    background-position: center;
+}
+
+.block-square--with-longest-path {
+    background-color: #ffacac;
+}

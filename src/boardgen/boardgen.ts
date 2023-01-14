@@ -1,6 +1,6 @@
 import {countConnectedComponents, cropToLargestConnectedComponent} from 'graphology-components';
 import Graph from 'graphology';
-import {Location, Size} from "./types";
+import {Linestats, Location, Size} from "./types";
 import {has2x2Block, hasSingleLongestPath, longestPathTerminalPairs} from "./graphProperties";
 import {consolidateNodes, gridLocations, gridNeighbourFunc, loc2Str, locFromStr, shuffle} from "./graphUtils";
 
@@ -13,7 +13,7 @@ export interface WrapRules {
 
 export const toroidalEmbedding: WrapRules = {wrapX: true, wrapY: true};
 
-export type BoardgenRules = {
+export type BoardgenRulesOld = {
     // How big is the board.
     size: Size,
     // Which style of board is being generated.
@@ -33,7 +33,7 @@ export type BoardgenRules = {
     singleConnectedComponent?: boolean,
 }
 
-export const defaultBoardgenRules: BoardgenRules = {
+export const defaultBoardgenRules: BoardgenRulesOld = {
     size: {width: 8, height: 8},
     boardStyle: "block",
     wrap: {wrapX: false, wrapY: false},
@@ -42,15 +42,9 @@ export const defaultBoardgenRules: BoardgenRules = {
     singleConnectedComponent: true,
 }
 
-// Some quantitative property tracked for every row and every column of a grid.
-type Linestats = {
-    rows: Array<number>,
-    cols: Array<number>,
-}
-
-export type BoardSpec = {
+export type BoardSpecOld = {
     // The rules that were used to generate this board.
-    rules: BoardgenRules,
+    rules: BoardgenRulesOld,
     graph: Graph,
     // degrees[n] is an array of all nodes that each have precisely n edges.
     degrees: Array<Array<string>>,
@@ -88,7 +82,7 @@ type ThroneSpec = {
     exitNode: Location,
 }
 
-export function generateBoard(rules: BoardgenRules) {
+export function generateBoard(rules: BoardgenRulesOld) {
     let g: Graph;
     const throneSize = {height: 3, width: 3};
 
@@ -186,7 +180,7 @@ export function generateBoard(rules: BoardgenRules) {
         ...getLineStats(g!, rules.size),
         restarts: rejects,
         throneRooms: thrones,
-    } as BoardSpec;
+    } as BoardSpecOld;
 }
 
 
@@ -211,7 +205,7 @@ function unconstrainedGridGraph(size: Size, wrapRules: WrapRules, rootLoc: Locat
     return graph;
 }
 
-function findBlockBoard(g: Graph, rules: BoardgenRules): Graph {
+function findBlockBoard(g: Graph, rules: BoardgenRulesOld): Graph {
     // With a block style board, we make nodes inaccessible until we're happy.
 
     // Not sure if I need to make a copy like this but whatever.
@@ -261,7 +255,7 @@ function findBlockBoard(g: Graph, rules: BoardgenRules): Graph {
     return g;
 }
 
-function findThinEdgesBoard(g: Graph, rules: BoardgenRules): Graph {
+function findThinEdgesBoard(g: Graph, rules: BoardgenRulesOld): Graph {
     // With an edges style board, we make edges inaccessible until we're happy.
 
     const edges = g.edges().map(s => s);

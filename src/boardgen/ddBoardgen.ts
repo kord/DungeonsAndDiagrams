@@ -1,4 +1,4 @@
-import {Location, Size} from "./types";
+import {Linestats, Location, Size} from "./types";
 import {gridLocations, loc2Str, shuffle} from "./graphUtils";
 import {MutableGrid} from "./mutableGrid";
 
@@ -7,17 +7,31 @@ type ThroneDemand = {
     attemptSubsequent: number,
 }
 
-export type DDSpec = {
+export type DDBoardgenSpec = {
     size: Size,
     throneSpec: ThroneDemand,
-    no2x2?: boolean,
-    singleComponent?: boolean,
+}
+
+export type DDBoardSpec = {
+    // The rules that were used to generate this board.
+    rules: DDBoardgenSpec,
+    grid: MutableGrid,
+
+    throneCount: number,
+    throneCenters: MutableGrid,
+    treasure: MutableGrid,
+    deadends: MutableGrid,
+
+    wallCounts: Linestats,
+
+    restarts: number,
 }
 
 // Try to place a throne in a sensible manner.
 // The passed grid is changed to include the 3x3 blank, and the center of that room is returned if space could be
 // found for such a room.
 function installThrone(grid: MutableGrid) {
+    console.log(`Entered installThrone`)
     const throneSize: Size = {width: 3, height: 3};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
@@ -28,6 +42,8 @@ function installThrone(grid: MutableGrid) {
         foundone = false;
         loopcount++;
 
+        // TODO: Instead of trying random locations forever, maybe try a random-order list of possible locations.
+        //  But then again, who gives a fuck if this is slow? Premature optimization?
         loc = {
             y: randomInt(grid.size.height - throneSize.height + 1),
             x: randomInt(grid.size.width - throneSize.width + 1)
@@ -39,7 +55,8 @@ function installThrone(grid: MutableGrid) {
             const room = gridLocations(throneSize, loc!).flat();
             const roomstrs = new Set(room.map(loc2Str));
             const roomneighbours = room.map(loc => grid.nf(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
-            const exit = roomneighbours.splice(randomInt(roomneighbours.length), 1);
+            // The exit is the only one we don't explicitly set to false.
+            const exit = roomneighbours.splice(randomInt(roomneighbours.length), 1)[0];
             roomneighbours.forEach(loc => grid.setLoc(loc, false));
 
             const components = grid.connectedComponents();
@@ -49,6 +66,7 @@ function installThrone(grid: MutableGrid) {
             if (components.length == 1) {
                 foundone = true;
                 grid.markSafe();
+                // grid.show()
             } else if (components.filter(c => c.length > 1).length == 1) {
                 foundone = true;
                 const singletons = components.filter(c => c.length == 1);
@@ -57,18 +75,23 @@ function installThrone(grid: MutableGrid) {
                 }
                 grid.markSafe();
             } else {
-                console.log(`grid.componentSizes() ${grid.componentSizes()}`)
+                // console.log(`grid.componentSizes() ${grid.componentSizes()}`)
                 grid.revert()
             }
         }
     }
-    if (foundone) return core!;
+
+    if (foundone) {
+        grid.show()
+        return core!;
+    }
 }
 
-export function ddGen(spec: DDSpec) {
+export function ddGen(spec: DDBoardgenSpec) {
     const disallowedBlockSize = {height: 2, width: 2};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
-    const grid = new MutableGrid(spec.size);
+
+    const grid = new MutableGrid(spec.size, true);
 
     let foundone = true;
     let loopcount = 0;
@@ -79,6 +102,7 @@ export function ddGen(spec: DDSpec) {
     const installFirst = Math.random() <= throneSpec.attemptFirst;
     if (installFirst) {
         do {
+            loopcount++;
             let throneloc = installThrone(grid);
             // False out the center so our subsequent processing won't find a blank 2x2 in there.
             if (throneloc != undefined) {
@@ -95,9 +119,10 @@ export function ddGen(spec: DDSpec) {
         width: spec.size.width - 1
     }).flat());
 
-    while (foundone && loopcount < 100) {
+    let loopcount2 = 0;
+    while (foundone && loopcount2 < 100) {
         foundone = false;
-        loopcount++;
+        loopcount2++;
 
         blockPossibilities.forEach(loc => {
             if (grid.checkBlock(loc, disallowedBlockSize)) {
@@ -105,16 +130,54 @@ export function ddGen(spec: DDSpec) {
                 grid.markSafe();
                 grid.setLoc({x: loc.x + randomInt(2), y: loc.y + randomInt(2)}, false);
                 if (grid.componentCount() != 1) grid.revert();
+                // else grid.show()
             }
         });
     }
 
     // Revert our falsed out room centers.
     console.log(...throneLocs)
-    while (throneLocs.length > 0) {
-        grid.setLoc(throneLocs.pop()!, true);
-    }
+    throneLocs.forEach(loc => grid.setLoc(loc, true));
     grid.markSafe();
 
-    grid.show();
+    return {grid: grid, throneLocs: throneLocs, restarts: loopcount + loopcount2};
+}
+
+// Wiggle a point into one of its 9 neighbours uniformly at random.
+function offCenter(loc: Location): Location {
+    return {
+        x: loc.x + Math.floor(Math.random() * 3) - 1,
+        y: loc.y + Math.floor(Math.random() * 3) - 1,
+    }
+}
+
+export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
+    const {grid, throneLocs, restarts} = ddGen(spec);
+    // grid.show();
+
+    const deadends = new MutableGrid(spec.size, false);
+    grid.leaves().forEach(loc => deadends.setLoc(loc, true));
+    deadends.markSafe();
+
+    const throneCenters = new MutableGrid(spec.size, false);
+    throneLocs.forEach(loc => throneCenters.setLoc(loc, true));
+    throneCenters.markSafe();
+
+    const treasure = new MutableGrid(spec.size, false);
+    throneLocs.forEach(loc => treasure.setLoc(offCenter(loc), true));
+    treasure.markSafe();
+
+    const wallCounts = grid.profile(false);
+
+    return {
+        rules: spec,
+        grid: grid,
+        deadends: deadends,
+        throneCenters: throneCenters,
+        treasure: treasure,
+        throneCount: throneLocs.length,
+        wallCounts: wallCounts,
+
+        restarts: restarts,
+    }
 }
