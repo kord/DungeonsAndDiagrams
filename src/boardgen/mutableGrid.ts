@@ -68,6 +68,7 @@ export class MutableGrid {
 
     componentCount = () => this.componentSizes().length;
 
+    // Return the sizes of the manhattan-adjacent connected components, starting with the smallest.
     componentSizes(): number[] {
         const backup = this.grid.map(row => row.map(b => b));
         const ret = [];
@@ -90,7 +91,35 @@ export class MutableGrid {
 
         // Restore before we started messing with it.
         this.grid = backup;
-        return ret;
+        return ret.sort((a, b) => a - b);
+    }
+
+    // Return the locations of the manhattan-adjacent connected components, starting with the smallest.
+    connectedComponents(): Location[][] {
+        const backup = this.grid.map(row => row.map(b => b));
+        const ret = [];
+
+        while (true) {
+            const seed = this.firstTrue();
+            if (seed === undefined) break;
+
+            let component = [];
+            const todo = [seed];
+            while (todo.length > 0) {
+                const cur = todo.pop()!;
+                if (!this.check(cur!)) continue;
+                // We set to false and add to our list at the same time so this works.
+                this.setLoc(cur, false);
+                component.push(cur);
+                // Set ourselves up to examine the neighbours.
+                todo.push(...this.nf(cur));
+            }
+            ret.push(component);
+        }
+
+        // Restore before we started falsing everything out.
+        this.grid = backup;
+        return ret.sort((a, b) => a.length - b.length);
     }
 
     // Returns true iff a block with top-left corner loc and size size has all true values in the grid.

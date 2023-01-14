@@ -68,6 +68,10 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
         const spec: DDSpec = {
             size: this.state.size,
+            throneSpec: {
+                attemptFirst: .8,
+                attemptSubsequent: .9,
+            }
 
         }
         ddGen(spec)

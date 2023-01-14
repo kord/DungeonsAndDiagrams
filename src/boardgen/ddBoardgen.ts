@@ -2,9 +2,14 @@ import {Location, Size} from "./types";
 import {gridLocations, loc2Str, shuffle} from "./graphUtils";
 import {MutableGrid} from "./mutableGrid";
 
+type ThroneDemand = {
+    attemptFirst: number,
+    attemptSubsequent: number,
+}
+
 export type DDSpec = {
     size: Size,
-    throneCount?: number,
+    throneSpec: ThroneDemand,
     no2x2?: boolean,
     singleComponent?: boolean,
 }
@@ -29,18 +34,32 @@ function installThrone(grid: MutableGrid) {
         };
 
         if (grid.checkBlock(loc, throneSize)) {
+            // We have a candidate location...
             core = {x: loc!.x + 1, y: loc!.y + 1};
             const room = gridLocations(throneSize, loc!).flat();
             const roomstrs = new Set(room.map(loc2Str));
             const roomneighbours = room.map(loc => grid.nf(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
             const exit = roomneighbours.splice(randomInt(roomneighbours.length), 1);
             roomneighbours.forEach(loc => grid.setLoc(loc, false));
-            // grid.setLoc(core, false);
 
-            if (grid.componentCount() == 1) {
+            const components = grid.connectedComponents();
+            // There are a couple cases we can handle.
+            // If the remainder forms a single connected component, we're golden.
+            // If we're left with singleton components, we can do that too, by falsing out the singletons.
+            if (components.length == 1) {
                 foundone = true;
                 grid.markSafe();
-            } else grid.revert()
+            } else if (components.filter(c => c.length > 1).length == 1) {
+                foundone = true;
+                const singletons = components.filter(c => c.length == 1);
+                for (let singleton of singletons) {
+                    grid.setLoc(singleton[0], false);
+                }
+                grid.markSafe();
+            } else {
+                console.log(`grid.componentSizes() ${grid.componentSizes()}`)
+                grid.revert()
+            }
         }
     }
     if (foundone) return core!;
@@ -54,15 +73,20 @@ export function ddGen(spec: DDSpec) {
     let foundone = true;
     let loopcount = 0;
 
+    const {throneSpec} = spec;
+
     const throneLocs = [];
-    for (let i = 0; i < 3; i++) {
-        let throneloc = installThrone(grid);
-        // False out the center so our subsequent processing won't find a blank 2x2 in there.
-        if (throneloc != undefined) {
-            throneLocs.push(throneloc);
-            grid.setLoc(throneloc, false);
-            grid.markSafe();
-        }
+    const installFirst = Math.random() <= throneSpec.attemptFirst;
+    if (installFirst) {
+        do {
+            let throneloc = installThrone(grid);
+            // False out the center so our subsequent processing won't find a blank 2x2 in there.
+            if (throneloc != undefined) {
+                throneLocs.push(throneloc);
+                grid.setLoc(throneloc, false);
+                grid.markSafe();
+            }
+        } while (Math.random() <= throneSpec.attemptSubsequent);
     }
 
     // All of the possible spots on the grid where we need to be vigilant about a 2x2 opening.
