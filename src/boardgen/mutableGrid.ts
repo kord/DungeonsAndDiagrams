@@ -1,6 +1,8 @@
 import {Location, Size} from "./types";
 import {gridLocations, gridNeighbourFunc} from "./graphUtils";
 
+// A class representing an arbitrary size grid of bools, with the handy feature that you can roll back changes
+// easily to the last time you declared it 'safe.'
 export class MutableGrid {
     currentlySafe: boolean;
     nf: (loc: Location) => Location[];
@@ -30,7 +32,7 @@ export class MutableGrid {
         this.currentlySafe = false;
     }
 
-    declareSafe() {
+    markSafe() {
         this.lastSafe = this.grid.map(row => row.map(b => b));
         this.currentlySafe = true;
     }
@@ -51,6 +53,7 @@ export class MutableGrid {
         return ret;
     }
 
+    // Find the first location of a true element in the grid, starting in the top-left and scanning across rows first.
     firstTrue(startloc: Location = {x: 0, y: 0}): Location | undefined {
         const ret = [];
         // Only use a nonzero start for out x-coordinate the first time through.
@@ -63,29 +66,34 @@ export class MutableGrid {
         }
     }
 
-    componentCount(): number {
+    componentCount = () => this.componentSizes().length;
+
+    componentSizes(): number[] {
         const backup = this.grid.map(row => row.map(b => b));
-        let foundComponents = 0;
+        const ret = [];
 
         while (true) {
             const seed = this.firstTrue();
             if (seed === undefined) break;
-            foundComponents += 1;
 
+            let componentSize = 0;
             const todo = [seed];
             while (todo.length > 0) {
                 const cur = todo.pop()!;
                 if (!this.check(cur!)) continue;
                 this.setLoc(cur, false);
+                componentSize++;
                 todo.push(...this.nf(cur));
             }
+            ret.push(componentSize);
         }
 
         // Restore before we started messing with it.
         this.grid = backup;
-        return foundComponents;
+        return ret;
     }
 
+    // Returns true iff a block with top-left corner loc and size size has all true values in the grid.
     checkBlock(loc: Location, size: Size) {
         if (loc.x + size.width > this.size.width) return false;
         if (loc.y + size.height > this.size.height) return false;
@@ -100,23 +108,26 @@ export class MutableGrid {
     isLeaf = (loc: Location) => (this.check(loc) && this.neighbourCount(loc) == 1);
     leaves = () => gridLocations(this.size).flat().filter(this.isLeaf);
 
+    // Print the grid to
     show() {
+        const leafChar = 'o';
+        const emptyChar = '.';
+        const wallChar = 'x';
+
         const ret = [];
         for (let j = 0; j < this.size.height; j++) {
             const row = [];
             for (let i = 0; i < this.size.width; i++) {
                 const loc = {x: i, y: j};
-                if (!this.check(loc)) row.push('x');
+                if (!this.check(loc)) row.push(wallChar);
                 else {
-                    row.push(this.isLeaf(loc) ? 'o' : '.');
+                    row.push(this.isLeaf(loc) ? leafChar : emptyChar);
                 }
             }
             ret.push(row.join(''));
         }
         console.log(ret.join('\n'));
-        console.log(this.leaves().length)
-
-        // console.log(this.grid.map(row => row.map(v => v ? '.' : 'x').join('')).join('\n'));
+        console.log(`${this.leaves().length} leaves.`)
     }
 }
 

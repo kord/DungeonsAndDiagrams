@@ -9,6 +9,9 @@ export type DDSpec = {
     singleComponent?: boolean,
 }
 
+// Try to place a throne in a sensible manner.
+// The passed grid is changed to include the 3x3 blank, and the center of that room is returned if space could be
+// found for such a room.
 function installThrone(grid: MutableGrid) {
     const throneSize: Size = {width: 3, height: 3};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
@@ -26,23 +29,21 @@ function installThrone(grid: MutableGrid) {
         };
 
         if (grid.checkBlock(loc, throneSize)) {
-
             core = {x: loc!.x + 1, y: loc!.y + 1};
             const room = gridLocations(throneSize, loc!).flat();
             const roomstrs = new Set(room.map(loc2Str));
             const roomneighbours = room.map(loc => grid.nf(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
             const exit = roomneighbours.splice(randomInt(roomneighbours.length), 1);
             roomneighbours.forEach(loc => grid.setLoc(loc, false));
-            grid.setLoc(core, false);
+            // grid.setLoc(core, false);
 
             if (grid.componentCount() == 1) {
                 foundone = true;
-                grid.declareSafe();
+                grid.markSafe();
             } else grid.revert()
         }
     }
-    if (foundone)
-        return core!;
+    if (foundone) return core!;
 }
 
 export function ddGen(spec: DDSpec) {
@@ -53,13 +54,18 @@ export function ddGen(spec: DDSpec) {
     let foundone = true;
     let loopcount = 0;
 
-    let throneloc = installThrone(grid);
-    console.log(throneloc);
-    let throneloc2 = installThrone(grid);
-    console.log(throneloc2);
-    let throneloc3 = installThrone(grid);
-    console.log(throneloc3);
+    const throneLocs = [];
+    for (let i = 0; i < 3; i++) {
+        let throneloc = installThrone(grid);
+        // False out the center so our subsequent processing won't find a blank 2x2 in there.
+        if (throneloc != undefined) {
+            throneLocs.push(throneloc);
+            grid.setLoc(throneloc, false);
+            grid.markSafe();
+        }
+    }
 
+    // All of the possible spots on the grid where we need to be vigilant about a 2x2 opening.
     let blockPossibilities = shuffle(gridLocations({
         height: spec.size.height - 1,
         width: spec.size.width - 1
@@ -72,22 +78,19 @@ export function ddGen(spec: DDSpec) {
         blockPossibilities.forEach(loc => {
             if (grid.checkBlock(loc, disallowedBlockSize)) {
                 foundone = true;
-                grid.declareSafe();
+                grid.markSafe();
                 grid.setLoc({x: loc.x + randomInt(2), y: loc.y + randomInt(2)}, false);
                 if (grid.componentCount() != 1) grid.revert();
             }
         });
     }
 
-    if (throneloc)
-        grid.setLoc(throneloc, true)
-    if (throneloc2)
-        grid.setLoc(throneloc2, true)
-    if (throneloc3)
-        grid.setLoc(throneloc3, true)
+    // Revert our falsed out room centers.
+    console.log(...throneLocs)
+    while (throneLocs.length > 0) {
+        grid.setLoc(throneLocs.pop()!, true);
+    }
+    grid.markSafe();
 
-    // if (foundone)
     grid.show();
-
-
 }
