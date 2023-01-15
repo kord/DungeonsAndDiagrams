@@ -20,8 +20,8 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
     }
 
     blockSquareClassnames = (loc: Location) => {
-        const {grid, deadends, treasure, throneCenters} = this.props.spec;
-        const isFloor = grid.check(loc);
+        const {floors, deadends, treasure, throneCenters} = this.props.spec;
+        const isFloor = floors.check(loc);
         const isLeaf = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const isCenter = throneCenters.check(loc);

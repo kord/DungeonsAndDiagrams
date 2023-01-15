@@ -114,7 +114,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const isUserFloor = assignedFloors.check(loc);
         const isUserWall = assignedWalls.check(loc);
 
-        const {grid, deadends, treasure} = this.props.spec;
+        const {floors, deadends, treasure} = this.props.spec;
         const isDeadend = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const isImmutable = this.isImmutable(loc);
@@ -139,6 +139,12 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             // '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;
 
+        const boardClasses = classNames({
+            'play-board': true,
+            'play-board--completed': this.state.assignedWalls.equals(this.props.spec.walls),
+            'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
+        })
+
         // --side-color: black;
         // --top-bottom-color: black;
 
@@ -147,7 +153,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
         return (<>
 
-                <div className={'play-board'} style={st}>
+                <div className={boardClasses} style={st}>
                     <div className={'play-board__grid'}>
                         {this.columnHints(userWalls)}
                         {gridLocations(size).map((row, j) => {

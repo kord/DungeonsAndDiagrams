@@ -15,7 +15,8 @@ export type DDBoardgenSpec = {
 export type DDBoardSpec = {
     // The rules that were used to generate this board.
     rules: DDBoardgenSpec,
-    grid: MutableGrid,
+    floors: MutableGrid,
+    walls: MutableGrid,
 
     throneCount: number,
     throneCenters: MutableGrid,
@@ -93,6 +94,8 @@ export function ddGen(spec: DDBoardgenSpec) {
 
     const grid = new MutableGrid(spec.size, true);
 
+
+    // Install thrones
     let foundone = true;
     let loopcount = 0;
 
@@ -112,6 +115,8 @@ export function ddGen(spec: DDBoardgenSpec) {
             }
         } while (Math.random() <= throneSpec.attemptSubsequent);
     }
+
+    // Eliminate 2x2s
 
     // All of the possible spots on the grid where we need to be vigilant about a 2x2 opening.
     let blockPossibilities = shuffle(gridLocations({
@@ -136,7 +141,6 @@ export function ddGen(spec: DDBoardgenSpec) {
     }
 
     // Revert our falsed out room centers.
-    console.log(...throneLocs)
     throneLocs.forEach(loc => grid.setLoc(loc, true));
     grid.markSafe();
 
@@ -156,6 +160,10 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     const {grid, throneLocs, restarts} = ddGen(spec);
     // grid.show();
 
+    const walls = new MutableGrid(spec.size, true);
+    grid.trueLocs().forEach(loc => walls.setLoc(loc, false));
+    walls.markSafe();
+
     const deadends = new MutableGrid(spec.size, false);
     grid.leaves().forEach(loc => deadends.setLoc(loc, true));
     deadends.markSafe();
@@ -171,10 +179,12 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     const wallCounts = grid.profile(false);
 
     console.timeEnd('generateDDBoard');
+    console.log(`restarts: ${restarts}`)
 
     return {
         rules: spec,
-        grid: grid,
+        floors: grid,
+        walls: walls,
         deadends: deadends,
         throneCenters: throneCenters,
         treasure: treasure,

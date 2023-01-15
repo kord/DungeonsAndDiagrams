@@ -25,6 +25,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.gameRef = React.createRef();
         this.state = {
             size: defaultBoardgenRules.size,
+            // Unused!
             block: defaultBoardgenRules.boardStyle == 'block',
             no2x2: !!defaultBoardgenRules.no2x2,
             uniqueDiameter: !!defaultBoardgenRules.uniqueDiameter,
@@ -47,7 +48,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState(newstate);
     }
 
-    regen = () => {
+    newGame = () => {
         const spec = {
             size: this.state.size,
             throneSpec: {
@@ -81,56 +82,36 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     // });
 
 
-    something = () => {
-
-        const spec: DDBoardgenSpec = {
-            size: this.state.size,
-            throneSpec: {
-                attemptFirst: .8,
-                attemptSubsequent: .9,
-            }
-
-        }
-        // ddGen(spec)
-        //
-        // this.setState({spec: spec})
-        //
-        // const {graph} = this.state.spec!;
-        // const size = this.state.spec!.rules.size;
-        // // installThroneRooms(graph,3,
-        // //     {height: 3, width: 3},
-        // //     'block');
-        // this.forceUpdate()
-    }
+    // something = () => {
+    //
+    //     const spec: DDBoardgenSpec = {
+    //         size: this.state.size,
+    //         throneSpec: {
+    //             attemptFirst: .8,
+    //             attemptSubsequent: .9,
+    //         }
+    //
+    //     }
+    //     // ddGen(spec)
+    //     //
+    //     // this.setState({spec: spec})
+    //     //
+    //     // const {graph} = this.state.spec!;
+    //     // const size = this.state.spec!.rules.size;
+    //     // // installThroneRooms(graph,3,
+    //     // //     {height: 3, width: 3},
+    //     // //     'block');
+    //     // this.forceUpdate()
+    // }
 
     render() {
         return (<>
-                <label>
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'block'} checked={this.state.block}/>
-                    block
-                </label>
-                <label>
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'no2x2'} checked={this.state.no2x2}/>
-                    no2x2
-                </label>
-                <label>
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'uniqueDiameter'}
-                           checked={this.state.uniqueDiameter}/>
-                    uniqueDiameter
-                </label>
-                <label>
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapX'} checked={this.state.wrapX}/>
-                    WrapX
-                </label>
-                <label>
-                    <input type={'checkbox'} onChange={this.setCheckbox} name={'wrapY'} checked={this.state.wrapY}/>
-                    WrapY
-                </label>
                 <input onChange={this.setHeight} value={this.state.size.height}/>
                 &nbsp;
                 <input onChange={this.setWidth} value={this.state.size.width}/>
-                <button onClick={this.regen}>Regen</button>
-                <button onClick={this.something}>Do Something</button>
+                &nbsp;
+                <button onClick={this.newGame}>New Game</button>
+                {/*<button onClick={this.something}>Do Something</button>*/}
 
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <div/>}

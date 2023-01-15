@@ -9,14 +9,26 @@
     --square-size: 80px;
     --hint-height: 80px;
     --gap: 4px;
+    --border-width: 10px;
     --gap-width: calc((var(--board-width)) * var(--gap));
     --square-width: calc((var(--board-width)) * var(--square-size));
 
     width: calc(var(--hint-height) + var(--gap-width) + var(--square-width));
-    border-top: var(--gap) solid var(--top-bottom-color);
-    border-bottom: var(--gap) solid var(--top-bottom-color);
-    border-left: var(--gap) solid var(--side-color);
-    border-right: var(--gap) solid var(--side-color);
+    border-top: var(--border-width) solid var(--top-bottom-color);
+    border-bottom: var(--border-width) solid var(--top-bottom-color);
+    border-left: var(--border-width) solid var(--side-color);
+    border-right: var(--border-width) solid var(--side-color);
+
+}
+
+.play-board--completed {
+    --side-color: green;
+    --top-bottom-color: green;
+    /*border-width: 10px;*/
+    /*background-color: green;*/
+}
+
+.play-board--incomplete {
 
 }
 
@@ -85,7 +97,7 @@
 }
 
 .block-square--user-wall {
-    background-color: #205816;
+    background-color: saddlebrown;
 }
 
 .block-square--user-untouched {
