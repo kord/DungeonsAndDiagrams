@@ -80,9 +80,9 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
         let fig: Record<string, boolean> = {};
         fig[`simple-grid-board__count`] = true;
         fig[`simple-grid-board__count--${orientation}`] = true;
-        fig[`simple-grid-board__count--undersatisafied`] = current < required;
-        fig[`simple-grid-board__count--satisafied`] = current == required;
-        fig[`simple-grid-board__count--oversatisafied`] = current > required;
+        fig[`simple-grid-board__count--undersatisfied`] = current < required;
+        fig[`simple-grid-board__count--satisfied`] = current == required;
+        fig[`simple-grid-board__count--oversatisfied`] = current > required;
         return classNames(fig);
     }
 

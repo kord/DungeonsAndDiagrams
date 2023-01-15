@@ -176,6 +176,14 @@ export class MutableGrid {
         return {rows: rows, cols: cols,}
     }
 
+    copy(): MutableGrid {
+        const ret = new MutableGrid(this.size, false);
+        ret.grid = this.grid.map(row => row.map(b => b));
+        ret.lastSafe = this.lastSafe.map(row => row.map(b => b));
+        ret.currentlySafe = this.currentlySafe;
+        return ret;
+    }
+
     // Check whether all of the current values are the same for this and another MutableGrid.
     equals(other: MutableGrid): boolean {
         // Grids have the be the same size to be equal.

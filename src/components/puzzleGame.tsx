@@ -3,6 +3,7 @@ import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Size} from "../boardgen/types";
 import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {SolutionDisplayBoard} from "./solutionDisplayBoard";
+import {PlayBoard} from "./playBoard";
 
 export type PuzzleGameProps = {};
 
@@ -17,8 +18,11 @@ type PuzzleGameState = {
 };
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
+    gameRef: React.RefObject<PlayBoard>;
+
     constructor(props: PuzzleGameProps) {
         super(props);
+        this.gameRef = React.createRef();
         this.state = {
             size: defaultBoardgenRules.size,
             block: defaultBoardgenRules.boardStyle == 'block',
@@ -52,7 +56,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             }
         } as DDBoardgenSpec;
         const puz = generateDDBoard(spec);
-        this.setState({spec: puz})
+        if (this.gameRef.current) this.gameRef.current.reset();
+        this.setState({spec: puz});
     }
 
     //
@@ -128,6 +133,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <button onClick={this.something}>Do Something</button>
 
 
+                {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <div/>}
                 {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <div/>}
 
                 {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}

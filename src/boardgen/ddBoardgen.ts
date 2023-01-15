@@ -152,6 +152,7 @@ function offCenter(loc: Location): Location {
 }
 
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
+    console.time('generateDDBoard');
     const {grid, throneLocs, restarts} = ddGen(spec);
     // grid.show();
 
@@ -168,6 +169,8 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     treasure.markSafe();
 
     const wallCounts = grid.profile(false);
+
+    console.timeEnd('generateDDBoard');
 
     return {
         rules: spec,
