@@ -175,6 +175,19 @@ export class MutableGrid {
         }
         return {rows: rows, cols: cols,}
     }
+
+    // Check whether all of the current values are the same for this and another MutableGrid.
+    equals(other: MutableGrid): boolean {
+        // Grids have the be the same size to be equal.
+        if (!(this.size.height == other.size.height && this.size.width == other.size.width)) return false;
+        for (let j = 0; j < this.size.height; j++) {
+            for (let i = 0; i < this.size.width; i++) {
+                const loc = {x: i, y: j,};
+                if (this.check(loc) != other.check(loc)) return false;
+            }
+        }
+        return true;
+    }
 }
 
 
