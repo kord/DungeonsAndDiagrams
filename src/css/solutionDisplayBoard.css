@@ -38,8 +38,6 @@
 }
 
 .simple-grid-board__count--row {
-    text-align: center;
-    vertical-align: center;
 
     /*margin-right: var(--gap);*/
     /*position: relative;*/
@@ -48,11 +46,16 @@
 }
 
 .simple-grid-board__count--col {
-    text-align: center;
     /*position: relative;*/
     /*bottom: -20px;*/
 
 }
+
+/*.simple-grid-board__count__text {*/
+/*    !*text-align: center;*!*/
+/*    !*vertical-align: center;*!*/
+/*    position: relative;*/
+/*}*/
 
 .simple-grid-board__count--undersatisafied {
     color: blue;

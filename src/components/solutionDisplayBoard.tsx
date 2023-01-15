@@ -3,17 +3,17 @@ import classNames from "classnames";
 import {Location} from "../boardgen/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
-import './simpleGridBoard.css';
+import '../css/solutionDisplayBoard.css';
 
-export type SimpleGridBoardProps = {
+export type SolutionDisplayBoardProps = {
     spec: DDBoardSpec,
 };
-type SimpleGridBoardState = {};
+type SolutionDisplayBoardState = {};
 
-export class SimpleGridBoard extends Component<SimpleGridBoardProps, SimpleGridBoardState> {
+export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, SolutionDisplayBoardState> {
     canvasRef: React.RefObject<HTMLCanvasElement>;
 
-    constructor(props: SimpleGridBoardProps) {
+    constructor(props: SolutionDisplayBoardProps) {
         super(props);
         this.canvasRef = React.createRef();
         this.state = {};
@@ -59,6 +59,7 @@ export class SimpleGridBoard extends Component<SimpleGridBoardProps, SimpleGridB
                                 return <>
                                     <div className={this.counterClasses('row', wallCounts.rows[i], 0)} key={`rowhint${i}`}>
                                         {wallCounts.rows[i]}
+                                        {/*<p className={'simple-grid-board__count__text'}> {wallCounts.rows[i]}</p>*/}
                                     </div>
                                     {row.map(loc =>
                                         <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
@@ -91,6 +92,7 @@ export class SimpleGridBoard extends Component<SimpleGridBoardProps, SimpleGridB
             {this.props.spec.wallCounts.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', cnt, 0)} key={`colhint${i}`}>
                     {cnt}
+                    {/*<p className={'simple-grid-board__count__text'}> {cnt}</p>*/}
                 </div>)}
 
         </>

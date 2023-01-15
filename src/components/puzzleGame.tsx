@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Size} from "../boardgen/types";
 import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
-import {SimpleGridBoard} from "./simpleGridBoard";
+import {SolutionDisplayBoard} from "./solutionDisplayBoard";
 
 export type PuzzleGameProps = {};
 
@@ -128,7 +128,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <button onClick={this.something}>Do Something</button>
 
 
-                {this.state.spec ? <SimpleGridBoard spec={this.state.spec}/> : <div/>}
+                {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <div/>}
 
                 {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
                 {/*<br/>*/}
