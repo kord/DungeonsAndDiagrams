@@ -195,6 +195,14 @@ export class MutableGrid {
         }
         return true;
     }
+
+    inverted(): MutableGrid {
+        const ret = new MutableGrid(this.size, false);
+        ret.grid = this.grid.map(row => row.map(b => !b));
+        ret.lastSafe = this.lastSafe.map(row => row.map(b => !b));
+        ret.currentlySafe = this.currentlySafe;
+        return ret;
+    }
 }
 
 

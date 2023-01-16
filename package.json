@@ -19,6 +19,7 @@
     "graphology-layout-forceatlas2": "^0.10.1",
     "graphology-metrics": "^2.1.0",
     "graphology-shortest-path": "^2.0.1",
+    "logic-solver": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

@@ -4,6 +4,8 @@ import {Size} from "../boardgen/types";
 import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {SolutionDisplayBoard} from "./solutionDisplayBoard";
 import {PlayBoard} from "./playBoard";
+import {ddSolve} from "../boardgen/ddSolver";
+import {MutableGrid} from "../boardgen/mutableGrid";
 
 export type PuzzleGameProps = {};
 
@@ -15,7 +17,23 @@ type PuzzleGameState = {
     uniqueDiameter: boolean,
     wrapX: boolean,
     wrapY: boolean,
+    solns: MutableGrid[],
 };
+
+function imaginePuzzleSpec(soln: MutableGrid): DDBoardSpec {
+    const anygrid = new MutableGrid(soln.size, false);
+    return {
+        walls: soln,
+        wallCounts: soln.profile(true),
+        rules: {size: soln.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
+        deadends: anygrid,
+        treasure: anygrid,
+        throneCenters: anygrid,
+        throneCount: 0,
+        floors: soln.inverted(),
+        restarts: 0,
+    };
+}
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     gameRef: React.RefObject<PlayBoard>;
@@ -31,6 +49,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             uniqueDiameter: !!defaultBoardgenRules.uniqueDiameter,
             wrapX: defaultBoardgenRules.wrap.wrapX,
             wrapY: defaultBoardgenRules.wrap.wrapY,
+            solns: [],
         };
     }
 
@@ -81,28 +100,41 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     //     })
     // });
 
+    findSolverFlaw = () => {
+        let tries = 0;
 
-    // something = () => {
-    //
-    //     const spec: DDBoardgenSpec = {
-    //         size: this.state.size,
-    //         throneSpec: {
-    //             attemptFirst: .8,
-    //             attemptSubsequent: .9,
-    //         }
-    //
-    //     }
-    //     // ddGen(spec)
-    //     //
-    //     // this.setState({spec: spec})
-    //     //
-    //     // const {graph} = this.state.spec!;
-    //     // const size = this.state.spec!.rules.size;
-    //     // // installThroneRooms(graph,3,
-    //     // //     {height: 3, width: 3},
-    //     // //     'block');
-    //     // this.forceUpdate()
-    // }
+        const spec = {
+            size: this.state.size,
+            throneSpec: {
+                attemptFirst: .8,
+                attemptSubsequent: 0.9,
+            }
+        } as DDBoardgenSpec;
+        let puz = generateDDBoard(spec);
+
+        let grid = ddSolve(puz) as MutableGrid;
+
+        while (grid.equals(puz.walls) && tries++ < 20) {
+            puz = generateDDBoard(spec);
+            grid = ddSolve(puz) as MutableGrid;
+        }
+
+        if (grid) this.setState({solns: [grid], spec: puz});
+        console.warn(`Took ${tries} tries to get a failure.`)
+    }
+
+    something = () => {
+
+
+        let grid = ddSolve(this.state.spec) as MutableGrid;
+        if (grid.equals(this.state.spec!.walls)) console.log(`Solver found our candidate.`)
+        else {
+            console.warn(`Solver failed.`)
+            grid.inverted().show();
+        }
+        if (grid) this.setState({solns: [grid]});
+
+    }
 
     render() {
         return (<>
@@ -111,10 +143,15 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <input onChange={this.setWidth} value={this.state.size.width}/>
                 &nbsp;
                 <button onClick={this.newGame}>New Game</button>
-                {/*<button onClick={this.something}>Do Something</button>*/}
+                <button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>
+                <button onClick={this.findSolverFlaw}>findSolverFlaw</button>
 
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <div/>}
+                {this.state.solns ? this.state.solns.map(soln =>
+                    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)}/>
+                ) : <></>}
+
                 {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <div/>}
 
                 {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
