@@ -124,8 +124,7 @@ export class MutableGrid {
 
     // Returns true iff a block with top-left corner loc and size size has all true values in the grid.
     checkBlock(loc: Location, size: Size) {
-        if (loc.x + size.width > this.size.width) return false;
-        if (loc.y + size.height > this.size.height) return false;
+        if (loc.x + size.width > this.size.width || loc.y + size.height > this.size.height) return false;
         for (let j = 0; j < size.height; j++)
             for (let i = 0; i < size.width; i++) {
                 if (!this.check({x: loc.x + i, y: loc.y + j})) return false;
@@ -156,7 +155,7 @@ export class MutableGrid {
             ret.push(row.join(''));
         }
         console.log(ret.join('\n'));
-        console.log(`${this.componentSizes()} componentsizes.`)
+        // console.log(`${this.componentSizes()} componentsizes.`)
         console.log(`${this.leaves().length} leaves.`)
     }
 

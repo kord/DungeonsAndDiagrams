@@ -32,7 +32,7 @@ export type DDBoardSpec = {
 // The passed grid is changed to include the 3x3 blank, and the center of that room is returned if space could be
 // found for such a room.
 function installThrone(grid: MutableGrid) {
-    console.log(`Entered installThrone`)
+    // console.log(`Entered installThrone`)
     const throneSize: Size = {width: 3, height: 3};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
@@ -83,7 +83,7 @@ function installThrone(grid: MutableGrid) {
     }
 
     if (foundone) {
-        grid.show()
+        // grid.show()
         return core!;
     }
 }
@@ -92,59 +92,61 @@ export function ddGen(spec: DDBoardgenSpec) {
     const disallowedBlockSize = {height: 2, width: 2};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
-    const grid = new MutableGrid(spec.size, true);
+    let grid: MutableGrid;
+    let throneLocs = [];
+    let loopCount = 0;
+    let twox2Done: boolean = false;
+    do {
+        loopCount++;
+        grid = new MutableGrid(spec.size, true);
 
+        // Install thrones
+        const {throneSpec} = spec;
 
-    // Install thrones
-    let foundone = true;
-    let loopcount = 0;
+        throneLocs = [];
+        const installFirst = Math.random() <= throneSpec.attemptFirst;
+        if (installFirst) {
+            do {
+                loopCount++;
+                let throneloc = installThrone(grid);
+                // False out the center so our subsequent processing won't find a blank 2x2 in there.
+                if (throneloc != undefined) {
+                    throneLocs.push(throneloc);
+                    grid.setLoc(throneloc, false);
+                    grid.markSafe();
+                }
+            } while (Math.random() <= throneSpec.attemptSubsequent);
+        }
 
-    const {throneSpec} = spec;
+        // Eliminate 2x2s
 
-    const throneLocs = [];
-    const installFirst = Math.random() <= throneSpec.attemptFirst;
-    if (installFirst) {
-        do {
-            loopcount++;
-            let throneloc = installThrone(grid);
-            // False out the center so our subsequent processing won't find a blank 2x2 in there.
-            if (throneloc != undefined) {
-                throneLocs.push(throneloc);
-                grid.setLoc(throneloc, false);
-                grid.markSafe();
-            }
-        } while (Math.random() <= throneSpec.attemptSubsequent);
-    }
+        // All of the possible spots on the grid where we need to be vigilant about a 2x2 opening.
+        let blockPossibilities = shuffle(gridLocations({
+            height: spec.size.height - 1,
+            width: spec.size.width - 1
+        }).flat());
 
-    // Eliminate 2x2s
-
-    // All of the possible spots on the grid where we need to be vigilant about a 2x2 opening.
-    let blockPossibilities = shuffle(gridLocations({
-        height: spec.size.height - 1,
-        width: spec.size.width - 1
-    }).flat());
-
-    let loopcount2 = 0;
-    while (foundone && loopcount2 < 100) {
-        foundone = false;
-        loopcount2++;
-
-        blockPossibilities.forEach(loc => {
+        twox2Done = blockPossibilities.every(loc => {
+            let success = true;
             if (grid.checkBlock(loc, disallowedBlockSize)) {
-                foundone = true;
-                grid.markSafe();
-                grid.setLoc({x: loc.x + randomInt(2), y: loc.y + randomInt(2)}, false);
-                if (grid.componentCount() != 1) grid.revert();
-                // else grid.show()
+                const candidates = shuffle(gridLocations({width: 2, height: 2}, loc).flat());
+                success = candidates.some(cl => {
+                    grid.markSafe();
+                    grid.setLoc(cl, false);
+                    if (grid.componentCount() != 1) grid.revert();
+                    else return true;
+                });
             }
+            return success;
         });
-    }
+        if (!twox2Done) grid.show()
+    } while (!twox2Done);
 
     // Revert our falsed out room centers.
     throneLocs.forEach(loc => grid.setLoc(loc, true));
     grid.markSafe();
 
-    return {grid: grid, throneLocs: throneLocs, restarts: loopcount + loopcount2};
+    return {grid: grid, throneLocs: throneLocs, restarts: loopCount};
 }
 
 // Wiggle a point into one of its 9 neighbours uniformly at random.
@@ -157,7 +159,9 @@ function offCenter(loc: Location): Location {
 
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     console.time('generateDDBoard');
-    const {grid, throneLocs, restarts} = ddGen(spec);
+    let board = ddGen(spec);
+
+    const {grid, throneLocs} = board;
     // grid.show();
 
     const walls = new MutableGrid(spec.size, true);
@@ -179,7 +183,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     const wallCounts = grid.profile(false);
 
     console.timeEnd('generateDDBoard');
-    console.log(`restarts: ${restarts}`)
+    console.log(`restarts: ${board.restarts}`)
 
     return {
         rules: spec,
@@ -191,6 +195,6 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
         throneCount: throneLocs.length,
         wallCounts: wallCounts,
 
-        restarts: restarts,
+        restarts: board.restarts,
     }
 }

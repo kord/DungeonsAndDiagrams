@@ -74,7 +74,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     onContextMenu = (e: MouseEvent) => e.preventDefault();
 
     keyPress = (e: KeyboardEvent) => {
-        console.log(`keypress ${e.key} code ${e.code}`);
+        // console.log(`keypress ${e.key} code ${e.code}`);
 
         // You can't undo while clicking stuff. That's just weird.
         if (this.mouseBehaviour) return;
