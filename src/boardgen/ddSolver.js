@@ -32,7 +32,7 @@ function col(i, size) {
   return ret;
 }
 
-function boxAround(loc, gridSize) {
+function boxCenteredAt(loc, gridSize) {
   return [
     {x: loc.x - 1, y: loc.y - 1},
     {x: loc.x - 1, y: loc.y},
@@ -67,6 +67,8 @@ function fenceAround(loc, gridSize) {
   ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
 }
 
+const treasureString = (loc) => `istreasure${loc2Str(loc)}`;
+
 export function ddSolve(spec) {
   var solver = new Logic.Solver();
 
@@ -91,24 +93,49 @@ export function ddSolve(spec) {
   // Treasure room augmented vars.
   spec.treasure.trueLocs().forEach(treasure => {
     // Only the chest centers that are off boundary are real candidates.
-    const tcandidates = boxAround(treasure, size).filter(loc => !onBoundary(loc, size));
+    const tcandidates = boxCenteredAt(treasure, size).filter(loc => !onBoundary(loc, size));
     // Only one room per chest.
-    solver.require(Logic.exactlyOne(tcandidates.map(t => `istreasure${loc2Str(t)}`)));
-    // Being the treasure room means no walls inside and mostly walls outside.
-    tcandidates.forEach(t => {
-      solver.require(Logic.implies(`istreasure${loc2Str(t)}`, Logic.and(boxAround(t, size).map(l => Logic.not(loc2Str(l))))));
-      solver.require(Logic.implies(`istreasure${loc2Str(t)}`, Logic.exactlyOne(fenceAround(t, size).map(l => Logic.not(loc2Str(l))))));
-    });
+    solver.require(Logic.exactlyOne(tcandidates.map(treasureString)));
+  });
 
-  })
-  //
-  // // No 2x2 floor constraints.
-  // // TODO: These have to be short-circuited within the treasure rooms. Shit.
-  // const twox2Origins = gridLocations({height: size.height - 1, width: size.width - 1}).flat();
-  // twox2Origins.forEach(loc => {
-  //   const sq = gridLocations({height: 2, width: 2}, loc).flat();
-  //   solver.require(Logic.or(...sq.map(loc2Str)));
-  // });
+  // No treasure in the outer rim.
+  const interior = gridLocations({height: size.height - 2, width: size.width - 2}, {x: 1, y: 1});
+  const rim = gridLocations(size).filter(l => onBoundary(l, size));
+
+  rim.forEach(tr => solver.require(Logic.not(treasureString(tr))));
+
+  console.log(`True treasure count ${spec.treasure.trueLocs().length}`)
+
+  // Being the treasure room means no walls inside and mostly walls outside.
+  interior.forEach(loc => {
+    solver.require(Logic.implies(treasureString(loc),
+      Logic.and(boxCenteredAt(loc, size).map(l => Logic.not(loc2Str(l))))));
+    solver.require(Logic.implies(treasureString(loc), Logic.exactlyOne(fenceAround(loc, size).map(l => Logic.not(loc2Str(l))))));
+  });
+
+  // // Only the right number of treasure chests.
+  // solver.require(Logic.equalBits(
+  //   Logic.sum(interior.map(treasureString)),
+  //   Logic.constantBits(spec.treasure.trueLocs().length)
+  // ));
+
+  const thronesContainingMe = (loc) => {
+    return [
+      {x: loc.x + 1, y: loc.y + 1},
+      {x: loc.x, y: loc.y + 1},
+      {x: loc.x + 1, y: loc.y},
+      {x: loc.x, y: loc.y},
+    ].filter(l => !onBoundary(l, size));
+  }
+
+  // No 2x2 floor constraints.
+  // TODO: These have to be short-circuited within the treasure rooms. Shit.
+  const twox2Origins = gridLocations({height: size.height - 1, width: size.width - 1}).flat();
+  twox2Origins.forEach(loc => {
+    const sq = gridLocations({height: 2, width: 2}, loc).flat();
+    const thr = thronesContainingMe(loc, size).map(treasureString);
+    solver.require(Logic.or(...thr, ...sq.map(loc2Str)));
+  });
 
   // Deadends
   gridLocations(size).flat().forEach(loc => {
@@ -125,12 +152,6 @@ export function ddSolve(spec) {
     }
   })
 
-  // spec.deadends.trueLocs().forEach(de => {
-  //   // Exactly one non-wall neighbour.
-  //   solver.require(Logic.exactlyOne(spec.deadends.nf(de).map(n => Logic.not(loc2Str(n)))));
-  //   // Not a wall itself.
-  //   solver.require(Logic.not(loc2Str(de)));
-  // });
 
   // Treasure
   // TODO
@@ -145,12 +166,18 @@ export function ddSolve(spec) {
 
   const solnWalls = new MutableGrid(size, false);
 
-  const treasure = soln.getTrueVars().filter(s => s[0] == 'i').map(s => s.substring('istreasure'.length));
-  // console.log('treasure!', treasure.join('  '))
+  const treasure = soln.getTrueVars().filter(s => s[0] == 'i').map(s => locFromStr(s.substring('istreasure'.length)));
+  console.log('Treasure!', treasure.map(loc2Str).join('  '))
   // console.log(soln.getTrueVars().join(' '))
 
   soln.getTrueVars().filter(s => s[0] != 'i').map(locFromStr).forEach(loc => solnWalls.setLoc(loc, true));
-  return solnWalls;
+
+  let sln = {
+    wallGrid: solnWalls,
+    thrones: treasure,
+  }
+
+  return sln;
 }
 
 

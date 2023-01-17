@@ -203,6 +203,12 @@ export class MutableGrid {
         ret.currentlySafe = this.currentlySafe;
         return ret;
     }
+
+    static fromLocs(size: Size, thrones: Location[]): MutableGrid {
+        const ret = new MutableGrid(size, false);
+        thrones.forEach(l => ret.setLoc(l, true));
+        return ret;
+    }
 }
 
 

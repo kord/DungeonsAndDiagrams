@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
-import {Size} from "../boardgen/types";
+import {Location, Size} from "../boardgen/types";
 import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {SolutionDisplayBoard} from "./solutionDisplayBoard";
 import {PlayBoard} from "./playBoard";
@@ -8,6 +8,11 @@ import {ddSolve} from "../boardgen/ddSolver";
 import {MutableGrid} from "../boardgen/mutableGrid";
 
 export type PuzzleGameProps = {};
+
+export type SolnRecord = {
+    wallGrid: MutableGrid,
+    thrones: Location[],
+}
 
 type PuzzleGameState = {
     size: Size,
@@ -17,20 +22,20 @@ type PuzzleGameState = {
     uniqueDiameter: boolean,
     wrapX: boolean,
     wrapY: boolean,
-    solns: MutableGrid[],
+    solns: SolnRecord[],
 };
 
-function imaginePuzzleSpec(soln: MutableGrid): DDBoardSpec {
-    const anygrid = new MutableGrid(soln.size, false);
+function imaginePuzzleSpec(s: SolnRecord): DDBoardSpec {
+    const anygrid = new MutableGrid(s.wallGrid.size, false);
     return {
-        walls: soln,
-        wallCounts: soln.profile(true),
-        rules: {size: soln.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
+        walls: s.wallGrid,
+        wallCounts: s.wallGrid.profile(true),
+        rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
         deadends: anygrid,
-        treasure: anygrid,
+        treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
         throneCenters: anygrid,
         throneCount: 0,
-        floors: soln.inverted(),
+        floors: s.wallGrid.inverted(),
         restarts: 0,
     };
 }
@@ -112,27 +117,24 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         } as DDBoardgenSpec;
         let puz = generateDDBoard(spec);
 
-        let grid = ddSolve(puz) as MutableGrid;
+        let sln: SolnRecord = ddSolve(puz)!;
 
-        while (grid.equals(puz.walls) && tries++ < 20) {
+        while (sln.wallGrid.equals(puz.walls) && tries++ < 20) {
             puz = generateDDBoard(spec);
-            grid = ddSolve(puz) as MutableGrid;
+            sln = ddSolve(puz)!;
         }
 
-        if (grid) this.setState({solns: [grid], spec: puz});
+        if (sln) this.setState({solns: [sln], spec: puz});
         console.warn(`Took ${tries} tries to get a failure.`)
     }
 
     something = () => {
-
-
-        let grid = ddSolve(this.state.spec) as MutableGrid;
-        if (grid.equals(this.state.spec!.walls)) console.log(`Solver found our candidate.`)
-        else {
-            console.warn(`Solver failed.`)
-            grid.inverted().show();
-        }
-        if (grid) this.setState({solns: [grid]});
+        // let grid = ddSolve(this.state.spec) ;
+        // if (grid&& grid.walls.equals(this.state.spec!.walls)) console.log(`Solver found our candidate.`)
+        // else {
+        //     console.warn(`Solver failed.`)
+        // }
+        // if (grid) this.setState({solns: [grid]});
 
     }
 
@@ -147,12 +149,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <button onClick={this.findSolverFlaw}>findSolverFlaw</button>
 
 
-                {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <div/>}
+                {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
                 {this.state.solns ? this.state.solns.map(soln =>
                     <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)}/>
                 ) : <></>}
 
-                {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <div/>}
+                {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}
 
                 {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
                 {/*<br/>*/}

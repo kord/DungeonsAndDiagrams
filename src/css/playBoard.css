@@ -6,8 +6,8 @@
     --side-color: black;
     --top-bottom-color: black;
 
-    --square-size: 80px;
-    --hint-height: 80px;
+    --square-size: 40px;
+    --hint-height: 40px;
     --gap: 4px;
     --border-width: 10px;
     --gap-width: calc((var(--board-width)) * var(--gap));
