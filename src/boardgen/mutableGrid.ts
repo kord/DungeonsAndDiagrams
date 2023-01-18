@@ -204,6 +204,12 @@ export class MutableGrid {
         return ret;
     }
 
+    leafGrid(): MutableGrid {
+        const ret = new MutableGrid(this.size, false);
+        this.leaves().forEach(l => ret.setLoc(l, true));
+        return ret;
+    }
+
     static fromLocs(size: Size, thrones: Location[]): MutableGrid {
         const ret = new MutableGrid(size, false);
         thrones.forEach(l => ret.setLoc(l, true));

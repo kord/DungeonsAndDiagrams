@@ -8,6 +8,7 @@ import {MutableGrid} from "../boardgen/mutableGrid";
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
+    scale?: number,
 };
 type PlayBoardState = {
     assignedWalls: MutableGrid,
@@ -135,6 +136,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
+            '--scale': this.props.scale || 1.0,
             // '--side-color': wrap.wrapX ? 'white' : 'black',
             // '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;

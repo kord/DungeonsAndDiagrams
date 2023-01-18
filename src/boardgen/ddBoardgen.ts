@@ -1,6 +1,7 @@
 import {Linestats, Location, Size} from "./types";
 import {gridLocations, loc2Str, shuffle} from "./graphUtils";
 import {MutableGrid} from "./mutableGrid";
+import {hasMultipleSolutions} from "./ddSolver";
 
 type ThroneDemand = {
     attemptFirst: number,
@@ -139,7 +140,6 @@ export function ddGen(spec: DDBoardgenSpec) {
             }
             return success;
         });
-        if (!twox2Done) grid.show()
     } while (!twox2Done);
 
     // Revert our falsed out room centers.
@@ -159,42 +159,49 @@ function offCenter(loc: Location): Location {
 
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     console.time('generateDDBoard');
-    let board = ddGen(spec);
+    let ret: DDBoardSpec;
+    let restarts = 0;
+    do {
+        let board = ddGen(spec);
 
-    const {grid, throneLocs} = board;
-    // grid.show();
+        const {grid, throneLocs} = board;
+        // grid.show();
 
-    const walls = new MutableGrid(spec.size, true);
-    grid.trueLocs().forEach(loc => walls.setLoc(loc, false));
-    walls.markSafe();
+        const walls = new MutableGrid(spec.size, true);
+        grid.trueLocs().forEach(loc => walls.setLoc(loc, false));
+        walls.markSafe();
 
-    const deadends = new MutableGrid(spec.size, false);
-    grid.leaves().forEach(loc => deadends.setLoc(loc, true));
-    deadends.markSafe();
+        const deadends = new MutableGrid(spec.size, false);
+        grid.leaves().forEach(loc => deadends.setLoc(loc, true));
+        deadends.markSafe();
 
-    const throneCenters = new MutableGrid(spec.size, false);
-    throneLocs.forEach(loc => throneCenters.setLoc(loc, true));
-    throneCenters.markSafe();
+        const throneCenters = new MutableGrid(spec.size, false);
+        throneLocs.forEach(loc => throneCenters.setLoc(loc, true));
+        throneCenters.markSafe();
 
-    const treasure = new MutableGrid(spec.size, false);
-    throneLocs.forEach(loc => treasure.setLoc(offCenter(loc), true));
-    treasure.markSafe();
+        const treasure = new MutableGrid(spec.size, false);
+        throneLocs.forEach(loc => treasure.setLoc(offCenter(loc), true));
+        treasure.markSafe();
 
-    const wallCounts = grid.profile(false);
+        const wallCounts = grid.profile(false);
 
+        ret = {
+            rules: spec,
+            floors: grid,
+            walls: walls,
+            deadends: deadends,
+            throneCenters: throneCenters,
+            treasure: treasure,
+            throneCount: throneLocs.length,
+            wallCounts: wallCounts,
+
+            restarts: restarts,
+        }
+
+        restarts += board.restarts;
+    } while (hasMultipleSolutions(ret))
     console.timeEnd('generateDDBoard');
-    console.log(`restarts: ${board.restarts}`)
+    console.log(`restarts: ${restarts}`)
 
-    return {
-        rules: spec,
-        floors: grid,
-        walls: walls,
-        deadends: deadends,
-        throneCenters: throneCenters,
-        treasure: treasure,
-        throneCount: throneLocs.length,
-        wallCounts: wallCounts,
-
-        restarts: board.restarts,
-    }
+    return ret;
 }

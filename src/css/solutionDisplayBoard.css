@@ -6,11 +6,14 @@
     --side-color: black;
     --top-bottom-color: black;
 
-    --square-size: 40px;
-    --hint-height: 80px;
-    --gap: 4px;
+    --scale: 1.0;
+    --square-size: calc(40px * var(--scale));
+    --hint-height: calc(80px * var(--scale));
+    --gap: calc(4px * var(--scale));
     --gap-width: calc((var(--board-width)) * var(--gap));
     --square-width: calc((var(--board-width)) * var(--square-size));
+
+    display: inline-block;
 
     width: calc(var(--hint-height) + var(--gap-width) + var(--square-width));
     border-top: var(--gap) solid var(--top-bottom-color);

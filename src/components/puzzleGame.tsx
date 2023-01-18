@@ -27,15 +27,16 @@ type PuzzleGameState = {
 
 function imaginePuzzleSpec(s: SolnRecord): DDBoardSpec {
     const anygrid = new MutableGrid(s.wallGrid.size, false);
+    const floors = s.wallGrid.inverted();
     return {
         walls: s.wallGrid,
         wallCounts: s.wallGrid.profile(true),
         rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
-        deadends: anygrid,
+        deadends: floors.leafGrid(),
         treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
         throneCenters: anygrid,
-        throneCount: 0,
-        floors: s.wallGrid.inverted(),
+        throneCount: s.thrones.length,
+        floors: floors,
         restarts: 0,
     };
 }
@@ -106,6 +107,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     // });
 
     findSolverFlaw = () => {
+        const maxTries = 200;
+
         let tries = 0;
 
         const spec = {
@@ -117,14 +120,14 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         } as DDBoardgenSpec;
         let puz = generateDDBoard(spec);
 
-        let sln: SolnRecord = ddSolve(puz)!;
+        let slns = ddSolve(puz);
 
-        while (sln.wallGrid.equals(puz.walls) && tries++ < 20) {
+        while (slns.length == 1 && tries++ < maxTries) {
             puz = generateDDBoard(spec);
-            sln = ddSolve(puz)!;
+            slns = ddSolve(puz)!;
         }
 
-        if (sln) this.setState({solns: [sln], spec: puz});
+        if (slns.length > 0) this.setState({solns: slns, spec: puz});
         console.warn(`Took ${tries} tries to get a failure.`)
     }
 
@@ -151,7 +154,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
                 {this.state.solns ? this.state.solns.map(soln =>
-                    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)}/>
+                    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>
                 ) : <></>}
 
                 {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}

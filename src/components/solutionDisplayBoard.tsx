@@ -7,6 +7,8 @@ import '../css/solutionDisplayBoard.css';
 
 export type SolutionDisplayBoardProps = {
     spec: DDBoardSpec,
+    annotation?: string,
+    scale?: number,
 };
 type SolutionDisplayBoardState = {};
 
@@ -42,6 +44,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
+            '--scale': this.props.scale || 1.0,
             // '--side-color': wrap.wrapX ? 'white' : 'black',
             // '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;
@@ -51,27 +54,27 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
         return (<>
 
-                <div className={'simple-grid-board'} style={st}>
-                    <div className={'simple-grid-board__grid'}>
+                <div className={'simple-grid-board'} style={st} key={'simple-grid-board'}>
+                    <div className={'simple-grid-board__grid'} key={'simple-grid-board__grid'}>
                         {this.columnHints()}
                         {gridLocations(size).map((row, i) => {
-                                const wallCounts = this.props.spec.wallCounts;
-                                return <>
-                                    <div className={this.counterClasses('row', wallCounts.rows[i], 0)} key={`rowhint${i}`}>
-                                        {wallCounts.rows[i]}
-                                        {/*<p className={'simple-grid-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                            const wallCounts = this.props.spec.wallCounts;
+                            return <>
+                                <div className={this.counterClasses('row', wallCounts.rows[i], 0)}
+                                     key={`rowhint${i}`}>
+                                    {wallCounts.rows[i]}
+                                </div>
+                                {row.map(loc =>
+                                    <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
+                                        {}
                                     </div>
-                                    {row.map(loc =>
-                                        <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
-                                            {}
-                                        </div>
-                                    )}
-                                </>;
+                                )}
+                            </>;
                             }
                         )}
                     </div>
                 </div>
-                <br/>
+                {/*<br/>*/}
             </>
         );
     }
@@ -88,7 +91,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
     private columnHints() {
         return <>
-            <div className={'simple-grid-board--topcorner'}/>
+            <div className={'simple-grid-board--topcorner'} key={'topcorner'}>{this.props.annotation}</div>
             {this.props.spec.wallCounts.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', cnt, 0)} key={`colhint${i}`}>
                     {cnt}

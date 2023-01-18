@@ -6,10 +6,13 @@
     --side-color: black;
     --top-bottom-color: black;
 
-    --square-size: 40px;
-    --hint-height: 40px;
-    --gap: 4px;
+    --scale: 1.0;
+    --default-square-size: 40px;
+    --default-hint-height: 80px;
+    --square-size: calc(var(--default-square-size) * var(--scale));
+    --hint-height: calc(var(--default-hint-height) * var(--scale));
     --border-width: 10px;
+    --gap: calc(4px * var(--scale));
     --gap-width: calc((var(--board-width)) * var(--gap));
     --square-width: calc((var(--board-width)) * var(--square-size));
 

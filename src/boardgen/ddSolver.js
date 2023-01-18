@@ -20,59 +20,115 @@ var Logic = require('logic-solver');
 //   restarts: number,
 // }
 
-function row(j, size) {
-  const ret = [];
-  for (let i = 0; i < size.width; i++) ret.push(`${i},${j}`);
-  return ret;
-}
+const fns = (size) => {
+  return {
+    row: (j) => {
+      const ret = [];
+      for (let i = 0; i < size.width; i++) ret.push(`${i},${j}`);
+      return ret;
+    },
+    col: (i) => {
+      const ret = [];
+      for (let j = 0; j < size.height; j++) ret.push(`${i},${j}`);
+      return ret;
+    },
+    onBoundary: (loc) => {
+      return loc.x == 0 || loc.y == 0 || loc.x == size.width - 1 || loc.y == size.height - 1
+    },
+    boxCenteredAt: (loc) => {
+      return [
+        {x: loc.x - 1, y: loc.y - 1},
+        {x: loc.x - 1, y: loc.y},
+        {x: loc.x - 1, y: loc.y + 1},
+        {x: loc.x, y: loc.y - 1},
+        {x: loc.x, y: loc.y},
+        {x: loc.x, y: loc.y + 1},
+        {x: loc.x + 1, y: loc.y - 1},
+        {x: loc.x + 1, y: loc.y},
+        {x: loc.x + 1, y: loc.y + 1},
+      ].filter(l => l.x >= 0 && l.y >= 0 && l.x < size.width && l.y < size.height);
+    },
+    fenceAround: (loc) => {
+      return [
+        {x: loc.x - 2, y: loc.y - 1},
+        {x: loc.x - 2, y: loc.y},
+        {x: loc.x - 2, y: loc.y + 1},
+        {x: loc.x + 2, y: loc.y - 1},
+        {x: loc.x + 2, y: loc.y},
+        {x: loc.x + 2, y: loc.y + 1},
+        {y: loc.y - 2, x: loc.x - 1},
+        {y: loc.y - 2, x: loc.x},
+        {y: loc.y - 2, x: loc.x + 1},
+        {y: loc.y + 2, x: loc.x - 1},
+        {y: loc.y + 2, x: loc.x},
+        {y: loc.y + 2, x: loc.x + 1},
+      ].filter(l => l.x >= 0 && l.y >= 0 && l.x < size.width && l.y < size.height);
+    },
 
-function col(i, size) {
-  const ret = [];
-  for (let j = 0; j < size.height; j++) ret.push(`${i},${j}`);
-  return ret;
-}
-
-function boxCenteredAt(loc, gridSize) {
-  return [
-    {x: loc.x - 1, y: loc.y - 1},
-    {x: loc.x - 1, y: loc.y},
-    {x: loc.x - 1, y: loc.y + 1},
-    {x: loc.x, y: loc.y - 1},
-    {x: loc.x, y: loc.y},
-    {x: loc.x, y: loc.y + 1},
-    {x: loc.x + 1, y: loc.y - 1},
-    {x: loc.x + 1, y: loc.y},
-    {x: loc.x + 1, y: loc.y + 1},
-  ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
-}
-
-function onBoundary(loc, size) {
-  return loc.x == 0 || loc.y == 0 || loc.x == size.width - 1 || loc.y == size.height - 1;
-}
-
-function fenceAround(loc, gridSize) {
-  return [
-    {x: loc.x - 2, y: loc.y - 1},
-    {x: loc.x - 2, y: loc.y},
-    {x: loc.x - 2, y: loc.y + 1},
-    {x: loc.x + 2, y: loc.y - 1},
-    {x: loc.x + 2, y: loc.y},
-    {x: loc.x + 2, y: loc.y + 1},
-    {y: loc.y - 2, x: loc.x - 1},
-    {y: loc.y - 2, x: loc.x},
-    {y: loc.y - 2, x: loc.x + 1},
-    {y: loc.y + 2, x: loc.x - 1},
-    {y: loc.y + 2, x: loc.x},
-    {y: loc.y + 2, x: loc.x + 1},
-  ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
-}
+  }
+};
+//
+// function row(j, size) {
+//   const ret = [];
+//   for (let i = 0; i < size.width; i++) ret.push(`${i},${j}`);
+//   return ret;
+// }
+//
+// function col(i, size) {
+//   const ret = [];
+//   for (let j = 0; j < size.height; j++) ret.push(`${i},${j}`);
+//   return ret;
+// }
+//
+// function boxCenteredAt(loc, gridSize) {
+//   return [
+//     {x: loc.x - 1, y: loc.y - 1},
+//     {x: loc.x - 1, y: loc.y},
+//     {x: loc.x - 1, y: loc.y + 1},
+//     {x: loc.x, y: loc.y - 1},
+//     {x: loc.x, y: loc.y},
+//     {x: loc.x, y: loc.y + 1},
+//     {x: loc.x + 1, y: loc.y - 1},
+//     {x: loc.x + 1, y: loc.y},
+//     {x: loc.x + 1, y: loc.y + 1},
+//   ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
+// }
+//
+// function onBoundary(loc, size) {
+//   return loc.x == 0 || loc.y == 0 || loc.x == size.width - 1 || loc.y == size.height - 1;
+// }
+//
+// function fenceAround(loc, gridSize) {
+//   return [
+//     {x: loc.x - 2, y: loc.y - 1},
+//     {x: loc.x - 2, y: loc.y},
+//     {x: loc.x - 2, y: loc.y + 1},
+//     {x: loc.x + 2, y: loc.y - 1},
+//     {x: loc.x + 2, y: loc.y},
+//     {x: loc.x + 2, y: loc.y + 1},
+//     {y: loc.y - 2, x: loc.x - 1},
+//     {y: loc.y - 2, x: loc.x},
+//     {y: loc.y - 2, x: loc.x + 1},
+//     {y: loc.y + 2, x: loc.x - 1},
+//     {y: loc.y + 2, x: loc.x},
+//     {y: loc.y + 2, x: loc.x + 1},
+//   ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
+// }
 
 const treasureString = (loc) => `istreasure${loc2Str(loc)}`;
 
-export function ddSolve(spec) {
+export function ddSolve(spec, maxSolutionsReturned = 5) {
+  console.time('ddSolve');
+
   var solver = new Logic.Solver();
 
   let {size} = spec.rules;
+  const {onBoundary, row, col, fenceAround, boxCenteredAt} = fns(size);
+
+  const interior = gridLocations({height: size.height - 2, width: size.width - 2}, {x: 1, y: 1}).flat();
+  const rim = gridLocations(size).filter(l => onBoundary(l, size)).flat();
+  const treasureCount = spec.treasure.trueLocs().length;
+  const deadEnds = spec.deadends.trueLocs();
 
   // Wallcount constraints for rows and columns.
   for (let j = 0; j < size.height; j++) {
@@ -90,6 +146,12 @@ export function ddSolve(spec) {
     );
   }
 
+  // Only the right number of treasure chests.
+  solver.require(Logic.equalBits(
+    Logic.sum(interior.map(treasureString)),
+    Logic.constantBits(treasureCount)
+  ));
+
   // Treasure room augmented vars.
   spec.treasure.trueLocs().forEach(treasure => {
     // Only the chest centers that are off boundary are real candidates.
@@ -99,12 +161,8 @@ export function ddSolve(spec) {
   });
 
   // No treasure in the outer rim.
-  const interior = gridLocations({height: size.height - 2, width: size.width - 2}, {x: 1, y: 1});
-  const rim = gridLocations(size).filter(l => onBoundary(l, size));
-
   rim.forEach(tr => solver.require(Logic.not(treasureString(tr))));
 
-  console.log(`True treasure count ${spec.treasure.trueLocs().length}`)
 
   // Being the treasure room means no walls inside and mostly walls outside.
   interior.forEach(loc => {
@@ -113,13 +171,7 @@ export function ddSolve(spec) {
     solver.require(Logic.implies(treasureString(loc), Logic.exactlyOne(fenceAround(loc, size).map(l => Logic.not(loc2Str(l))))));
   });
 
-  // // Only the right number of treasure chests.
-  // solver.require(Logic.equalBits(
-  //   Logic.sum(interior.map(treasureString)),
-  //   Logic.constantBits(spec.treasure.trueLocs().length)
-  // ));
-
-  const thronesContainingMe = (loc) => {
+  const treasureRoomOriginsContainingMe = (loc) => {
     return [
       {x: loc.x + 1, y: loc.y + 1},
       {x: loc.x, y: loc.y + 1},
@@ -129,55 +181,61 @@ export function ddSolve(spec) {
   }
 
   // No 2x2 floor constraints.
-  // TODO: These have to be short-circuited within the treasure rooms. Shit.
   const twox2Origins = gridLocations({height: size.height - 1, width: size.width - 1}).flat();
   twox2Origins.forEach(loc => {
     const sq = gridLocations({height: 2, width: 2}, loc).flat();
-    const thr = thronesContainingMe(loc, size).map(treasureString);
+    const thr = treasureRoomOriginsContainingMe(loc, size).map(treasureString);
     solver.require(Logic.or(...thr, ...sq.map(loc2Str)));
   });
 
   // Deadends
   gridLocations(size).flat().forEach(loc => {
-    const s = loc2Str(loc);
-    const ns = spec.deadends.nf(loc);
-    const hasExactlyOneNeighbour = Logic.exactlyOne(ns.map(nl => Logic.not(loc2Str(nl))));
+    const locName = loc2Str(loc);
+    const neighbours = spec.deadends.nf(loc);
+    const hasExactlyOneNeighbour = Logic.exactlyOne(neighbours.map(nl => Logic.not(loc2Str(nl))));
     if (spec.deadends.check(loc)) {
       // We're a known deadend.
-      solver.require(Logic.not(s));
+      solver.forbid(locName);  // We can't be a wall.
       solver.require(hasExactlyOneNeighbour);
     } else {
-      // If we have exactly one neighbour, we must just be a wall.
-      solver.require(Logic.implies(hasExactlyOneNeighbour, s));
+      // If we're on the floor, we don't have exactly one neighbour.
+      solver.require(Logic.implies(Logic.not(locName), Logic.not(hasExactlyOneNeighbour)));
     }
   })
 
-
-  // Treasure
-  // TODO
-
-  // Grab a solution and dump it in a grid for inspection.
-  let soln = solver.solve();
-
-  if (!soln) {
-    console.warn(`Solution didn't work...`);
-    return;
+  let ret = [];
+  {
+    let soln;
+    let solutionsFound = 0;
+    soln = solver.solve();
+    while (soln && solutionsFound < maxSolutionsReturned) {
+      solutionsFound++;
+      let deets = solutionDetails(size, soln);
+      // If the solution isn't topologically sound, we can't include it in the solutions, and we have to keep looking.
+      if (deets.wallGrid.inverted().componentCount() == 1) {
+        ret.push(deets);
+      }
+      solver.forbid(soln.getFormula())
+      soln = solver.solve();
+    }
   }
 
+  console.timeEnd('ddSolve');
+  return ret;
+}
+
+export function hasMultipleSolutions(spec) {
+  return ddSolve(spec, 2).length > 1;
+}
+
+function solutionDetails(size, soln) {
   const solnWalls = new MutableGrid(size, false);
-
   const treasure = soln.getTrueVars().filter(s => s[0] == 'i').map(s => locFromStr(s.substring('istreasure'.length)));
-  console.log('Treasure!', treasure.map(loc2Str).join('  '))
-  // console.log(soln.getTrueVars().join(' '))
-
   soln.getTrueVars().filter(s => s[0] != 'i').map(locFromStr).forEach(loc => solnWalls.setLoc(loc, true));
 
-  let sln = {
+  return {
     wallGrid: solnWalls,
     thrones: treasure,
   }
-
-  return sln;
 }
-
 
