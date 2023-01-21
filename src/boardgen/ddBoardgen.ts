@@ -57,7 +57,7 @@ function installThrone(grid: MutableGrid) {
             core = {x: loc!.x + 1, y: loc!.y + 1};
             const room = gridLocations(throneSize, loc!).flat();
             const roomstrs = new Set(room.map(loc2Str));
-            const roomneighbours = room.map(loc => grid.nf(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
+            const roomneighbours = room.map(loc => grid.neighbourFunction(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
             // The exit is the only one we don't explicitly set to false.
             const exit = roomneighbours.splice(randomInt(roomneighbours.length), 1)[0];
             roomneighbours.forEach(loc => grid.setLoc(loc, false));

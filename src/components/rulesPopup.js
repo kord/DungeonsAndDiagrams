@@ -6,9 +6,6 @@ class RulesPopup extends React.Component {
         super(props);
     }
 
-
-    // t = `The terrifying labyrinth has ${rulesList.length} rules.`
-
     render() {
         const myBigGreenDialog = {
             backgroundColor: '#77C76E',

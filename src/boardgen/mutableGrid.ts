@@ -5,7 +5,7 @@ import {gridLocations, gridNeighbourFunc} from "./graphUtils";
 // easily to the last time you declared it 'safe.'
 export class MutableGrid {
     currentlySafe: boolean;
-    nf: (loc: Location) => Location[];
+    neighbourFunction: (loc: Location) => Location[];
     private grid: boolean[][];
     private lastSafe: boolean[][];
 
@@ -13,7 +13,7 @@ export class MutableGrid {
         this.grid = constantGrid(size, initialValue);
         this.lastSafe = constantGrid(size, initialValue);
         this.currentlySafe = true;
-        this.nf = gridNeighbourFunc(size, {wrapX: false, wrapY: false});
+        this.neighbourFunction = gridNeighbourFunc(size, {wrapX: false, wrapY: false});
     }
 
     check(loc: Location): boolean {
@@ -84,7 +84,7 @@ export class MutableGrid {
                 if (!this.check(cur!)) continue;
                 this.setLoc(cur, false);
                 componentSize++;
-                todo.push(...this.nf(cur));
+                todo.push(...this.neighbourFunction(cur));
             }
             ret.push(componentSize);
         }
@@ -112,7 +112,7 @@ export class MutableGrid {
                 this.setLoc(cur, false);
                 component.push(cur);
                 // Set ourselves up to examine the neighbours.
-                todo.push(...this.nf(cur));
+                todo.push(...this.neighbourFunction(cur));
             }
             ret.push(component);
         }
@@ -132,7 +132,7 @@ export class MutableGrid {
         return true;
     }
 
-    neighbourCount = (loc: Location) => this.nf(loc).filter(n => this.check(n)).length;
+    neighbourCount = (loc: Location) => this.neighbourFunction(loc).filter(n => this.check(n)).length;
     isLeaf = (loc: Location) => (this.check(loc) && this.neighbourCount(loc) == 1);
     leaves = () => gridLocations(this.size).flat().filter(this.isLeaf);
 

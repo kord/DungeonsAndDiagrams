@@ -191,7 +191,7 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
   // Deadends
   gridLocations(size).flat().forEach(loc => {
     const locName = loc2Str(loc);
-    const neighbours = spec.deadends.nf(loc);
+    const neighbours = spec.deadends.neighbourFunction(loc);
     const hasExactlyOneNeighbour = Logic.exactlyOne(neighbours.map(nl => Logic.not(loc2Str(nl))));
     if (spec.deadends.check(loc)) {
       // We're a known deadend.
