@@ -23,7 +23,7 @@ export type DDBoardSpec = {
     throneCenters: MutableGrid,
     treasure: MutableGrid,
     deadends: MutableGrid,
-    monsterChoice: Map<string, number>,
+    monsterChoices: Map<string, number>,
 
     wallCounts: Linestats,
 
@@ -199,7 +199,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             floors: grid,
             walls: walls,
             deadends: deadends,
-            monsterChoice: monsterChoices(grid),
+            monsterChoices: monsterChoices(grid),
             throneCenters: throneCenters,
             treasure: treasure,
             throneCount: throneLocs.length,

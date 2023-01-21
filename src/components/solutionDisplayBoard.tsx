@@ -45,12 +45,8 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
             '--board-height': size.height,
             '--board-width': size.width,
             '--scale': this.props.scale || 1.0,
-            // '--side-color': wrap.wrapX ? 'white' : 'black',
-            // '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;
 
-        // --side-color: black;
-        // --top-bottom-color: black;
 
         return (<>
 

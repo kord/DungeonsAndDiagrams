@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Location, Size} from "../boardgen/types";
-import {DDBoardgenSpec, DDBoardSpec, generateDDBoard, monsterChoices} from "../boardgen/ddBoardgen";
+import {DDBoardSpec, generateDDBoard, monsterChoices} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
 
@@ -15,9 +15,6 @@ export type SolnRecord = {
 type PuzzleGameState = {
     size: Size,
     spec?: DDBoardSpec,
-    block: boolean,
-    no2x2: boolean,
-    uniqueDiameter: boolean,
     wrapX: boolean,
     wrapY: boolean,
     solns: SolnRecord[],
@@ -31,7 +28,7 @@ function imaginePuzzleSpec(s: SolnRecord): DDBoardSpec {
         wallCounts: s.wallGrid.profile(true),
         rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
         deadends: floors.leafGrid(),
-        monsterChoice: monsterChoices(s.wallGrid),
+        monsterChoices: monsterChoices(s.wallGrid),
         treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
         throneCenters: anygrid,
         throneCount: s.thrones.length,
@@ -48,10 +45,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.gameRef = React.createRef();
         this.state = {
             size: defaultBoardgenRules.size,
-            // Unused!
-            block: defaultBoardgenRules.boardStyle == 'block',
-            no2x2: !!defaultBoardgenRules.no2x2,
-            uniqueDiameter: !!defaultBoardgenRules.uniqueDiameter,
             wrapX: defaultBoardgenRules.wrap.wrapX,
             wrapY: defaultBoardgenRules.wrap.wrapY,
             solns: [],
@@ -73,16 +66,15 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     }
 
     newGame = () => {
-        const spec = {
+        const puz = generateDDBoard({
             size: this.state.size,
             throneSpec: {
                 attemptFirst: .8,
                 attemptSubsequent: 0.9,
             }
-        } as DDBoardgenSpec;
-        const puz = generateDDBoard(spec);
-        if (this.gameRef.current) this.gameRef.current.reset();
-        this.setState({spec: puz});
+        });
+        this.setState({spec: puz, solns: [],});
+        if (this.gameRef.current) this.gameRef.current.reset(puz.rules.size);
     }
 
     //
@@ -142,9 +134,9 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-                <input onChange={this.setHeight} value={this.state.size.height}/>
+                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'}/>
                 &nbsp;
-                <input onChange={this.setWidth} value={this.state.size.width}/>
+                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'}/>
                 &nbsp;
                 <button onClick={this.newGame}>New Game</button>
                 {/*<button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>*/}

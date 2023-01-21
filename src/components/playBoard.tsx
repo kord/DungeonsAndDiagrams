@@ -1,6 +1,6 @@
 import React, {Component, CSSProperties, MouseEventHandler} from 'react';
 import classNames from "classnames";
-import {Linestats, Location} from "../boardgen/types";
+import {Linestats, Location, Size} from "../boardgen/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "../boardgen/mutableGrid";
@@ -51,8 +51,8 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         };
     }
 
-    public reset() {
-        const {size} = this.props.spec.rules;
+    public reset(size: Size) {
+        // const {size} = this.props.spec.rules;
         this.undoStack = [];
         this.setState({
             assignedFloors: new MutableGrid(size, false),
@@ -111,11 +111,11 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const isUserFloor = assignedFloors.check(loc);
         const isUserWall = assignedWalls.check(loc);
 
-        const {floors, deadends, treasure, monsterChoice} = this.props.spec;
+        const {floors, deadends, treasure, monsterChoices} = this.props.spec;
         const isDeadend = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const isImmutable = this.isImmutable(loc);
-        const monstername = `block-square--monster${monsterChoice.get(loc2Str(loc))}`;
+        const monstername = `block-square--monster${monsterChoices.get(loc2Str(loc))}`;
 
         return classNames({
             'block-square': true,
@@ -159,8 +159,8 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
         return (<>
 
-                <div className={boardClasses} style={st}>
-                    <div className={'play-board__grid'}>
+                <div className={boardClasses} style={st} key={'itstheboard'}>
+                    <div className={'play-board__grid'} key={'itsthegrid'}>
                         {this.columnHints(userWalls)}
                         {gridLocations(size).map((row, j) => {
                             return <>
@@ -170,17 +170,16 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                                     {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
                                 </div>
                                 {row.map(loc =>
-                                        <div className={this.blockSquareClassnames(loc)}
-                                             key={loc2Str(loc)}
-                                             onMouseDown={this.mouseDown(loc)}
-                                             onMouseEnter={(e) => {
-                                                 if (e.buttons === this.mouseBehaviour?.initialButtons)
-                                                     this.performBehaviour(loc);
-                                             }}
-                                        >
-                                            {}
-                                        </div>
-                                    )}
+                                    <div className={this.blockSquareClassnames(loc)}
+                                         key={loc2Str(loc)}
+                                         onMouseDown={this.mouseDown(loc)}
+                                         onMouseEnter={(e) => {
+                                             if (e.buttons === this.mouseBehaviour?.initialButtons)
+                                                 this.performBehaviour(loc);
+                                         }}
+                                    >
+                                    </div>
+                                )}
                                 </>;
                             }
                         )}
@@ -295,8 +294,8 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     private columnHints(userWalls: Linestats) {
         const solutionWalls = this.props.spec.wallCounts;
         return <>
-            <div className={'play-board--topcorner'}/>
-            {this.props.spec.wallCounts.cols.map((cnt, i) =>
+            <div className={'play-board--topcorner'} key={'topcorner'}/>
+            {solutionWalls.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', cnt, userWalls.cols[i])}
                      key={`colhint${i}`}>
                     {cnt}

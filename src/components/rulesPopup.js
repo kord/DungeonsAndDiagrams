@@ -19,7 +19,7 @@ class RulesPopup extends React.Component {
         const rulesList = [
             'Every spot in our terrifying labyrinth is either a floor or a wall.',
             'All of the floor space in the labyrinth is connected.',
-            'Every dead end has a monster in it.',
+            'Every dead end has a monster in it, every monster is in a dead end.',
             'Treasure chests are in a 3x3 room with only one exit.',
             'Nowhere outside a treasure room is there a 2x2 floor area, the corridors are tight.',
         ];
@@ -29,7 +29,7 @@ class RulesPopup extends React.Component {
               <SkyLight dialogStyles={myBigGreenDialog} hideOnOverlayClicked ref={ref => this.customDialog = ref}
                         title="Dungeons and Diagrams Rules">
                   <ul>
-                      {rulesList.map(r => <li>{r}</li>)}
+                      {rulesList.map((r, i) => <li key={i}>{r}</li>)}
                       <br/>
                       This is an original puzzle by <a href={'https://en.wikipedia.org/wiki/Zachtronics'}>
                       Zachtronics</a> from the game <a href={'https://www.zachtronics.com/last-call-bbs/'}>
