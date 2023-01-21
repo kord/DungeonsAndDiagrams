@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import {PuzzleGame} from "./components/puzzleGame";
+import RulesPopup from './components/rulesPopup';
 
 function App() {
 
@@ -9,13 +10,14 @@ function App() {
             <header className="App-header">
                 {/*<img src={logo} className="App-logo" alt="logo" />*/}
                 <p>
-                    Things.
+                    Dungeons and Diagrams
                 </p>
 
             </header>
 
             <div>
-            <p>fff</p>
+                <RulesPopup/>
+                {/*<p>fff</p>*/}
                 <PuzzleGame/>
             </div>
 
