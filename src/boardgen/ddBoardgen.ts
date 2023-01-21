@@ -23,6 +23,7 @@ export type DDBoardSpec = {
     throneCenters: MutableGrid,
     treasure: MutableGrid,
     deadends: MutableGrid,
+    monsterChoice: Map<string, number>,
 
     wallCounts: Linestats,
 
@@ -157,6 +158,14 @@ function offCenter(loc: Location): Location {
     }
 }
 
+const maxMonster = 4;
+
+export function monsterChoices(g: MutableGrid) {
+    const monsterChoice = new Map<string, number>();
+    g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(Math.random() * maxMonster)));
+    return monsterChoice;
+}
+
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     console.time('generateDDBoard');
     let ret: DDBoardSpec;
@@ -190,6 +199,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             floors: grid,
             walls: walls,
             deadends: deadends,
+            monsterChoice: monsterChoices(grid),
             throneCenters: throneCenters,
             treasure: treasure,
             throneCount: throneLocs.length,
@@ -199,9 +209,9 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
         }
 
         restarts += board.restarts;
-    } while (hasMultipleSolutions(ret))
+    } while (hasMultipleSolutions(ret));
     console.timeEnd('generateDDBoard');
-    console.log(`restarts: ${restarts}`)
+    // console.log(`restarts: ${restarts}`)
 
     return ret;
 }

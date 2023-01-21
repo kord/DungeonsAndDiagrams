@@ -3,23 +3,18 @@ import classNames from "classnames";
 import {Linestats, Location} from "../boardgen/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
-import '../css/playBoard.css';
 import {MutableGrid} from "../boardgen/mutableGrid";
+import '../css/playBoard.css';
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
     scale?: number,
 };
+
 type PlayBoardState = {
     assignedWalls: MutableGrid,
     assignedFloors: MutableGrid,
 };
-
-type WallChange = {
-    locs: Location[],
-    before: [boolean, boolean],
-    after: [boolean, boolean],
-}
 
 type BlockState = 'immutable' | 'user-untouched' | 'user-wall' | 'user-floor';
 
@@ -36,7 +31,7 @@ type MouseAction = {
 }
 
 export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
-    canvasRef: React.RefObject<HTMLCanvasElement>;
+    // canvasRef: React.RefObject<HTMLCanvasElement>;
     undoStack: PlayBoardState[];
     stateBeforeClick: PlayBoardState;
     mouseBehaviour?: MouseBehaviour;
@@ -44,19 +39,20 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     constructor(props: PlayBoardProps) {
         super(props);
         this.undoStack = [];
-        this.canvasRef = React.createRef();
+        // this.canvasRef = React.createRef();
+        const size = props.spec.rules.size;
         this.stateBeforeClick = {
-            assignedWalls: new MutableGrid(props.spec.rules.size, false),
-            assignedFloors: new MutableGrid(props.spec.rules.size, false),
+            assignedWalls: new MutableGrid(size, false),
+            assignedFloors: new MutableGrid(size, false),
         }
         this.state = {
-            assignedWalls: new MutableGrid(props.spec.rules.size, false),
-            assignedFloors: new MutableGrid(props.spec.rules.size, false),
+            assignedWalls: new MutableGrid(size, false),
+            assignedFloors: new MutableGrid(size, false),
         };
     }
 
     public reset() {
-        const size = this.props.spec.rules.size;
+        const {size} = this.props.spec.rules;
         this.undoStack = [];
         this.setState({
             assignedFloors: new MutableGrid(size, false),
@@ -115,10 +111,11 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const isUserFloor = assignedFloors.check(loc);
         const isUserWall = assignedWalls.check(loc);
 
-        const {floors, deadends, treasure} = this.props.spec;
+        const {floors, deadends, treasure, monsterChoice} = this.props.spec;
         const isDeadend = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const isImmutable = this.isImmutable(loc);
+        const monstername = `block-square--monster${monsterChoice.get(loc2Str(loc))}`;
 
         return classNames({
             'block-square': true,
@@ -127,8 +124,19 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             'block-square--user-untouched': !isImmutable && !isUserFloor && !isUserWall,
             'block-square--immutable': isImmutable,
             'block-square--deadend': isDeadend,
+            [monstername]: isDeadend,
             'block-square--treasure': isTreasure,
         });
+    }
+
+    counterClasses(orientation: string, required: number, current: number) {
+        let fig: Record<string, boolean> = {};
+        fig[`play-board__count`] = true;
+        fig[`play-board__count--${orientation}`] = true;
+        fig[`play-board__count--undersatisfied`] = current < required;
+        fig[`play-board__count--satisfied`] = current == required;
+        fig[`play-board__count--oversatisfied`] = current > required;
+        return classNames(fig);
     }
 
     render() {
@@ -137,18 +145,14 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             '--board-height': size.height,
             '--board-width': size.width,
             '--scale': this.props.scale || 1.0,
-            // '--side-color': wrap.wrapX ? 'white' : 'black',
-            // '--top-bottom-color': wrap.wrapY ? 'white' : 'black',
         } as CSSProperties;
 
         const boardClasses = classNames({
             'play-board': true,
             'play-board--completed': this.state.assignedWalls.equals(this.props.spec.walls),
             'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
-        })
+        });
 
-        // --side-color: black;
-        // --top-bottom-color: black;
 
         const solutionWalls = this.props.spec.wallCounts;
         const userWalls = this.state.assignedWalls.profile(true);
@@ -169,42 +173,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                                         <div className={this.blockSquareClassnames(loc)}
                                              key={loc2Str(loc)}
                                              onMouseDown={this.mouseDown(loc)}
-
-                                            // onMouseDown={(e) => {
-                                            //     console.log(`onMouseDown in ${loc2Str(loc)}`);
-                                            //     (e.target as HTMLDivElement).setPointerCapture(e.pointerId);
-                                            //     this.captureMouse(loc, e.buttons);
-                                            // }}
-                                            // onMouseUp={(e) => {
-                                            //     // if (e.buttons == 1)
-                                            //     //     this.blockClick(loc);
-                                            //     // else if (e.buttons == 2)
-                                            //     //     this.blockRightClick(loc);
-                                            //     console.log(`onMouseUp in ${loc2Str(loc)}`)
-                                            // }}
                                              onMouseEnter={(e) => {
                                                  if (e.buttons === this.mouseBehaviour?.initialButtons)
                                                      this.performBehaviour(loc);
-                                                 // if (e.buttons == 1) {
-                                                 //     console.log(`Entered ${loc2Str(loc)}`);
-                                                 //     this.blockClick(loc);
-                                                 // }
-                                                 // if (e.buttons == 2) {
-                                                 //     console.log(`Entered ${loc2Str(loc)} ${e.buttons}`);
-                                                 //     this.blockRightClick(loc);
-                                                 // }
                                              }}
-                                            // onDragOver={(e) => {
-                                            //     console.log(`onDragOver ${loc2Str(loc)} with ${e.buttons}`)
-                                            //     // if (e.buttons == 1) {
-                                            //     //     console.log(`Entered ${loc2Str(loc)}`);
-                                            //     //     this.blockClick(loc);
-                                            //     // }
-                                            //     // if (e.buttons == 2) {
-                                            //     //     console.log(`Entered ${loc2Str(loc)} ${e.buttons}`);
-                                            //     //     this.blockRightClick(loc);
-                                            //     // }
-                                            // }}
                                         >
                                             {}
                                         </div>
@@ -217,16 +189,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 <br/>
             </>
         );
-    }
-
-    counterClasses(orientation: string, required: number, current: number) {
-        let fig: Record<string, boolean> = {};
-        fig[`play-board__count`] = true;
-        fig[`play-board__count--${orientation}`] = true;
-        fig[`play-board__count--undersatisfied`] = current < required;
-        fig[`play-board__count--satisfied`] = current == required;
-        fig[`play-board__count--oversatisfied`] = current > required;
-        return classNames(fig);
     }
 
     private attemptUndo() {

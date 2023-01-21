@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Location, Size} from "../boardgen/types";
-import {DDBoardgenSpec, DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
-import {SolutionDisplayBoard} from "./solutionDisplayBoard";
+import {DDBoardgenSpec, DDBoardSpec, generateDDBoard, monsterChoices} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
-import {ddSolve} from "../boardgen/ddSolver";
 import {MutableGrid} from "../boardgen/mutableGrid";
 
 export type PuzzleGameProps = {};
@@ -33,6 +31,7 @@ function imaginePuzzleSpec(s: SolnRecord): DDBoardSpec {
         wallCounts: s.wallGrid.profile(true),
         rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
         deadends: floors.leafGrid(),
+        monsterChoice: monsterChoices(s.wallGrid),
         treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
         throneCenters: anygrid,
         throneCount: s.thrones.length,
@@ -107,28 +106,28 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     // });
 
     findSolverFlaw = () => {
-        const maxTries = 200;
-
-        let tries = 0;
-
-        const spec = {
-            size: this.state.size,
-            throneSpec: {
-                attemptFirst: .8,
-                attemptSubsequent: 0.9,
-            }
-        } as DDBoardgenSpec;
-        let puz = generateDDBoard(spec);
-
-        let slns = ddSolve(puz);
-
-        while (slns.length == 1 && tries++ < maxTries) {
-            puz = generateDDBoard(spec);
-            slns = ddSolve(puz)!;
-        }
-
-        if (slns.length > 0) this.setState({solns: slns, spec: puz});
-        console.warn(`Took ${tries} tries to get a failure.`)
+        // const maxTries = 200;
+        //
+        // let tries = 0;
+        //
+        // const spec = {
+        //     size: this.state.size,
+        //     throneSpec: {
+        //         attemptFirst: .8,
+        //         attemptSubsequent: 0.9,
+        //     }
+        // } as DDBoardgenSpec;
+        // let puz = generateDDBoard(spec);
+        //
+        // let slns = ddSolve(puz);
+        //
+        // while (slns.length == 1 && tries++ < maxTries) {
+        //     puz = generateDDBoard(spec);
+        //     slns = ddSolve(puz)!;
+        // }
+        //
+        // if (slns.length > 0) this.setState({solns: slns, spec: puz});
+        // console.warn(`Took ${tries} tries to get a failure.`)
     }
 
     something = () => {
@@ -148,16 +147,16 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <input onChange={this.setWidth} value={this.state.size.width}/>
                 &nbsp;
                 <button onClick={this.newGame}>New Game</button>
-                <button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>
-                <button onClick={this.findSolverFlaw}>findSolverFlaw</button>
+                {/*<button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>*/}
+                {/*<button onClick={this.findSolverFlaw}>findSolverFlaw</button>*/}
 
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
-                {this.state.solns ? this.state.solns.map(soln =>
-                    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>
-                ) : <></>}
+                {/*{this.state.solns ? this.state.solns.map(soln =>*/}
+                {/*    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>*/}
+                {/*) : <></>}*/}
 
-                {this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}
+                {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}*/}
 
                 {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
                 {/*<br/>*/}

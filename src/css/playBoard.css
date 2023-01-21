@@ -111,9 +111,24 @@
     background-color: white;
 }
 
+.block-square--monster1 {
+    background-image: url("../assets/demons/character-evil-halloween-horror-monster-svgrepo-com.svg");
+}
+
+.block-square--monster2 {
+    background-image: url("../assets/demons/mummy-svgrepo-com.svg");
+}
+
+.block-square--monster3 {
+    background-image: url("../assets/demons/frankenstein-svgrepo-com.svg");
+}
+
+.block-square--monster4 {
+    background-image: url("../assets/demons/monster-svgrepo-com.svg");
+}
+
 .block-square--deadend {
     /*background-color: gold;*/
-    background-image: url("../assets/demons/character-evil-halloween-horror-monster-svgrepo-com.svg");
     background-size: contain;
     background-position: center;
 }
