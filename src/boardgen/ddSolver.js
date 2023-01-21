@@ -3,23 +3,6 @@ import {gridLocations, loc2Str, locFromStr} from "./graphUtils";
 
 var Logic = require('logic-solver');
 
-
-// export type DDBoardSpec = {
-//   // The rules that were used to generate this board.
-//   rules: DDBoardgenSpec,
-//   floors: MutableGrid,
-//   walls: MutableGrid,
-//
-//   throneCount: number,
-//   throneCenters: MutableGrid,
-//   treasure: MutableGrid,
-//   deadends: MutableGrid,
-//
-//   wallCounts: Linestats,
-//
-//   restarts: number,
-// }
-
 const fns = (size) => {
   return {
     row: (j) => {
@@ -33,7 +16,7 @@ const fns = (size) => {
       return ret;
     },
     onBoundary: (loc) => {
-      return loc.x == 0 || loc.y == 0 || loc.x == size.width - 1 || loc.y == size.height - 1
+      return loc.x === 0 || loc.y === 0 || loc.x === size.width - 1 || loc.y === size.height - 1
     },
     boxCenteredAt: (loc) => {
       return [
@@ -67,53 +50,6 @@ const fns = (size) => {
 
   }
 };
-//
-// function row(j, size) {
-//   const ret = [];
-//   for (let i = 0; i < size.width; i++) ret.push(`${i},${j}`);
-//   return ret;
-// }
-//
-// function col(i, size) {
-//   const ret = [];
-//   for (let j = 0; j < size.height; j++) ret.push(`${i},${j}`);
-//   return ret;
-// }
-//
-// function boxCenteredAt(loc, gridSize) {
-//   return [
-//     {x: loc.x - 1, y: loc.y - 1},
-//     {x: loc.x - 1, y: loc.y},
-//     {x: loc.x - 1, y: loc.y + 1},
-//     {x: loc.x, y: loc.y - 1},
-//     {x: loc.x, y: loc.y},
-//     {x: loc.x, y: loc.y + 1},
-//     {x: loc.x + 1, y: loc.y - 1},
-//     {x: loc.x + 1, y: loc.y},
-//     {x: loc.x + 1, y: loc.y + 1},
-//   ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
-// }
-//
-// function onBoundary(loc, size) {
-//   return loc.x == 0 || loc.y == 0 || loc.x == size.width - 1 || loc.y == size.height - 1;
-// }
-//
-// function fenceAround(loc, gridSize) {
-//   return [
-//     {x: loc.x - 2, y: loc.y - 1},
-//     {x: loc.x - 2, y: loc.y},
-//     {x: loc.x - 2, y: loc.y + 1},
-//     {x: loc.x + 2, y: loc.y - 1},
-//     {x: loc.x + 2, y: loc.y},
-//     {x: loc.x + 2, y: loc.y + 1},
-//     {y: loc.y - 2, x: loc.x - 1},
-//     {y: loc.y - 2, x: loc.x},
-//     {y: loc.y - 2, x: loc.x + 1},
-//     {y: loc.y + 2, x: loc.x - 1},
-//     {y: loc.y + 2, x: loc.x},
-//     {y: loc.y + 2, x: loc.x + 1},
-//   ].filter(l => l.x >= 0 && l.y >= 0 && l.x < gridSize.width && l.y < gridSize.height);
-// }
 
 const treasureString = (loc) => `istreasure${loc2Str(loc)}`;
 
@@ -212,7 +148,7 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
       solutionsFound++;
       let deets = solutionDetails(size, soln);
       // If the solution isn't topologically sound, we can't include it in the solutions, and we have to keep looking.
-      if (deets.wallGrid.inverted().componentCount() == 1) {
+      if (deets.wallGrid.inverted().componentCount() === 1) {
         ret.push(deets);
       }
       solver.forbid(soln.getFormula())
@@ -230,8 +166,8 @@ export function hasMultipleSolutions(spec) {
 
 function solutionDetails(size, soln) {
   const solnWalls = new MutableGrid(size, false);
-  const treasure = soln.getTrueVars().filter(s => s[0] == 'i').map(s => locFromStr(s.substring('istreasure'.length)));
-  soln.getTrueVars().filter(s => s[0] != 'i').map(locFromStr).forEach(loc => solnWalls.setLoc(loc, true));
+  const treasure = soln.getTrueVars().filter(s => s[0] === 'i').map(s => locFromStr(s.substring('istreasure'.length)));
+  soln.getTrueVars().filter(s => s[0] !== 'i').map(locFromStr).forEach(loc => solnWalls.setLoc(loc, true));
 
   return {
     wallGrid: solnWalls,

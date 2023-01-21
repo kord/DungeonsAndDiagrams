@@ -75,7 +75,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
         // You can't undo while clicking stuff. That's just weird.
         if (this.mouseBehaviour) return;
-        if (e.code == 'KeyZ' && e.ctrlKey) this.attemptUndo();
+        if (e.code === 'KeyZ' && e.ctrlKey) this.attemptUndo();
     }
 
     componentDidMount(): void {
@@ -134,7 +134,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         fig[`play-board__count`] = true;
         fig[`play-board__count--${orientation}`] = true;
         fig[`play-board__count--undersatisfied`] = current < required;
-        fig[`play-board__count--satisfied`] = current == required;
+        fig[`play-board__count--satisfied`] = current === required;
         fig[`play-board__count--oversatisfied`] = current > required;
         return classNames(fig);
     }
@@ -204,7 +204,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
             console.log(`Mousedown inner buttons ${e.buttons}`)
 
-            if (initialButtons == 1) {
+            if (initialButtons === 1) {
                 // Left click
                 switch (initialBlockState) {
                     case "user-untouched":
@@ -216,7 +216,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                     case "user-wall":
                         action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
                 }
-            } else if (initialButtons == 2) {
+            } else if (initialButtons === 2) {
                 // Right click
                 switch (initialBlockState) {
                     case "user-untouched":
@@ -287,7 +287,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         }
 
         // Call for an update if we did anything.
-        if (assignedWalls.check(loc) != oldWall || assignedFloors.check(loc) != oldFloor)
+        if (assignedWalls.check(loc) !== oldWall || assignedFloors.check(loc) !== oldFloor)
             this.forceUpdate();
     }
 

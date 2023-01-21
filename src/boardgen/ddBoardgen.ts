@@ -66,13 +66,13 @@ function installThrone(grid: MutableGrid) {
             // There are a couple cases we can handle.
             // If the remainder forms a single connected component, we're golden.
             // If we're left with singleton components, we can do that too, by falsing out the singletons.
-            if (components.length == 1) {
+            if (components.length === 1) {
                 foundone = true;
                 grid.markSafe();
                 // grid.show()
-            } else if (components.filter(c => c.length > 1).length == 1) {
+            } else if (components.filter(c => c.length > 1).length === 1) {
                 foundone = true;
-                const singletons = components.filter(c => c.length == 1);
+                const singletons = components.filter(c => c.length === 1);
                 for (let singleton of singletons) {
                     grid.setLoc(singleton[0], false);
                 }
@@ -112,7 +112,7 @@ export function ddGen(spec: DDBoardgenSpec) {
                 loopCount++;
                 let throneloc = installThrone(grid);
                 // False out the center so our subsequent processing won't find a blank 2x2 in there.
-                if (throneloc != undefined) {
+                if (throneloc !== undefined) {
                     throneLocs.push(throneloc);
                     grid.setLoc(throneloc, false);
                     grid.markSafe();
@@ -135,8 +135,9 @@ export function ddGen(spec: DDBoardgenSpec) {
                 success = candidates.some(cl => {
                     grid.markSafe();
                     grid.setLoc(cl, false);
-                    if (grid.componentCount() != 1) grid.revert();
+                    if (grid.componentCount() !== 1) grid.revert();
                     else return true;
+                    return false;
                 });
             }
             return success;
