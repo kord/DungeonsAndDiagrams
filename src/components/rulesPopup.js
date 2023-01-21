@@ -34,7 +34,7 @@ class RulesPopup extends React.Component {
             {rulesList.map((r, i) => <li key={i}>{r}</li>)}
             <br/>
             This is an original puzzle by <a href={'https://en.wikipedia.org/wiki/Zachtronics'}>
-            Zachtronics</a> from the game <a href={'https://www.zachtronics.com/last-call-bbs/'}>
+            Zachtronics</a> from <a href={'https://www.zachtronics.com/last-call-bbs/'}>
             Last Call BBS</a>.
           </ul>
         </SkyLight>
