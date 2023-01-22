@@ -3,7 +3,7 @@ import {gridLocations, loc2Str, locFromStr} from "./graphUtils";
 
 var Logic = require('logic-solver');
 
-const fns = (size) => {
+const locationGenerators = (size) => {
   return {
     row: (j) => {
       const ret = [];
@@ -53,13 +53,14 @@ const fns = (size) => {
 
 const treasureString = (loc) => `istreasure${loc2Str(loc)}`;
 
+// Solve a puzzle, leveraging a SAT solver to do the heavy lifting.
 export function ddSolve(spec, maxSolutionsReturned = 5) {
   console.time('ddSolve');
 
   var solver = new Logic.Solver();
 
   let {size} = spec.rules;
-  const {onBoundary, row, col, fenceAround, boxCenteredAt} = fns(size);
+  const {onBoundary, row, col, fenceAround, boxCenteredAt} = locationGenerators(size);
 
   const interior = gridLocations({height: size.height - 2, width: size.width - 2}, {x: 1, y: 1}).flat();
   const rim = gridLocations(size).filter(l => onBoundary(l, size)).flat();
@@ -137,8 +138,11 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
       // If we're on the floor, we don't have exactly one neighbour.
       solver.require(Logic.implies(Logic.not(locName), Logic.not(hasExactlyOneNeighbour)));
     }
-  })
+  });
 
+  // Now we have to enforce the requirement that the floor space in the dungeon is connected. This is not
+  // something that can be done in a clean efficient way in the SAT constraints, so we just generate solutions
+  // and throw them out until we have one with a connected floorplan.
   let ret = [];
   {
     let soln;

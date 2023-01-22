@@ -16,6 +16,8 @@ export function locFromStr(str: string | undefined): Location | undefined {
     return {x: l[0], y: l[1]};
 }
 
+// Just get a big fat dump of each of the locations in a grid of a certain size, possibly with some specified
+// top-left corner element.
 export function gridLocations(size: Size, rootLoc: Location = {x: 0, y: 0}): Location[][] {
     let ret = [];
     for (let j = rootLoc.y; j < rootLoc.y + size.height; j++) {

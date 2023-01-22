@@ -89,7 +89,7 @@ function installThrone(grid: MutableGrid) {
     }
 }
 
-export function ddGen(spec: DDBoardgenSpec) {
+function generateRandomFloorplan(spec: DDBoardgenSpec) {
     const disallowedBlockSize = {height: 2, width: 2};
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
@@ -158,22 +158,22 @@ function offCenter(loc: Location): Location {
     }
 }
 
-const maxMonster = 5;
-
+// Generate a random selection of monsters for all of the squares marked true in the passed grid.
 export function monsterChoices(g: MutableGrid) {
+    const maxMonster = 5;
     const monsterChoice = new Map<string, number>();
     g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(Math.random() * maxMonster)));
-
-    // console.log(monsterChoice)
     return monsterChoice;
 }
 
+// Generate a board with the specified requirements, ensuring only to return one with a unique solution.
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     console.time('generateDDBoard');
     let ret: DDBoardSpec;
     let restarts = 0;
     do {
-        let board = ddGen(spec);
+        let board = generateRandomFloorplan(spec);
+        restarts += board.restarts;
 
         const {grid, throneLocs} = board;
         // grid.show();
@@ -205,14 +205,11 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             treasure: treasure,
             throneCount: throneLocs.length,
             wallCounts: wallCounts,
-
             restarts: restarts,
         }
 
-        restarts += board.restarts;
     } while (hasMultipleSolutions(ret));
     console.timeEnd('generateDDBoard');
-    // console.log(`restarts: ${restarts}`)
 
     return ret;
 }
