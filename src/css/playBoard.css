@@ -50,7 +50,7 @@
 }
 
 .play-board__count {
-    background-color: #98e7ff;
+    background-color: rgba(165, 42, 42, 0.32);
     font-size: x-large;
     font-weight: bold;
 }
@@ -96,14 +96,17 @@
 
 .block-square--user-floor {
     /*background-color: darkgray;*/
-    background-image: url("../assets/cross-svgrepo-com.svg");
-    background-size: contain;
+    /*background-image: url("../assets/cross-svgrepo-com.svg");*/
+    background-image: url("../assets/largeorangediamond-svgrepo-com.svg");
+    background-size: 30%;
+    background-repeat: no-repeat;
     background-position: center;
     background-color: whitesmoke;
 }
 
 .block-square--user-wall {
     background-color: saddlebrown;
+    background-image: url("../assets/brick-wall-wall-svgrepo-com.svg");
 }
 
 .block-square--user-untouched {
