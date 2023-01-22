@@ -123,6 +123,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'}/>
                 &nbsp;
                 <button onClick={this.newGame}>New Game</button>
+                <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Clear
+                </button>
                 {/*<button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>*/}
                 {/*<button onClick={this.findSolverFlaw}>findSolverFlaw</button>*/}
 

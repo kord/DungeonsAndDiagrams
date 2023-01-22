@@ -51,8 +51,9 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         };
     }
 
-    public reset(size: Size) {
+    public reset(size?: Size) {
         // const {size} = this.props.spec.rules;
+        if (size === undefined) size = this.props.spec.rules.size;
         this.undoStack = [];
         this.setState({
             assignedFloors: new MutableGrid(size, false),

@@ -31,9 +31,9 @@ class UrlReader {
         const width = queryParams.get('w');
         const puzzleString = queryParams.get('p');
         const thrones = queryParams.get('t');
-        if (!height || !width || !puzzleString || !thrones) return undefined;
+        if (!height || !width || !puzzleString) return undefined;
 
-        const t = atob(thrones).split('/').map(locFromStr);
+        const t = thrones === null ? [] : atob(thrones).split('/').map(locFromStr);
         if (t.some(l => !l)) return undefined;
 
         const size = {height: +height, width: +width};
@@ -45,13 +45,13 @@ class UrlReader {
         const wallSequenceString = p.walls.stringEncoding();
         const throneSequenceString = btoa(p.treasure.trueLocs().map(loc2Str).join('/'));
 
-        // const baseURL = 'http://dandd.therestinmotion.com';
-        const baseURL = 'http://localhost:3000/';
+        const baseURL = 'http://dandd.therestinmotion.com';
+        // const baseURL = 'http://localhost:3000/';
         const myUrl = new URL(baseURL);
         myUrl.searchParams.set('h', p.rules.size.height.toString());
         myUrl.searchParams.set('w', p.rules.size.width.toString());
         myUrl.searchParams.set('p', wallSequenceString);
-        myUrl.searchParams.set('t', throneSequenceString);
+        if (throneSequenceString.length > 0) myUrl.searchParams.set('t', throneSequenceString);
 
         return myUrl.toString();
     }
