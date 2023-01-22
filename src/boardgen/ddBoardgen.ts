@@ -173,7 +173,6 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     let restarts = 0;
     do {
         let board = generateRandomFloorplan(spec);
-        restarts += board.restarts;
 
         const {grid, throneLocs} = board;
         // grid.show();
@@ -208,6 +207,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             restarts: restarts,
         }
 
+        restarts += board.restarts;
     } while (hasMultipleSolutions(ret));
     console.timeEnd('generateDDBoard');
 

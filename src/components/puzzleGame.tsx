@@ -129,16 +129,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
                 {/*{this.state.spec ? <a href={UrlReader.urlFromPuzzle(this.state.spec)}>link</a> : <></>}*/}
-                {/*{this.state.solns ? this.state.solns.map(soln =>*/}
-                {/*    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>*/}
-                {/*) : <></>}*/}
 
                 {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}*/}
-
-                {/*{this.state.spec ? <BlockBoardVis2 spec={this.state.spec}/> : <div/>}*/}
-                {/*<br/>*/}
-                {/*{this.state.spec ? <BlockBoardVis spec={this.state.spec}/> : <div/>}*/}
-
 
             </>
         );
