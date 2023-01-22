@@ -25,6 +25,7 @@
     border-left: var(--border-width) solid var(--side-color);
     border-right: var(--border-width) solid var(--side-color);
 
+    margin-left: 10px;
 }
 
 .play-board--completed {
