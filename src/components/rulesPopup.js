@@ -22,13 +22,15 @@ class RulesPopup extends React.Component {
       'Every dead end has a monster in it, every monster is in a dead end.',
       'Treasure chests are in a 3x3 room with only one exit.',
       'Nowhere outside a treasure room is there a 2x2 floor area, the corridors are tight.',
-      'Put all of the walls in the right place to win.',
+      'Rows and columns have the number of walls they contain listed. Put all of the walls in the right place to win.',
       'Mark walls with left click, floors with right click, and press ctrl-z to undo.',
     ];
     return (
       <>
         <button className={'button game-button__rules'} onClick={() => this.customDialog.show()}>Rules</button>
-        <SkyLight dialogStyles={myBigGreenDialog} hideOnOverlayClicked ref={ref => this.customDialog = ref}
+        <SkyLight dialogStyles={myBigGreenDialog}
+                  hideOnOverlayClicked
+                  ref={ref => this.customDialog = ref}
                   title="Dungeons and Diagrams Rules">
           <ul>
             {rulesList.map((r, i) => <li key={i}>{r}</li>)}
