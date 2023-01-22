@@ -76,7 +76,7 @@
 /*}*/
 
 .play-board__count--undersatisfied {
-    color: blue;
+    color: black;
 }
 
 .play-board__count--satisfied {
