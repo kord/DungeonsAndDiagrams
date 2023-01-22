@@ -266,7 +266,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     private setBlockState(loc: Location, newState: BlockState | undefined) {
-        console.log(`setBlockState ${loc2Str(loc)} ${newState}`)
+        // console.log(`setBlockState ${loc2Str(loc)} ${newState}`)
         const assignedWalls = this.state.assignedWalls;
         const assignedFloors = this.state.assignedFloors;
 
