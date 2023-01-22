@@ -11,7 +11,7 @@
 
     --scale: 1.0;
     --default-square-size: 40px;
-    --default-hint-height: 80px;
+    --default-hint-height: 70px;
     --square-size: calc(var(--default-square-size) * var(--scale));
     --hint-height: calc(var(--default-hint-height) * var(--scale));
     --border-width: 10px;
@@ -131,6 +131,10 @@
 
 .block-square--monster4 {
     background-image: url("../assets/demons/monster-svgrepo-com.svg");
+}
+
+.block-square--monster5 {
+    background-image: url("../assets/demons/evil-halloween-hand-svgrepo-com.svg");
 }
 
 .block-square--deadend {

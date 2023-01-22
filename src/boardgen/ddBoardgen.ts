@@ -158,7 +158,7 @@ function offCenter(loc: Location): Location {
     }
 }
 
-const maxMonster = 4;
+const maxMonster = 5;
 
 export function monsterChoices(g: MutableGrid) {
     const monsterChoice = new Map<string, number>();
