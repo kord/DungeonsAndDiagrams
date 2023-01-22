@@ -20,9 +20,10 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     constructor(props: PuzzleGameProps) {
         super(props);
         this.gameRef = React.createRef();
+        const spec = UrlReader.puzzleFromUrl();
         this.state = {
-            spec: UrlReader.puzzleFromUrl(),
-            size: defaultBoardgenRules.size,
+            spec: spec,
+            size: spec?.walls.size || defaultBoardgenRules.size,
             solns: [],
         };
     }
