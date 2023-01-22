@@ -20,10 +20,11 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     constructor(props: PuzzleGameProps) {
         super(props);
         this.gameRef = React.createRef();
-        const spec = UrlReader.puzzleFromUrl();
+        const urlPuzzle = UrlReader.puzzleFromUrl();
         this.state = {
-            spec: spec,
-            size: spec?.walls.size || defaultBoardgenRules.size,
+            spec: urlPuzzle,
+            // size: {width: 5, height:3},
+            size: urlPuzzle?.rules.size || defaultBoardgenRules.size,
             solns: [],
         };
     }
@@ -54,6 +55,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         if (this.gameRef.current) {
             this.gameRef.current.reset(puz.rules.size);
         }
+
+        window.history.pushState({state: 'puzzle!'}, '', UrlReader.urlFromPuzzle(puz));
     }
 
     //
@@ -125,7 +128,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
-                {this.state.spec ? <a href={UrlReader.urlFromPuzzle(this.state.spec)}>link</a> : <></>}
+                {/*{this.state.spec ? <a href={UrlReader.urlFromPuzzle(this.state.spec)}>link</a> : <></>}*/}
                 {/*{this.state.solns ? this.state.solns.map(soln =>*/}
                 {/*    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>*/}
                 {/*) : <></>}*/}

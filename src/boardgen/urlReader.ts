@@ -44,8 +44,8 @@ class UrlReader {
         const wallSequenceString = p.walls.stringEncoding();
         const throneSequenceString = btoa(p.treasure.trueLocs().map(loc2Str).join('/'));
 
-        const baseURL = 'http://dandd.therestinmotion.com';
-        // const baseURL = 'http://localhost:3000/';
+        const baseURL = window.location.href;
+        // console.log(baseURL);
         const myUrl = new URL(baseURL);
         myUrl.searchParams.set('h', p.rules.size.height.toString());
         myUrl.searchParams.set('w', p.rules.size.width.toString());
