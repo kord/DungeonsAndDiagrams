@@ -1,3 +1,5 @@
+import {MutableGrid} from "./mutableGrid";
+
 export type Size = {
     height: number,
     width: number,
@@ -12,4 +14,11 @@ export type Location = {
 export type Linestats = {
     rows: Array<number>,
     cols: Array<number>,
+}
+
+// The minimal presentation of a puzzle solution. Just a record of the wall locations and a redundant
+// specification of where the treasure rooms are located.
+export type SolnRecord = {
+    walls: MutableGrid,
+    treasures: Location[],
 }

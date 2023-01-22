@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
-import {Location, Size} from "../boardgen/types";
+import {Size, SolnRecord} from "../boardgen/types";
 import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
@@ -8,16 +8,9 @@ import UrlReader from "../boardgen/urlReader";
 
 export type PuzzleGameProps = {};
 
-export type SolnRecord = {
-    wallGrid: MutableGrid,
-    thrones: Location[],
-}
-
 type PuzzleGameState = {
     size: Size,
     spec?: DDBoardSpec,
-    wrapX: boolean,
-    wrapY: boolean,
     solns: SolnRecord[],
 };
 
@@ -30,8 +23,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.state = {
             spec: UrlReader.puzzleFromUrl(),
             size: defaultBoardgenRules.size,
-            wrapX: defaultBoardgenRules.wrap.wrapX,
-            wrapY: defaultBoardgenRules.wrap.wrapY,
             solns: [],
         };
     }
@@ -59,7 +50,9 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             }
         });
         this.setState({spec: puz, solns: [],});
-        if (this.gameRef.current) this.gameRef.current.reset(puz.rules.size);
+        if (this.gameRef.current) {
+            this.gameRef.current.reset(puz.rules.size);
+        }
     }
 
     //
@@ -123,7 +116,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'}/>
                 &nbsp;
                 <button onClick={this.newGame}>New Game</button>
-                <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Clear
+                &nbsp;
+                <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Reset
                 </button>
                 {/*<button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>*/}
                 {/*<button onClick={this.findSolverFlaw}>findSolverFlaw</button>*/}

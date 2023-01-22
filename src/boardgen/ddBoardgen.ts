@@ -101,7 +101,7 @@ export function ddGen(spec: DDBoardgenSpec) {
         loopCount++;
         grid = new MutableGrid(spec.size, true);
 
-        // Install thrones
+        // Install treasures
         const {throneSpec} = spec;
 
         throneLocs = [];

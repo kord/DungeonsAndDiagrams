@@ -1,20 +1,19 @@
 import {DDBoardSpec, monsterChoices} from "./ddBoardgen";
 import {MutableGrid} from "./mutableGrid";
-import {SolnRecord} from "../components/puzzleGame";
 import {loc2Str, locFromStr} from "./graphUtils";
-import {Location} from "./types";
+import {Location, SolnRecord} from "./types";
 
 
 function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
-    const floors = s.wallGrid.inverted();
+    const floors = s.walls.inverted();
     return {
-        walls: s.wallGrid,
-        wallCounts: s.wallGrid.profile(true),
-        rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
+        walls: s.walls,
+        wallCounts: s.walls.profile(true),
+        rules: {size: s.walls.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
         deadends: floors.leafGrid(),
         monsterChoices: monsterChoices(floors),
-        treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
-        throneCount: s.thrones.length,
+        treasure: MutableGrid.fromLocs(s.walls.size, s.treasures),
+        throneCount: s.treasures.length,
         floors: floors,
         restarts: 0,
     };
@@ -38,7 +37,7 @@ class UrlReader {
 
         const size = {height: +height, width: +width};
         const ret = MutableGrid.fromString(size, puzzleString);
-        return buildPuzzleSpec({wallGrid: ret, thrones: t as Location[]});
+        return buildPuzzleSpec({walls: ret, treasures: t as Location[]});
     }
 
     static urlFromPuzzle(p: DDBoardSpec): string {
