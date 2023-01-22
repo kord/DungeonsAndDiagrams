@@ -16,6 +16,12 @@ export class MutableGrid {
         this.neighbourFunction = gridNeighbourFunc(size, {wrapX: false, wrapY: false});
     }
 
+    static fromLocs(size: Size, thrones: Location[]): MutableGrid {
+        const ret = new MutableGrid(size, false);
+        thrones.forEach(l => ret.setLoc(l, true));
+        return ret;
+    }
+
     check(loc: Location): boolean {
         console.assert(loc.x >= 0 && loc.y >= 0 && loc.y < this.size.height && loc.x < this.size.width);
         return this.grid[loc.y][loc.x];
@@ -133,7 +139,9 @@ export class MutableGrid {
     }
 
     neighbourCount = (loc: Location) => this.neighbourFunction(loc).filter(n => this.check(n)).length;
+
     isLeaf = (loc: Location) => (this.check(loc) && this.neighbourCount(loc) == 1);
+
     leaves = () => gridLocations(this.size).flat().filter(this.isLeaf);
 
     // Print the grid to
@@ -210,10 +218,38 @@ export class MutableGrid {
         return ret;
     }
 
-    static fromLocs(size: Size, thrones: Location[]): MutableGrid {
+    public static fromString(size: Size, s: string): MutableGrid {
         const ret = new MutableGrid(size, false);
-        thrones.forEach(l => ret.setLoc(l, true));
+        const ss = atob(s);
+        let codep = 0;
+        gridLocations(size).flat().forEach((loc, i) => {
+            if (i % 8 == 0) codep = ss.codePointAt(i / 8)!;
+            const next = codep % 2 == 1;
+            codep = Math.floor(codep / 2);
+            ret.setLoc(loc, next);
+        });
         return ret;
+    }
+
+    stringEncoding(): string {
+        const bitstring = this.grid.map(row => row.map(g => g ? 1 : 0)).flat();
+        const padLength = (8 - (bitstring.length % 8)) % 8;
+        for (let i = 0; i < padLength; i++) bitstring.push(0);
+        const bytelength = bitstring.length / 8;
+        const bytes = [];
+        for (let i = 0; i < bytelength; i++) {
+            bytes.push(bitstring[i * 8] * 1 + bitstring[i * 8 + 1] * 2 + bitstring[i * 8 + 2] * 4 + bitstring[i * 8 + 3] * 8 + bitstring[i * 8 + 4] * 16 + bitstring[i * 8 + 5] * 32 + bitstring[i * 8 + 6] * 64 + bitstring[i * 8 + 7] * 128);
+            // bytes.push(bitstring[i * 8] * 128 + bitstring[i * 8 + 1] * 64 + bitstring[i * 8 + 2] * 32 + bitstring[i * 8 + 3] * 16 + bitstring[i * 8 + 4] * 8 + bitstring[i * 8 + 5] * 4 + bitstring[i * 8 + 6] * 2 + bitstring[i * 8 + 7]);
+        }
+        const s = Uint8Array.from(bytes);
+        let result = "";
+        bytes.forEach((char) => {
+            result += String.fromCharCode(char);
+        });
+
+        let encoded = btoa(result);
+        // console.log(encoded);
+        return encoded;
     }
 }
 

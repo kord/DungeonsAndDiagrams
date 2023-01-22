@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Location, Size} from "../boardgen/types";
-import {DDBoardSpec, generateDDBoard, monsterChoices} from "../boardgen/ddBoardgen";
+import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
+import UrlReader from "../boardgen/urlReader";
 
 export type PuzzleGameProps = {};
 
@@ -20,23 +21,6 @@ type PuzzleGameState = {
     solns: SolnRecord[],
 };
 
-function imaginePuzzleSpec(s: SolnRecord): DDBoardSpec {
-    const anygrid = new MutableGrid(s.wallGrid.size, false);
-    const floors = s.wallGrid.inverted();
-    return {
-        walls: s.wallGrid,
-        wallCounts: s.wallGrid.profile(true),
-        rules: {size: s.wallGrid.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
-        deadends: floors.leafGrid(),
-        monsterChoices: monsterChoices(s.wallGrid),
-        treasure: MutableGrid.fromLocs(s.wallGrid.size, s.thrones),
-        throneCenters: anygrid,
-        throneCount: s.thrones.length,
-        floors: floors,
-        restarts: 0,
-    };
-}
-
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     gameRef: React.RefObject<PlayBoard>;
 
@@ -44,6 +28,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         super(props);
         this.gameRef = React.createRef();
         this.state = {
+            spec: UrlReader.puzzleFromUrl(),
             size: defaultBoardgenRules.size,
             wrapX: defaultBoardgenRules.wrap.wrapX,
             wrapY: defaultBoardgenRules.wrap.wrapY,
@@ -123,12 +108,11 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     }
 
     something = () => {
-        // let grid = ddSolve(this.state.spec) ;
-        // if (grid&& grid.walls.equals(this.state.spec!.walls)) console.log(`Solver found our candidate.`)
-        // else {
-        //     console.warn(`Solver failed.`)
-        // }
-        // if (grid) this.setState({solns: [grid]});
+        const walls = this.state.spec!.walls;
+        const s = walls.stringEncoding();
+        walls.show();
+        MutableGrid.fromString(walls.size, s).show();
+
 
     }
 
@@ -144,6 +128,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
+                {this.state.spec ? <a href={UrlReader.urlFromPuzzle(this.state.spec)}>link</a> : <></>}
                 {/*{this.state.solns ? this.state.solns.map(soln =>*/}
                 {/*    <SolutionDisplayBoard spec={imaginePuzzleSpec(soln)} annotation={'solver'} scale={.6}/>*/}
                 {/*) : <></>}*/}

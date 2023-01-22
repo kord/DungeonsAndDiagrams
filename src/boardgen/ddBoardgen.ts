@@ -20,7 +20,6 @@ export type DDBoardSpec = {
     walls: MutableGrid,
 
     throneCount: number,
-    throneCenters: MutableGrid,
     treasure: MutableGrid,
     deadends: MutableGrid,
     monsterChoices: Map<string, number>,
@@ -164,6 +163,8 @@ const maxMonster = 4;
 export function monsterChoices(g: MutableGrid) {
     const monsterChoice = new Map<string, number>();
     g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(Math.random() * maxMonster)));
+
+    // console.log(monsterChoice)
     return monsterChoice;
 }
 
@@ -201,7 +202,6 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             walls: walls,
             deadends: deadends,
             monsterChoices: monsterChoices(grid),
-            throneCenters: throneCenters,
             treasure: treasure,
             throneCount: throneLocs.length,
             wallCounts: wallCounts,

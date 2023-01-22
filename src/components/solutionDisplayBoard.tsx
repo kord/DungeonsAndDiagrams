@@ -22,11 +22,10 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
     }
 
     blockSquareClassnames = (loc: Location) => {
-        const {floors, deadends, treasure, throneCenters} = this.props.spec;
+        const {floors, deadends, treasure} = this.props.spec;
         const isFloor = floors.check(loc);
         const isLeaf = deadends.check(loc);
         const isTreasure = treasure.check(loc);
-        const isCenter = throneCenters.check(loc);
 
         return classNames({
             'block-square': true,
