@@ -197,6 +197,8 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         if (p) this.setState(p)
     }
 
+    // Set the sort of action the mouse held down over other elements will produce, depending on the status of the
+    // square it is over when the mouse if first pressed.
     private mouseDown(loc: Location): MouseEventHandler<HTMLDivElement> {
         return (e) => {
             let action: MouseAction = {};
