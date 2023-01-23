@@ -7,7 +7,7 @@ from the game [Last Call BBS](https://www.zachtronics.com/last-call-bbs/).
 I dug it so I recreated it for fun.
 
 
-## Features
+## Features 
 
 - Arbitrary sized puzzled on the original scheme.
 - Every produced puzzle has exactly one solution.
