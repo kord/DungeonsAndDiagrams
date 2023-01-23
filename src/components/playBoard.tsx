@@ -8,7 +8,6 @@ import '../css/playBoard.css';
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
-    scale?: number,
 };
 
 type PlayBoardState = {
@@ -268,7 +267,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
-            '--scale': this.props.scale || 1.0,
         } as CSSProperties;
 
         const boardClasses = classNames({

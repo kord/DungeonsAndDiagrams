@@ -23,7 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "react-skylight": "^0.5.1",
+    "reoverlay": "^1.0.3",
+    "sweetalert2": "^11.7.0",
     "typescript": "^4.9.4",
     "web-vitals": "^2.1.4"
   },

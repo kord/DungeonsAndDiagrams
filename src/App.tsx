@@ -1,21 +1,22 @@
 import React from 'react';
-import './App.css';
 import {PuzzleGame} from "./components/puzzleGame";
-import RulesPopup from './components/rulesPopup';
+import {RulesButton} from "./components/rules";
+import './App.css';
 
 function App() {
 
     return (
         <div className="App">
             <header className="App-header">
-                <p>
+                <h1>
                     Dungeons and Diagrams
-                </p>
+                </h1>
 
             </header>
 
             <div>
-                <RulesPopup/>
+                <RulesButton/>
+                <br/>
                 <PuzzleGame/>
             </div>
 
