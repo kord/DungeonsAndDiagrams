@@ -3,7 +3,20 @@
 This is an original puzzle by [Zachtronics](https://en.wikipedia.org/wiki/Zachtronics)
 from the game [Last Call BBS](https://www.zachtronics.com/last-call-bbs/).
 I dug it so I recreated it for fun.
-                      
+
+## Features
+
+- Arbitrary sized puzzled on the original scheme.
+- Every produced puzzle has exactly one solution.
+- Individual puzzles shareable by url.
+- Pleasing wall/floor marking in the style of the original.
+- Infinte undo. 
+- Single-page static site with all of the computing done in your browser.
+
+## Non-features
+
+- Bad graphic design.
+- Couldn't figure out a good way to build it for touchscreens. Use a mouse.
                       
 ## Links
 
