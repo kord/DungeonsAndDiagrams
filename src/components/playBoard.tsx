@@ -203,7 +203,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             const initialButtons = e.buttons;
             const initialBlockState = this.blockState(loc);
 
-            console.log(`Mousedown inner buttons ${e.buttons}`)
+            // console.log(`Mousedown inner buttons ${e.buttons}`)
 
             if (initialButtons === 1) {
                 // Left click
