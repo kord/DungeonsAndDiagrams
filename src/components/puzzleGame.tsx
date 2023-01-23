@@ -56,6 +56,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             this.gameRef.current.reset(puz.rules.size);
         }
 
+        // TODO: Get some better behaviour on this.
         window.history.pushState({state: 'puzzle!'}, '', UrlReader.urlFromPuzzle(puz));
     }
 

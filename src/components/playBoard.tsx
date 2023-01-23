@@ -94,103 +94,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         document.removeEventListener('keypress', this.keyPress);
     }
 
-    // Whether the player should ba allowed to change the appearance of a square in any way while playing.
-    isImmutable(loc: Location) {
-        const {deadends, treasure} = this.props.spec;
-        return deadends.check(loc) || treasure.check(loc);
-    }
-
-    blockState(loc: Location): BlockState {
-        if (this.isImmutable(loc)) return 'immutable';
-        if (this.state.assignedWalls.check(loc)) return 'user-wall';
-        if (this.state.assignedFloors.check(loc)) return 'user-floor';
-        return "user-untouched";
-    }
-
-    blockSquareClassnames = (loc: Location) => {
-        const {assignedWalls, assignedFloors} = this.state;
-        const isUserFloor = assignedFloors.check(loc);
-        const isUserWall = assignedWalls.check(loc);
-
-        const {floors, deadends, treasure, monsterChoices} = this.props.spec;
-        const isDeadend = deadends.check(loc);
-        const isTreasure = treasure.check(loc);
-        const isImmutable = this.isImmutable(loc);
-        const monstername = `block-square--monster${monsterChoices.get(loc2Str(loc))}`;
-
-        return classNames({
-            'block-square': true,
-            'block-square--user-wall': isUserWall,
-            'block-square--user-floor': isUserFloor,
-            'block-square--user-untouched': !isImmutable && !isUserFloor && !isUserWall,
-            'block-square--immutable': isImmutable,
-            'block-square--deadend': isDeadend,
-            [monstername]: isDeadend,
-            'block-square--treasure': isTreasure,
-        });
-    }
-
-    counterClasses(orientation: string, required: number, current: number) {
-        let fig: Record<string, boolean> = {};
-        fig[`play-board__count`] = true;
-        fig[`play-board__count--${orientation}`] = true;
-        fig[`play-board__count--undersatisfied`] = current < required;
-        fig[`play-board__count--satisfied`] = current === required;
-        fig[`play-board__count--oversatisfied`] = current > required;
-        return classNames(fig);
-    }
-
-    render() {
-        const {size, throneSpec} = this.props.spec.rules;
-        const st = {
-            '--board-height': size.height,
-            '--board-width': size.width,
-            '--scale': this.props.scale || 1.0,
-        } as CSSProperties;
-
-        const boardClasses = classNames({
-            'play-board': true,
-            'play-board--completed': this.state.assignedWalls.equals(this.props.spec.walls),
-            'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
-        });
-
-
-        const solutionWalls = this.props.spec.wallCounts;
-        const userWalls = this.state.assignedWalls.profile(true);
-
-        return (<>
-
-                <div className={boardClasses} style={st} key={'itstheboard'}>
-                    <div className={'play-board__grid'} key={'itsthegrid'}>
-                        {this.columnHints(userWalls)}
-                        {gridLocations(size).map((row, j) => {
-                            return <>
-                                <div className={this.counterClasses('row', solutionWalls.rows[j], userWalls.rows[j])}
-                                     key={`rowhint${j}`}>
-                                    {solutionWalls.rows[j]}
-                                    {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
-                                </div>
-                                {row.map(loc =>
-                                    <div className={this.blockSquareClassnames(loc)}
-                                         key={loc2Str(loc)}
-                                         onMouseDown={this.mouseDown(loc)}
-                                         onMouseEnter={(e) => {
-                                             if (e.buttons === this.mouseBehaviour?.initialButtons)
-                                                 this.performBehaviour(loc);
-                                         }}
-                                    >
-                                    </div>
-                                )}
-                                </>;
-                            }
-                        )}
-                    </div>
-                </div>
-                <br/>
-            </>
-        );
-    }
-
     private attemptUndo() {
         const p = this.undoStack.pop();
         console.log(`undo`)
@@ -306,6 +209,103 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 </div>)}
 
         </>
+    }
+
+    // Whether the player should ba allowed to change the appearance of a square in any way while playing.
+    isImmutable(loc: Location) {
+        const {deadends, treasure} = this.props.spec;
+        return deadends.check(loc) || treasure.check(loc);
+    }
+
+    blockState(loc: Location): BlockState {
+        if (this.isImmutable(loc)) return 'immutable';
+        if (this.state.assignedWalls.check(loc)) return 'user-wall';
+        if (this.state.assignedFloors.check(loc)) return 'user-floor';
+        return "user-untouched";
+    }
+
+    blockSquareClassnames = (loc: Location) => {
+        const {assignedWalls, assignedFloors} = this.state;
+        const isUserFloor = assignedFloors.check(loc);
+        const isUserWall = assignedWalls.check(loc);
+
+        const {floors, deadends, treasure, monsterChoices} = this.props.spec;
+        const isDeadend = deadends.check(loc);
+        const isTreasure = treasure.check(loc);
+        const isImmutable = this.isImmutable(loc);
+        const monstername = `block-square--monster${monsterChoices.get(loc2Str(loc))}`;
+
+        return classNames({
+            'block-square': true,
+            'block-square--user-wall': isUserWall,
+            'block-square--user-floor': isUserFloor,
+            'block-square--user-untouched': !isImmutable && !isUserFloor && !isUserWall,
+            'block-square--immutable': isImmutable,
+            'block-square--deadend': isDeadend,
+            [monstername]: isDeadend,
+            'block-square--treasure': isTreasure,
+        });
+    }
+
+    counterClasses(orientation: string, required: number, current: number) {
+        let fig: Record<string, boolean> = {};
+        fig[`play-board__count`] = true;
+        fig[`play-board__count--${orientation}`] = true;
+        fig[`play-board__count--undersatisfied`] = current < required;
+        fig[`play-board__count--satisfied`] = current === required;
+        fig[`play-board__count--oversatisfied`] = current > required;
+        return classNames(fig);
+    }
+
+    render() {
+        const {size, throneSpec} = this.props.spec.rules;
+        const st = {
+            '--board-height': size.height,
+            '--board-width': size.width,
+            '--scale': this.props.scale || 1.0,
+        } as CSSProperties;
+
+        const boardClasses = classNames({
+            'play-board': true,
+            'play-board--completed': this.state.assignedWalls.equals(this.props.spec.walls),
+            'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
+        });
+
+
+        const solutionWalls = this.props.spec.wallCounts;
+        const userWalls = this.state.assignedWalls.profile(true);
+
+        return (<>
+
+                <div className={boardClasses} style={st} key={'itstheboard'}>
+                    <div className={'play-board__grid'} key={'itsthegrid'}>
+                        {this.columnHints(userWalls)}
+                        {gridLocations(size).map((row, j) => {
+                            return <>
+                                <div className={this.counterClasses('row', solutionWalls.rows[j], userWalls.rows[j])}
+                                     key={`rowhint${j}`}>
+                                    {solutionWalls.rows[j]}
+                                    {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                                </div>
+                                {row.map(loc =>
+                                    <div className={this.blockSquareClassnames(loc)}
+                                         key={loc2Str(loc)}
+                                         onMouseDown={this.mouseDown(loc)}
+                                         onMouseEnter={(e) => {
+                                             if (e.buttons === this.mouseBehaviour?.initialButtons)
+                                                 this.performBehaviour(loc);
+                                         }}
+                                    >
+                                    </div>
+                                )}
+                                </>;
+                            }
+                        )}
+                    </div>
+                </div>
+                <br/>
+            </>
+        );
     }
 
 
