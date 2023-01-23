@@ -1,8 +1,11 @@
 # Dungeons and Diagrams
 
+[Web link](https://dandd.therestinmotion.com/)
+
 This is an original puzzle by [Zachtronics](https://en.wikipedia.org/wiki/Zachtronics)
 from the game [Last Call BBS](https://www.zachtronics.com/last-call-bbs/).
 I dug it so I recreated it for fun.
+
 
 ## Features
 
@@ -17,6 +20,7 @@ I dug it so I recreated it for fun.
 
 - Bad graphic design.
 - Couldn't figure out a good way to build it for touchscreens. Use a mouse.
+- Rules can be opaque for first-timers.
                       
 ## Links
 
