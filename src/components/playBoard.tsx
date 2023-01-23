@@ -33,7 +33,7 @@ type MouseAction = {
 export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     // canvasRef: React.RefObject<HTMLCanvasElement>;
     undoStack: PlayBoardState[];
-    stateBeforeClick: PlayBoardState;
+    stateBeforeClick?: PlayBoardState;
     mouseBehaviour?: MouseBehaviour;
 
     constructor(props: PlayBoardProps) {
@@ -41,10 +41,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         this.undoStack = [];
         // this.canvasRef = React.createRef();
         const size = props.spec.rules.size;
-        this.stateBeforeClick = {
-            assignedWalls: new MutableGrid(size, false),
-            assignedFloors: new MutableGrid(size, false),
-        }
         this.state = {
             assignedWalls: new MutableGrid(size, false),
             assignedFloors: new MutableGrid(size, false),
@@ -62,21 +58,28 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     mouseUpGlobal = (e: MouseEvent) => {
+        // console.log('mouseUpGlobal fired');
+        if (!this.stateBeforeClick) return;
         if (!this.stateBeforeClick.assignedFloors.equals(this.state.assignedFloors) ||
             !this.stateBeforeClick.assignedWalls.equals(this.state.assignedWalls)) {
             this.undoStack.push(this.stateBeforeClick);
         }
         this.mouseBehaviour = undefined;
+        this.stateBeforeClick = undefined;
     }
 
+    // Disable default right click behaviour.
     onContextMenu = (e: MouseEvent) => e.preventDefault();
 
+    // Capture Crtl-z for undo and R for reset.
     keyPress = (e: KeyboardEvent) => {
         // console.log(`keypress ${e.key} code ${e.code}`);
 
         // You can't undo while clicking stuff. That's just weird.
         if (this.mouseBehaviour) return;
+        // console.log(e.code);
         if (e.code === 'KeyZ' && e.ctrlKey) this.attemptUndo();
+        if (e.code === 'KeyR') this.reset();
     }
 
     componentDidMount(): void {
@@ -96,7 +99,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
     private attemptUndo() {
         const p = this.undoStack.pop();
-        console.log(`undo`)
+        console.log(`undo`);
         if (p) this.setState(p)
     }
 
@@ -104,6 +107,9 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     // square it is over when the mouse if first pressed.
     private mouseDown(loc: Location): MouseEventHandler<HTMLDivElement> {
         return (e) => {
+            // 2nd click does nothing.
+            if (this.stateBeforeClick) return;
+
             let action: MouseAction = {};
             const initialButtons = e.buttons;
             const initialBlockState = this.blockState(loc);
