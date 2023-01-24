@@ -9,12 +9,12 @@ I dug it so I recreated it for fun.
 
 ## Features 
 
-- Arbitrary sized puzzled on the original scheme.
-- Every produced puzzle has exactly one solution.
-- Individual puzzles shareable by url.
+- Arbitrarily sized puzzles on the original scheme.
+- Every generated puzzle has exactly one solution.
+- Individual puzzles shareable by URL.
 - Pleasing wall/floor marking in the style of the original.
-- Infinte undo. 
-- Single-page static site with all of the computing done in your browser.
+- Infinite undo. 
+- Static single-page site with all of the computing done in your browser.
 
 ## Non-features
 
@@ -30,3 +30,4 @@ I dug it so I recreated it for fun.
 - [This guy made one](https://www.lexaloffle.com/bbs/?tid=48966)
 - [This guy also made one](https://github.com/dungeon-diagrams/dungeon-diagrams.github.io)
 - [Same](https://github.com/CR-S01/Dungeons-Diagrams/tree/main)
+- [Same](https://github.com/halfburnttoast/Dungeon-Cross)
