@@ -5,6 +5,7 @@ import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
 import UrlReader from "../boardgen/urlReader";
+import {RulesButton} from "./rules";
 
 export type PuzzleGameProps = {};
 
@@ -23,7 +24,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         const urlPuzzle = UrlReader.puzzleFromUrl();
         this.state = {
             spec: urlPuzzle,
-            // size: {width: 5, height:3},
             size: urlPuzzle?.rules.size || defaultBoardgenRules.size,
             solns: [],
         };
@@ -60,51 +60,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         window.history.pushState({state: 'puzzle!'}, '', UrlReader.urlFromPuzzle(puz));
     }
 
-    //
-    // regen = () => this.setState({
-    //     spec: generateBoard({
-    //         size: this.state.size,
-    //         wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
-    //         boardStyle: this.state.block ? 'block' : 'thin edges',
-    //         no2x2: this.state.no2x2,
-    //         uniqueDiameter: this.state.uniqueDiameter,
-    //         singleConnectedComponent: true,
-    //     })
-    // });
-
-    // regen = () => this.setState({
-    //     spec: generateBoard({
-    //         size: this.state.size,
-    //         wrap: {wrapX: this.state.wrapX, wrapY: this.state.wrapY},
-    //         style: 'blank',
-    //     })
-    // });
-
-    findSolverFlaw = () => {
-        // const maxTries = 200;
-        //
-        // let tries = 0;
-        //
-        // const spec = {
-        //     size: this.state.size,
-        //     throneSpec: {
-        //         attemptFirst: .8,
-        //         attemptSubsequent: 0.9,
-        //     }
-        // } as DDBoardgenSpec;
-        // let puz = generateDDBoard(spec);
-        //
-        // let slns = ddSolve(puz);
-        //
-        // while (slns.length == 1 && tries++ < maxTries) {
-        //     puz = generateDDBoard(spec);
-        //     slns = ddSolve(puz)!;
-        // }
-        //
-        // if (slns.length > 0) this.setState({solns: slns, spec: puz});
-        // console.warn(`Took ${tries} tries to get a failure.`)
-    }
-
     something = () => {
         const walls = this.state.spec!.walls;
         const s = walls.stringEncoding();
@@ -116,22 +71,23 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'}/>
+                Size&nbsp;
+                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'} key={'width'}/>
                 &nbsp;
-                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'}/>
+                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'}/>
                 &nbsp;
-                <button onClick={this.newGame}>New Game</button>
+                <button onClick={this.newGame} key={'new'}>New Game</button>
+                &nbsp;
+                <RulesButton/>
+                <br/>
+                <button onClick={e => this.gameRef.current!.attemptUndo()}
+                        disabled={this.state.spec === undefined}>Undo
+                </button>
                 &nbsp;
                 <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Reset
                 </button>
-                {/*<button onClick={this.something} disabled={this.state.spec === undefined}>Do Something</button>*/}
-                {/*<button onClick={this.findSolverFlaw}>findSolverFlaw</button>*/}
-
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
-                {/*{this.state.spec ? <a href={UrlReader.urlFromPuzzle(this.state.spec)}>link</a> : <></>}*/}
-
-                {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/> : <></>}*/}
 
             </>
         );

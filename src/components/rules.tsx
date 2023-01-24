@@ -9,7 +9,7 @@ const rulesList = [
     'Every dead end has a monster in it, every monster is in a dead end.',
     `Treasure chests are in a 3x3 room with only one exit. They can be located in any of the room's 9 floor spaces`,
     'Nowhere outside a treasure room is there a 2x2 floor area, the corridors are tight.',
-    `Mark walls with left click, floors with right click, and press ctrl-z to undo. Sorry if you're on a touch device.`,
+    `Mark walls with left click, floors with right click, and press Z to undo. Sorry if you're on a touch device.`,
 ];
 
 

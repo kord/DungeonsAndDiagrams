@@ -70,14 +70,12 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     // Disable default right click behaviour.
     onContextMenu = (e: MouseEvent) => e.preventDefault();
 
-    // Capture Crtl-z for undo and R for reset.
+    // Capture Z for undo and R for reset.
     keyPress = (e: KeyboardEvent) => {
-        // console.log(`keypress ${e.key} code ${e.code}`);
-
         // You can't undo while clicking stuff. That's just weird.
         if (this.mouseBehaviour) return;
         // console.log(e.code);
-        if (e.code === 'KeyZ' && e.ctrlKey) this.attemptUndo();
+        if (e.code === 'KeyZ') this.attemptUndo();
         if (e.code === 'KeyR') this.reset();
     }
 
@@ -96,7 +94,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         document.removeEventListener('keypress', this.keyPress);
     }
 
-    private attemptUndo() {
+    public attemptUndo() {
         const p = this.undoStack.pop();
         console.log(`undo`);
         if (p) this.setState(p)

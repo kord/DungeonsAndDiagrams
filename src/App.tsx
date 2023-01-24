@@ -1,6 +1,5 @@
 import React from 'react';
 import {PuzzleGame} from "./components/puzzleGame";
-import {RulesButton} from "./components/rules";
 import './App.css';
 
 function App() {
@@ -15,8 +14,6 @@ function App() {
             </header>
 
             <div>
-                <RulesButton/>
-                <br/>
                 <PuzzleGame/>
             </div>
 
