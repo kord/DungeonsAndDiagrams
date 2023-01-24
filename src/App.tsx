@@ -1,6 +1,6 @@
 import React from 'react';
 import {PuzzleGame} from "./components/puzzleGame";
-import './App.css';
+import './css/App.css';
 
 function App() {
 
@@ -10,9 +10,7 @@ function App() {
                 <h1>
                     Dungeons and Diagrams
                 </h1>
-
             </header>
-
             <div>
                 <PuzzleGame/>
             </div>
