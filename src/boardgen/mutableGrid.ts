@@ -13,7 +13,7 @@ export class MutableGrid {
         this.grid = constantGrid(size, initialValue);
         this.lastSafe = constantGrid(size, initialValue);
         this.currentlySafe = true;
-        this.neighbourFunction = gridNeighbourFunc(size, {wrapX: false, wrapY: false});
+        this.neighbourFunction = gridNeighbourFunc(size);
     }
 
     static fromLocs(size: Size, thrones: Location[]): MutableGrid {

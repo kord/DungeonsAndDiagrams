@@ -1,5 +1,4 @@
 import {Location, Size} from "./types";
-import {WrapRules} from "./boardgen";
 import Graph from "graphology";
 
 export function loc2Str(loc: Location) {
@@ -30,8 +29,7 @@ export function gridLocations(size: Size, rootLoc: Location = {x: 0, y: 0}): Loc
     return ret;
 }
 
-export let gridNeighbourFunc = (size: Size, wrapRules: WrapRules) => {
-    const {wrapX, wrapY} = wrapRules;
+export let gridNeighbourFunc = (size: Size) => {
     return (loc: Location) => {
         let candidates =
             [
@@ -40,8 +38,6 @@ export let gridNeighbourFunc = (size: Size, wrapRules: WrapRules) => {
                 {x: loc.x + 1, y: loc.y},
                 {x: loc.x - 1, y: loc.y}
             ];
-        if (wrapX) candidates = candidates.map(loc => ({x: loc.x % size.width, y: loc.y}))
-        if (wrapY) candidates = candidates.map(loc => ({x: loc.x, y: loc.y % size.height}))
         return candidates.filter(
             (loc: Location) => loc.x >= 0 && loc.y >= 0 && loc.x < size.width && loc.y < size.height);
     }

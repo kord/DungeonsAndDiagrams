@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {defaultBoardgenRules} from "../boardgen/boardgen";
 import {Size, SolnRecord} from "../boardgen/types";
 import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
@@ -24,7 +23,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         const urlPuzzle = UrlReader.puzzleFromUrl();
         this.state = {
             spec: urlPuzzle,
-            size: urlPuzzle?.rules.size || defaultBoardgenRules.size,
+            size: urlPuzzle?.rules.size || {height: 8, width: 8},
             solns: [],
         };
     }
