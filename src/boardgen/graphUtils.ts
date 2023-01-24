@@ -1,5 +1,4 @@
 import {Location, Size} from "./types";
-import Graph from "graphology";
 
 export function loc2Str(loc: Location) {
     return `${loc.x},${loc.y}`;
@@ -59,24 +58,4 @@ export function shuffle(array: Array<any>) {
     }
 
     return array;
-}
-
-// Remove all but the first node from the nodes list, shifting all of the edges from the removed nodes onto that
-// first one, who is now something like a representative of the group.
-export function consolidateNodes(g: Graph, nodes: string[]) {
-    if (nodes.length == 0) {
-        console.error('consolidateNodes called without any nodes to contract.');
-        return;
-    }
-    const representative = nodes[0];
-    const neighbours = new Set<string>();
-    // Get all of the edges from everybody.
-    nodes.forEach(n => g.neighbors(n).forEach(neigh => neighbours.add(neigh)));
-    // Forget about the guys we're messing with from the neighbours list.
-    nodes.forEach(n => neighbours.delete(n));
-    nodes.forEach(n => g.dropNode(n));
-
-    g.addNode(representative);
-    neighbours.forEach(n => g.addEdge(representative, n));
-    return representative;
 }
