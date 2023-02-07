@@ -29,6 +29,11 @@ type MouseAction = {
     userfloor?: BlockState,
 }
 
+type OverFlowCounter = {
+    rows: Set<number>;
+    cols: Set<number>;
+}
+
 export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     // canvasRef: React.RefObject<HTMLCanvasElement>;
     undoStack: PlayBoardState[];
@@ -227,7 +232,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         return "user-untouched";
     }
 
-    blockSquareClassnames = (loc: Location) => {
+    blockSquareClassnames = (loc: Location, overflows: OverFlowCounter) => {
         const {assignedWalls, assignedFloors} = this.state;
         const isUserFloor = assignedFloors.check(loc);
         const isUserWall = assignedWalls.check(loc);
@@ -237,6 +242,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const isTreasure = treasure.check(loc);
         const isImmutable = this.isImmutable(loc);
         const monstername = `block-square--monster${monsterChoices.get(loc2Str(loc))}`;
+        const isOverflow = overflows.cols.has(loc.x) || overflows.rows.has(loc.y)
 
         return classNames({
             'block-square': true,
@@ -245,6 +251,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             'block-square--user-untouched': !isImmutable && !isUserFloor && !isUserWall,
             'block-square--immutable': isImmutable,
             'block-square--deadend': isDeadend,
+            'block-square--overflow': isOverflow,
             [monstername]: isDeadend,
             'block-square--treasure': isTreasure,
         });
@@ -273,9 +280,15 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
         });
 
-
         const solutionWalls = this.props.spec.wallCounts;
         const userWalls = this.state.assignedWalls.profile(true);
+
+        // Just a single pass to figure out which rows/cols are overfilled.
+        const rows = new Set<number>();
+        const cols = new Set<number>();
+        for (let i = 0; i < size.height; i++) if (userWalls.rows[i] > solutionWalls.rows[i]) rows.add(i);
+        for (let j = 0; j < size.width; j++) if (userWalls.cols[j] > solutionWalls.cols[j]) cols.add(j);
+        const overflowCounts: OverFlowCounter = {cols: cols, rows: rows};
 
         return (<>
 
@@ -283,23 +296,23 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                     <div className={'play-board__grid'} key={'itsthegrid'}>
                         {this.columnHints(userWalls)}
                         {gridLocations(size).map((row, j) => {
-                            return <>
-                                <div className={this.counterClasses('row', solutionWalls.rows[j], userWalls.rows[j])}
-                                     key={`rowhint${j}`}>
-                                    {solutionWalls.rows[j]}
-                                    {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
-                                </div>
-                                {row.map(loc =>
-                                    <div className={this.blockSquareClassnames(loc)}
-                                         key={loc2Str(loc)}
-                                         onMouseDown={this.mouseDown(loc)}
-                                         onMouseEnter={(e) => {
-                                             if (e.buttons === this.mouseBehaviour?.initialButtons)
-                                                 this.performBehaviour(loc);
-                                         }}
-                                    >
+                                return <>
+                                    <div className={this.counterClasses('row', solutionWalls.rows[j], userWalls.rows[j])}
+                                         key={`rowhint${j}`}>
+                                        {solutionWalls.rows[j]}
+                                        {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
                                     </div>
-                                )}
+                                    {row.map(loc =>
+                                        <div className={this.blockSquareClassnames(loc, overflowCounts)}
+                                             key={loc2Str(loc)}
+                                             onMouseDown={this.mouseDown(loc)}
+                                             onMouseEnter={(e) => {
+                                                 if (e.buttons === this.mouseBehaviour?.initialButtons)
+                                                     this.performBehaviour(loc);
+                                             }}
+                                        >
+                                        </div>
+                                    )}
                                 </>;
                             }
                         )}

@@ -87,6 +87,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 </button>
 
                 {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
+                {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/>  : <></>}*/}
 
             </>
         );

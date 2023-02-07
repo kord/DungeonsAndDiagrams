@@ -112,6 +112,12 @@
     background-image: url("../assets/brick-wall-wall-svgrepo-com.svg");
 }
 
+/* To darken the block where we've put too many in its row or column. */
+.block-square--user-wall.block-square--overflow {
+    background-blend-mode: color;
+
+}
+
 .block-square--user-untouched {
     background-color: whitesmoke;
 }
