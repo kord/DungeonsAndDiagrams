@@ -160,7 +160,7 @@ function offCenter(loc: Location): Location {
 
 // Generate a random selection of monsters for all of the squares marked true in the passed grid.
 export function monsterChoices(g: MutableGrid) {
-    const maxMonster = 5;
+    const maxMonster = 16;
     const monsterChoice = new Map<string, number>();
     g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(Math.random() * maxMonster)));
     return monsterChoice;

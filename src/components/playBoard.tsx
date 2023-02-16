@@ -5,6 +5,7 @@ import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "../boardgen/mutableGrid";
 import '../css/playBoard.css';
+import '../css/monsters.css';
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,

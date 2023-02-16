@@ -10,7 +10,7 @@
     --top-bottom-color: black;
 
     --scale: 1.0;
-    --default-square-size: 40px;
+    --default-square-size: 50px;
     --default-hint-height: 70px;
     --square-size: calc(var(--default-square-size) * var(--scale));
     --hint-height: calc(var(--default-hint-height) * var(--scale));
@@ -124,26 +124,6 @@
 
 .block-square--immutable {
     background-color: white;
-}
-
-.block-square--monster1 {
-    background-image: url("../assets/demons/character-evil-halloween-horror-monster-svgrepo-com.svg");
-}
-
-.block-square--monster2 {
-    background-image: url("../assets/demons/mummy-svgrepo-com.svg");
-}
-
-.block-square--monster3 {
-    background-image: url("../assets/demons/frankenstein-svgrepo-com.svg");
-}
-
-.block-square--monster4 {
-    background-image: url("../assets/demons/monster-svgrepo-com.svg");
-}
-
-.block-square--monster5 {
-    background-image: url("../assets/demons/evil-halloween-hand-svgrepo-com.svg");
 }
 
 .block-square--deadend {

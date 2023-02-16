@@ -1,0 +1,68 @@
+.block-square--deadend {
+    background-repeat: no-repeat;
+}
+
+/* When messing around here, you also have to redefine maxMonster in ddBoardgen.ts */
+.block-square--monster1 {
+    background-image: url("../assets/demons/character-evil-halloween-horror-monster-svgrepo-com.svg");
+}
+
+.block-square--monster2 {
+    background-image: url("../assets/demons/mummy-svgrepo-com.svg");
+}
+
+.block-square--monster3 {
+    background-image: url("../assets/demons/frankenstein-svgrepo-com.svg");
+}
+
+.block-square--monster4 {
+    background-image: url("../assets/demons/monster-svgrepo-com.svg");
+}
+
+.block-square--monster5 {
+    background-image: url("../assets/demons/evil-halloween-hand-svgrepo-com.svg");
+}
+
+.block-square--monster6 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.29.29 - goblin with an axe pixel art edit.png");
+}
+
+.block-square--monster7 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.29.39 - goblin with an axe pixel art edit.png");
+}
+
+.block-square--monster8 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.29.53 - goblin with an axe pixel art edit.png");
+}
+
+.block-square--monster9 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.30.47 - skeleton with a sword pixel art edit.png");
+}
+
+.block-square--monster10 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.32.01 - goblin covered in blood pixel art white background edit.png");
+}
+
+.block-square--monster11 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.33.08 - spooky threatening ghost pixel art white background edit.png");
+}
+
+.block-square--monster12 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.34.02 - violent horned demon pixel art white background edit.png");
+}
+
+.block-square--monster13 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 09.37.04 - angry devil pixel art white background edit.png");
+}
+
+.block-square--monster14 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 10.38.03 - minotaur pixel art white background edit.png");
+}
+
+.block-square--monster15 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 10.42.09 - angry zombie pixel art white background.png");
+}
+
+.block-square--monster16 {
+    background-image: url("../assets/dalle/DALL·E 2023-02-16 10.42.22 - angry zombie pixel art white background edit.png");
+}
