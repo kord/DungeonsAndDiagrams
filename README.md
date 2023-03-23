@@ -21,6 +21,21 @@ I dug it so I recreated it for fun.
 - Bad graphic design.
 - Couldn't figure out a good way to build it for touchscreens. Use a mouse.
 - Rules can be opaque for first-timers.
+                  
+## Some Puzzles
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=15&p=IgoUhYkCGeylEIiJRURi&t=NiwwLzEyLDEvMiw2LzksNw%3D%3D)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=BEDuKiCobqCSAqmVBhA%3D&t=MTEsMi80LDMvOCwz)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=PL6IIWKIBjR8YKEdwBA%3D&t=NywxLzExLDIvMiwzLzEyLDY%3D)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=ADh2gRy8GCA%2BCoFeHAA%3D&t=MiwyLzEyLDIvOCw1LzIsNi8xMiw3)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=AQCrIWJo4qKIKCp6cEA%3D&t=MTMsMC8yLDQvOCw1)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=cQEBdy8iiggiImZvAEA%3D&t=MTIsMi82LDMvMSw0)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=AJF1JBBlXRyE0CSCiRU%3D&t=MTEsMi80LDU%3D)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=IIKPKqKAQyKO56g1Aog%3D&t=OCwyLzIsMy8xMiw3)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=iAEOhy86ioiCIhcWMPA%3D&t=MiwwLzEwLDQvNSw1)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=CGDZgxUJRNyBgCsiiig%3D&t=MTEsMi80LDUvNyw3)
+ [15x7](https://dandd.therestinmotion.com/?h=7&w=15&p=QYAoWhTtcYyCQF2AIAA%3D&t=MywwLzksMS8wLDQvMTIsNA%3D%3D)
+ [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=CGDZgxUJRNyBgCsiiig%3D&t=MTEsMi80LDUvNyw3)
+
                       
 ## Links
 
