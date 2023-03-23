@@ -207,19 +207,19 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     rangeReport(orientation: 'row' | 'col', order: number) {
-        let wallCounts, userWalls, userFloors, size, treasureCounts, deadEndCounts;
+        let requiredWalls, userWalls, userFloors, size, treasureCounts, deadEndCounts;
         if (orientation === 'row') {
-            wallCounts = this.props.spec.wallCounts.rows;
+            requiredWalls = this.props.spec.wallCounts.rows;
+            size = this.props.spec.rules.size.width;
             userWalls = this.state.assignedWalls.profile(true).rows;
             userFloors = this.state.assignedFloors.profile(true).rows;
-            size = this.props.spec.rules.size.height;
             treasureCounts = this.props.spec.treasure.profile(true).rows;
             deadEndCounts = this.props.spec.deadends.profile(true).rows;
         } else if (orientation === 'col') {
-            wallCounts = this.props.spec.wallCounts.cols;
+            requiredWalls = this.props.spec.wallCounts.cols;
+            size = this.props.spec.rules.size.height;
             userWalls = this.state.assignedWalls.profile(true).cols;
             userFloors = this.state.assignedFloors.profile(true).cols;
-            size = this.props.spec.rules.size.width;
             treasureCounts = this.props.spec.treasure.profile(true).cols;
             deadEndCounts = this.props.spec.deadends.profile(true).cols;
         } else throw new Error(`Shouldn't happen ever`);
@@ -228,7 +228,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             order: order,
             orientation: orientation,
             size: size,
-            required: wallCounts[order],
+            required: requiredWalls[order],
             userWallCount: userWalls[order],
             userFloorCount: userFloors[order],
             deadEndCount: deadEndCounts[order],
@@ -277,13 +277,16 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     counterClasses(orientation: 'row' | 'col', order: number) {
         const report = this.rangeReport(orientation, order);
         const symbolCount = report.treasureCount + report.deadEndCount;
+
+        console.log(report)
+
         return classNames({
             'play-board__count': true,
             [`play-board__count--${orientation}`]: true,
             'play-board__count--undersatisfied': report.userWallCount < report.required,
             'play-board__count--satisfied': report.userWallCount === report.required,
             'play-board__count--oversatisfied': report.userWallCount > report.required,
-            'play-board__count--floor-saturated': report.userFloorCount + symbolCount === report.size - report.required,
+            'play-board__count--floor-saturated': report.userFloorCount + symbolCount + report.required === report.size,
         });
     }
 
