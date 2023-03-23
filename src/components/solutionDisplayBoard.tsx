@@ -53,18 +53,18 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
                     <div className={'simple-grid-board__grid'} key={'simple-grid-board__grid'}>
                         {this.columnHints()}
                         {gridLocations(size).map((row, i) => {
-                            const wallCounts = this.props.spec.wallCounts;
-                            return <>
-                                <div className={this.counterClasses('row', wallCounts.rows[i], 0)}
-                                     key={`rowhint${i}`}>
-                                    {wallCounts.rows[i]}
-                                </div>
-                                {row.map(loc =>
-                                    <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
-                                        {}
+                                const wallCounts = this.props.spec.wallCounts;
+                                return <>
+                                    <div className={this.counterClasses('row', wallCounts.rows[i], 0)}
+                                         key={`rowhint${i}`}>
+                                        {wallCounts.rows[i]}
                                     </div>
-                                )}
-                            </>;
+                                    {row.map(loc =>
+                                        <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
+                                            {}
+                                        </div>
+                                    )}
+                                </>;
                             }
                         )}
                     </div>
@@ -75,18 +75,21 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
     }
 
     counterClasses(orientation: string, required: number, current: number) {
-        let fig: Record<string, boolean> = {};
-        fig[`simple-grid-board__count`] = true;
-        fig[`simple-grid-board__count--${orientation}`] = true;
-        fig[`simple-grid-board__count--undersatisfied`] = current < required;
-        fig[`simple-grid-board__count--satisfied`] = current == required;
-        fig[`simple-grid-board__count--oversatisfied`] = current > required;
-        return classNames(fig);
+        return classNames({
+            'simple-grid-board__count': true,
+            [`simple-grid-board__count--${orientation}`]: true,
+            'simple-grid-board__count--undersatisfied': current < required,
+            'simple-grid-board__count--satisfied': current == required,
+            'simple-grid-board__count--oversatisfied': current > required
+        });
     }
 
     private columnHints() {
         return <>
             <div className={'simple-grid-board--topcorner'} key={'topcorner'}>{this.props.annotation}</div>
+
+            {}
+
             {this.props.spec.wallCounts.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', cnt, 0)} key={`colhint${i}`}>
                     {cnt}

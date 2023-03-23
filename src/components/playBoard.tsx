@@ -1,6 +1,6 @@
 import React, {Component, CSSProperties, MouseEventHandler} from 'react';
 import classNames from "classnames";
-import {Linestats, Location, Size} from "../boardgen/types";
+import {Location, RangeReport, Size} from "../boardgen/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "../boardgen/mutableGrid";
@@ -206,18 +206,34 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             this.forceUpdate();
     }
 
-    private columnHints(userWalls: Linestats) {
-        const solutionWalls = this.props.spec.wallCounts;
-        return <>
-            <div className={'play-board--topcorner'} key={'topcorner'}/>
-            {solutionWalls.cols.map((cnt, i) =>
-                <div className={this.counterClasses('col', cnt, userWalls.cols[i])}
-                     key={`colhint${i}`}>
-                    {cnt}
-                    {/*<p className={'play-board__count__text'}> {cnt}</p>*/}
-                </div>)}
+    rangeReport(orientation: 'row' | 'col', order: number) {
+        let wallCounts, userWalls, userFloors, size, treasureCounts, deadEndCounts;
+        if (orientation === 'row') {
+            wallCounts = this.props.spec.wallCounts.rows;
+            userWalls = this.state.assignedWalls.profile(true).rows;
+            userFloors = this.state.assignedFloors.profile(true).rows;
+            size = this.props.spec.rules.size.height;
+            treasureCounts = this.props.spec.treasure.profile(true).rows;
+            deadEndCounts = this.props.spec.deadends.profile(true).rows;
+        } else if (orientation === 'col') {
+            wallCounts = this.props.spec.wallCounts.cols;
+            userWalls = this.state.assignedWalls.profile(true).cols;
+            userFloors = this.state.assignedFloors.profile(true).cols;
+            size = this.props.spec.rules.size.width;
+            treasureCounts = this.props.spec.treasure.profile(true).cols;
+            deadEndCounts = this.props.spec.deadends.profile(true).cols;
+        } else throw new Error(`Shouldn't happen ever`);
 
-        </>
+        return {
+            order: order,
+            orientation: orientation,
+            size: size,
+            required: wallCounts[order],
+            userWallCount: userWalls[order],
+            userFloorCount: userFloors[order],
+            deadEndCount: deadEndCounts[order],
+            treasureCount: treasureCounts[order],
+        } as RangeReport;
     }
 
     // Whether the player should ba allowed to change the appearance of a square in any way while playing.
@@ -258,14 +274,17 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         });
     }
 
-    counterClasses(orientation: string, required: number, current: number) {
-        let fig: Record<string, boolean> = {};
-        fig[`play-board__count`] = true;
-        fig[`play-board__count--${orientation}`] = true;
-        fig[`play-board__count--undersatisfied`] = current < required;
-        fig[`play-board__count--satisfied`] = current === required;
-        fig[`play-board__count--oversatisfied`] = current > required;
-        return classNames(fig);
+    counterClasses(orientation: 'row' | 'col', order: number) {
+        const report = this.rangeReport(orientation, order);
+        const symbolCount = report.treasureCount + report.deadEndCount;
+        return classNames({
+            'play-board__count': true,
+            [`play-board__count--${orientation}`]: true,
+            'play-board__count--undersatisfied': report.userWallCount < report.required,
+            'play-board__count--satisfied': report.userWallCount === report.required,
+            'play-board__count--oversatisfied': report.userWallCount > report.required,
+            'play-board__count--floor-saturated': report.userFloorCount + symbolCount === report.size - report.required,
+        });
     }
 
     render() {
@@ -283,6 +302,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
         const solutionWalls = this.props.spec.wallCounts;
         const userWalls = this.state.assignedWalls.profile(true);
+        const userFloors = this.state.assignedFloors.profile(true);
 
         // Just a single pass to figure out which rows/cols are overfilled.
         const rows = new Set<number>();
@@ -295,10 +315,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
                 <div className={boardClasses} style={st} key={'itstheboard'}>
                     <div className={'play-board__grid'} key={'itsthegrid'}>
-                        {this.columnHints(userWalls)}
+                        {this.columnHints()}
                         {gridLocations(size).map((row, j) => {
                                 return <>
-                                    <div className={this.counterClasses('row', solutionWalls.rows[j], userWalls.rows[j])}
+                                    <div className={this.counterClasses('row', j)}
                                          key={`rowhint${j}`}>
                                         {solutionWalls.rows[j]}
                                         {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
@@ -322,6 +342,20 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 <br/>
             </>
         );
+    }
+
+    private columnHints() {
+        const solutionWalls = this.props.spec.wallCounts;
+        return <>
+            <div className={'play-board--topcorner'} key={'topcorner'}/>
+            {solutionWalls.cols.map((cnt, i) =>
+                <div className={this.counterClasses('col', i)}
+                     key={`colhint${i}`}>
+                    {cnt}
+                    {/*<p className={'play-board__count__text'}> {cnt}</p>*/}
+                </div>)}
+
+        </>
     }
 
 

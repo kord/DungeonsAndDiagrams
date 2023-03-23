@@ -77,9 +77,12 @@
 /*    !*vertical-align: center;*!*/
 /*    position: relative;*/
 /*}*/
-
 .play-board__count--undersatisfied {
     color: black;
+}
+
+.play-board__count--floor-saturated {
+    color: #ffff71;
 }
 
 .play-board__count--satisfied {
@@ -89,6 +92,7 @@
 .play-board__count--oversatisfied {
     color: red;
 }
+
 
 
 .block-square {

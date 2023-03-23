@@ -22,3 +22,14 @@ export type SolnRecord = {
     walls: MutableGrid,
     treasures: Location[],
 }
+
+export type RangeReport = {
+    order: number,
+    orientation: 'row' | 'col',
+    size: number,
+    required: number,
+    userWallCount: number,
+    userFloorCount: number,
+    treasureCount: number,
+    deadEndCount: number,
+}
