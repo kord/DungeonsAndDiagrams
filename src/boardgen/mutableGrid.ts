@@ -263,7 +263,6 @@ export class MutableGrid {
         return encoded;
     }
 
-    // TODO: I think something's messed up in this.
     public calculateDiameter(): MaxDistance | undefined {
         const init = this.firstTrue();
         if (!init) return undefined;
@@ -287,7 +286,11 @@ export class MutableGrid {
         while (progress) {
             progress = false;
             // The neighbours of the previous wave.
-            const nextwave = new Set(distanceSets[distanceSets.length - 1].map(loc => this.neighbourFunction(loc).map(loc2Str)).flat());
+            const nextwave = new Set(
+                distanceSets[distanceSets.length - 1]
+                    .map(loc => this.neighbourFunction(loc).filter(loc => this.check(loc)))
+                    .flat()
+                    .map(loc2Str));
             const further = new Array<Location>();
             nextwave.forEach(ls => {
                 if (visited.has(ls)) return;
