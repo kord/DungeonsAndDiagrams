@@ -16,6 +16,7 @@ export type DDBoardgenSpec = {
 export type DDBoardSpec = {
     // The rules that were used to generate this board.
     rules: DDBoardgenSpec,
+    // Locations of board symbols.
     floors: MutableGrid,
     walls: MutableGrid,
 

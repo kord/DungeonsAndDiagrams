@@ -6,7 +6,9 @@ import {MutableGrid} from "../boardgen/mutableGrid";
 import UrlReader from "../boardgen/urlReader";
 import {RulesButton} from "./rules";
 import {OptionsButton} from "./options";
-import {getStoredSize} from "../localStorage";
+import {getStoredBool, getStoredSize} from "../localStorage";
+import StatsPanel from "./statsPanel";
+import '../css/puzzleGame.css';
 
 export type PuzzleGameProps = {};
 
@@ -18,10 +20,12 @@ type PuzzleGameState = {
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     gameRef: React.RefObject<PlayBoard>;
+    statsRef: React.RefObject<StatsPanel>;
 
     constructor(props: PuzzleGameProps) {
         super(props);
         this.gameRef = React.createRef();
+        this.statsRef = React.createRef();
         const urlPuzzle = UrlReader.puzzleFromUrl();
         this.state = {
             spec: urlPuzzle,
@@ -45,10 +49,15 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 attemptSubsequent: 0.9,
             }
         });
-        this.setState({spec: puz, solns: [],});
-        if (this.gameRef.current) {
-            this.gameRef.current.reset(puz.rules.size);
-        }
+
+        this.setState({spec: puz, solns: [],}, () => {
+            if (this.gameRef.current) {
+                this.gameRef.current.reset(puz.rules.size);
+            }
+            if (this.statsRef.current) {
+                this.statsRef.current.update();
+            }
+        });
 
         // TODO: Get some better behaviour on this.
         window.history.pushState({state: 'puzzle!'}, '', UrlReader.urlFromPuzzle(puz));
@@ -78,7 +87,11 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Reset
                 </button>
 
-                {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
+                <div className={'puzzle-display-panel'}>
+                    {this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}
+                    {this.state.spec && getStoredBool('showStats') ?
+                        <StatsPanel puzzle={this.state.spec} ref={this.statsRef}/> : <></>}
+                </div>
                 {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/>  : <></>}*/}
 
             </>

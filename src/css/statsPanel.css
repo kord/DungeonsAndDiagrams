@@ -1,0 +1,13 @@
+.stats-panel {
+    /*width: 20%;*/
+    border: black 1px solid;
+    margin: 10px;
+    padding: 10px;
+    /*grid-template-rows: 20px*/
+}
+
+.stats-panel--interior {
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}

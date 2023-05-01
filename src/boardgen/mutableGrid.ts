@@ -1,5 +1,11 @@
 import {Linestats, Location, Size} from "./types";
-import {gridLocations, gridNeighbourFunc} from "./graphUtils";
+import {gridLocations, gridNeighbourFunc, loc2Str, locFromStr} from "./graphUtils";
+
+type MaxDistance = {
+    source: Location,
+    destination: Location,
+    distance: number,
+}
 
 // A class representing an arbitrary size grid of bools, with the handy feature that you can roll back changes
 // easily to the last time you declared it 'safe.'
@@ -22,11 +28,6 @@ export class MutableGrid {
         return ret;
     }
 
-    check(loc: Location): boolean {
-        console.assert(loc.x >= 0 && loc.y >= 0 && loc.y < this.size.height && loc.x < this.size.width);
-        return this.grid[loc.y][loc.x];
-    }
-
     // Note that the previous grid's last safe state is not retained.
     public static fromString(size: Size, s: string): MutableGrid {
         const ret = new MutableGrid(size, false);
@@ -40,6 +41,11 @@ export class MutableGrid {
         });
         ret.markSafe();
         return ret;
+    }
+
+    check(loc: Location): boolean {
+        console.assert(loc.x >= 0 && loc.y >= 0 && loc.y < this.size.height && loc.x < this.size.width);
+        return this.grid[loc.y][loc.x];
     }
 
     markSafe() {
@@ -255,6 +261,56 @@ export class MutableGrid {
         let encoded = btoa(result);
         // console.log(encoded);
         return encoded;
+    }
+
+    public calculateDiameter(): MaxDistance | undefined {
+        const init = this.firstTrue();
+        if (!init) return undefined;
+        let maxDistance = this.maxDistance(init);
+        // Borrowed from https://en.wikipedia.org/wiki/Distance_(graph_theory)
+        do {
+            const newDistance = this.maxDistance(maxDistance.destination);
+            // We're done if the number doesn't improve.
+            if (newDistance.distance == maxDistance.distance) return newDistance;
+            maxDistance = newDistance;
+        } while (true)
+    }
+
+    private maxDistance(init: Location): MaxDistance {
+        let distanceSets = new Array<Array<Location>>();
+        const visited = new Set<string>();
+
+        distanceSets.push([init]);
+        visited.add(loc2Str(init));
+        let progress = true;
+        while (progress) {
+            progress = false;
+            // The neighbours of the previous wave.
+            const nextwave = new Set(distanceSets[distanceSets.length - 1].map(loc => this.neighbourFunction(loc).map(loc2Str)).flat());
+            const further = new Array<Location>();
+            nextwave.forEach(ls => {
+                if (visited.has(ls)) return;
+                progress = true;
+                visited.add(ls);
+                further.push(locFromStr(ls)!);
+            });
+            distanceSets.push(further);
+        }
+        const maxDistanceLocs = distanceSets[distanceSets.length - 1];
+        let minDegree = Number.MAX_VALUE;
+        let minDegreeLoc = init;
+        maxDistanceLocs.forEach(loc => {
+            const neighbourCount = this.neighbourCount(loc);
+            if (neighbourCount < minDegree) {
+                minDegree = neighbourCount;
+                minDegreeLoc = loc;
+            }
+        });
+        return {
+            source: init,
+            destination: minDegreeLoc,
+            distance: distanceSets.length - 1,
+        }
     }
 }
 
