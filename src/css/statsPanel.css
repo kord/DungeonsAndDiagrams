@@ -11,3 +11,11 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+
+.stat-name {
+    font-style: italic;
+}
+
+.stat-value {
+
+}
