@@ -5,6 +5,8 @@ import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
 import UrlReader from "../boardgen/urlReader";
 import {RulesButton} from "./rules";
+import {OptionsButton} from "./options";
+import {getStoredSize} from "../localStorage";
 
 export type PuzzleGameProps = {};
 
@@ -28,13 +30,6 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         };
     }
 
-    setHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({size: {height: +event.target.value, width: this.state.size.width}});
-    }
-    setWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({size: {width: +event.target.value, height: this.state.size.height}});
-    }
-
     setCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, checked} = event.target;
         let newstate = {[name as keyof PuzzleGameState]: checked};
@@ -44,7 +39,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     newGame = () => {
         const puz = generateDDBoard({
-            size: this.state.size,
+            size: getStoredSize(),
             throneSpec: {
                 attemptFirst: .8,
                 attemptSubsequent: 0.9,
@@ -70,14 +65,11 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-                Size&nbsp;
-                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'} key={'width'}/>
-                &nbsp;
-                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'}/>
-                &nbsp;
                 <button onClick={this.newGame} key={'new'}>New Game</button>
                 &nbsp;
                 <RulesButton/>
+                &nbsp;
+                <OptionsButton/>
                 <br/>
                 <button onClick={e => this.gameRef.current!.attemptUndo()}
                         disabled={this.state.spec === undefined}>Undo

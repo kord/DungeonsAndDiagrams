@@ -19,7 +19,7 @@ const rli = rulesList.map((r, i) => `<li key=${i} class="${liClasses}">${r}</li>
 function showModal(p1: React.MouseEvent<HTMLButtonElement>) {
     Swal.fire({
         title: '<strong>Rules</strong>',
-        icon: 'question',
+        icon: 'info',
         html:
             '<ol>' +
             rli +
@@ -42,4 +42,5 @@ export class RulesButton extends Component {
         );
     }
 }
+
 
