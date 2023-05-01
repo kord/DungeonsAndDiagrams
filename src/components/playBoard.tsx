@@ -107,56 +107,20 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     // Set the sort of action the mouse held down over other elements will produce, depending on the status of the
-    // square it is over when the mouse if first pressed.
-    private mouseDown(loc: Location): MouseEventHandler<HTMLDivElement> {
-        return (e) => {
-            // 2nd click does nothing.
-            if (this.stateBeforeClick) return;
+    counterClasses(orientation: 'row' | 'col', order: number) {
+        const report = this.rangeReport(orientation, order);
+        const symbolCount = report.treasureCount + report.deadEndCount;
 
-            let action: MouseAction = {};
-            const initialButtons = e.buttons;
-            const initialBlockState = this.blockState(loc);
+        // console.log(report)
 
-            // console.log(`Mousedown inner buttons ${e.buttons}`)
-
-            if (initialButtons === 1) {
-                // Left click
-                switch (initialBlockState) {
-                    case "user-untouched":
-                        action = {useruntouched: 'user-wall',}
-                        break;
-                    case "user-floor":
-                        action = {useruntouched: 'user-wall', userfloor: 'user-wall'}
-                        break;
-                    case "user-wall":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
-                }
-            } else if (initialButtons === 2) {
-                // Right click
-                switch (initialBlockState) {
-                    case "user-untouched":
-                        action = {useruntouched: 'user-floor',}
-                        break;
-                    case "user-wall":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
-                        break;
-                    case "user-floor":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
-                        break;
-                }
-            }
-
-            this.stateBeforeClick = {
-                assignedWalls: this.state.assignedWalls.copy(),
-                assignedFloors: this.state.assignedFloors.copy(),
-            }
-            this.mouseBehaviour = {
-                initialButtons: initialButtons,
-                initialBlockState: initialBlockState,
-                mouseAction: action,
-            }
-            this.performBehaviour(loc);
-        }
+        return classNames({
+            'play-board__count': true,
+            [`play-board__count--${orientation}`]: true,
+            'play-board__count--undersatisfied': report.userWallCount < report.required,
+            'play-board__count--satisfied': report.userWallCount === report.required,
+            'play-board__count--oversatisfied': report.userWallCount > report.required,
+            'play-board__count--floor-saturated': report.userFloorCount + symbolCount + report.required === report.size,
+        });
     }
 
     private performBehaviour(loc: Location) {
@@ -274,22 +238,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         });
     }
 
-    counterClasses(orientation: 'row' | 'col', order: number) {
-        const report = this.rangeReport(orientation, order);
-        const symbolCount = report.treasureCount + report.deadEndCount;
-
-        console.log(report)
-
-        return classNames({
-            'play-board__count': true,
-            [`play-board__count--${orientation}`]: true,
-            'play-board__count--undersatisfied': report.userWallCount < report.required,
-            'play-board__count--satisfied': report.userWallCount === report.required,
-            'play-board__count--oversatisfied': report.userWallCount > report.required,
-            'play-board__count--floor-saturated': report.userFloorCount + symbolCount + report.required === report.size,
-        });
-    }
-
     render() {
         const {size, throneSpec} = this.props.spec.rules;
         const st = {
@@ -329,7 +277,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                                     {row.map(loc =>
                                         <div className={this.blockSquareClassnames(loc, overflowCounts)}
                                              key={loc2Str(loc)}
-                                             onMouseDown={this.mouseDown(loc)}
+                                             onMouseDown={this.mouseDownFn(loc)}
                                              onMouseEnter={(e) => {
                                                  if (e.buttons === this.mouseBehaviour?.initialButtons)
                                                      this.performBehaviour(loc);
@@ -345,6 +293,58 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 <br/>
             </>
         );
+    }
+
+    // square it is over when the mouse if first pressed.
+    private mouseDownFn(loc: Location): MouseEventHandler<HTMLDivElement> {
+        return (e) => {
+            // 2nd click does nothing.
+            if (this.stateBeforeClick) return;
+
+            let action: MouseAction = {};
+            const initialButtons = e.buttons;
+            const initialBlockState = this.blockState(loc);
+
+            // console.log(`Mousedown inner buttons ${e.buttons}`)
+
+            if (initialButtons === 1) {
+                // Left click
+                switch (initialBlockState) {
+                    case "user-untouched":
+                        action = {useruntouched: 'user-wall',}
+                        break;
+                    case "user-floor":
+                        action = {useruntouched: 'user-wall', userfloor: 'user-wall'}
+                        break;
+                    case "user-wall":
+                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                }
+            } else if (initialButtons === 2) {
+                // Right click
+                switch (initialBlockState) {
+                    case "user-untouched":
+                        action = {useruntouched: 'user-floor',}
+                        break;
+                    case "user-wall":
+                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                        break;
+                    case "user-floor":
+                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                        break;
+                }
+            }
+
+            this.stateBeforeClick = {
+                assignedWalls: this.state.assignedWalls.copy(),
+                assignedFloors: this.state.assignedFloors.copy(),
+            }
+            this.mouseBehaviour = {
+                initialButtons: initialButtons,
+                initialBlockState: initialBlockState,
+                mouseAction: action,
+            }
+            this.performBehaviour(loc);
+        }
     }
 
     private columnHints() {

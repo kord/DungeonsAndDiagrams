@@ -263,6 +263,7 @@ export class MutableGrid {
         return encoded;
     }
 
+    // TODO: I think something's messed up in this.
     public calculateDiameter(): MaxDistance | undefined {
         const init = this.firstTrue();
         if (!init) return undefined;
@@ -294,7 +295,7 @@ export class MutableGrid {
                 visited.add(ls);
                 further.push(locFromStr(ls)!);
             });
-            distanceSets.push(further);
+            if (further.length > 0) distanceSets.push(further);
         }
         const maxDistanceLocs = distanceSets[distanceSets.length - 1];
         let minDegree = Number.MAX_VALUE;
@@ -306,11 +307,13 @@ export class MutableGrid {
                 minDegreeLoc = loc;
             }
         });
-        return {
+        const ret = {
             source: init,
             destination: minDegreeLoc,
             distance: distanceSets.length - 1,
         }
+        console.log(ret);
+        return ret;
     }
 }
 

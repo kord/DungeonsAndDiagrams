@@ -54,9 +54,10 @@ class Options extends Component<OptionsProps, OptionsState> {
                 &nbsp;
 
                 <br/>
-                Show puzzle stats: <input type={'checkbox'} className={'options__checkbox'} name={'showStats'}
-                                          checked={this.state.showStats} onChange={this.setCheckbox}/>
-
+                <label htmlFor={'showStats'}>Show puzzle stats:
+                    <input type={'checkbox'} className={'options__checkbox'} name={'showStats'} id={'showStats'}
+                           checked={this.state.showStats} onChange={this.setCheckbox}/>
+                </label>
             </div>
         );
     }
@@ -77,7 +78,8 @@ function showModal(p1: React.MouseEvent<HTMLButtonElement>) {
 export class OptionsButton extends Component {
     render() {
         return (
-            <button onClick={showModal}>Options</button>
+            <button className={'options-button'}
+                    onClick={showModal}>Options</button>
         );
     }
 }
