@@ -1,8 +1,8 @@
 .stats-panel {
-    /*width: 20%;*/
+    width: 18%;
     border: black 1px solid;
     margin: 10px;
-    padding: 10px;
+    /*padding: 10px;*/
     /*grid-template-rows: 20px*/
 }
 
@@ -12,10 +12,16 @@
     grid-template-columns: 1fr 1fr;
 }
 
+.stat-name, .stat-value {
+    margin: 5px;
+}
+
 .stat-name {
     font-style: italic;
+    text-align: right;
 }
 
 .stat-value {
+    text-align: left;
 
 }

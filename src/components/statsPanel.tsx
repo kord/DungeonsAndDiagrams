@@ -31,6 +31,12 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
                     <p className={'stat-name'}>Hint Density</p>
                     <p className={'stat-value'}>{`${Math.floor(stats.hintDensity * 1000) / 10}%`}</p>
 
+                    <p className={'stat-name'}>Wall-count Variance (rows/cols)</p>
+                    <p className={'stat-value'}>{`${Math.floor(stats.rowDensityVariance * 100) / 100}, ${Math.floor(100 * stats.columnDensityVariance) / 100}`}</p>
+
+                    <p className={'stat-name'}>Wall Density</p>
+                    <p className={'stat-value'}>{`${Math.floor(stats.wallDensity * 1000) / 10}%`}</p>
+
                     <p className={'stat-name'}>Treasure Rooms</p>
                     <p className={'stat-value'}>{stats.treasureRoomCount}</p>
 
@@ -42,12 +48,6 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
 
                     <p className={'stat-name'}>Wall Components</p>
                     <p className={'stat-value'}>{stats.wallComponentCount}</p>
-
-                    <p className={'stat-name'}>Wall Density</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.wallDensity * 1000) / 10}%`}</p>
-
-                    <p className={'stat-name'}>Wall-count Variance (rows/cols)</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.rowDensityVariance * 100) / 100}, ${Math.floor(100 * stats.columnDensityVariance) / 100}`}</p>
 
                     <p className={'stat-name'}>Graph Diameter</p>
                     <p className={'stat-value'}>{stats.diameter}</p>
