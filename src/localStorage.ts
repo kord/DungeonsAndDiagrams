@@ -3,13 +3,17 @@ import {Size} from "./boardgen/types";
 type Defaults = {
     height: string,
     width: string,
-    showStats: string,
+    showPuzzleInfo: string,
+    lockWhenSolved: string,
+    colorfulLineCounters: string,
 }
 
 const defaultValues: Defaults = {
     height: '8',
     width: '8',
-    showStats: 'false',
+    showPuzzleInfo: 'false',
+    lockWhenSolved: 'true',
+    colorfulLineCounters: 'true',
 }
 
 export function getStoredValue(valueName: string): string | undefined {

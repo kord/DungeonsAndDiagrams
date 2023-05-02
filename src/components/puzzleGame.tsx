@@ -96,7 +96,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                             lockWhenSolved={getStoredBool('lockWhenSolved')}
                             ref={this.gameRef}/>
                         : <></>}</div>
-                    {this.state.spec && getStoredBool('showStats') ?
+                    {this.state.spec && getStoredBool('showPuzzleInfo') ?
                         <StatsPanel puzzle={this.state.spec} ref={this.statsRef}/> : <></>}
                 </div>
                 {/*{this.state.spec ? <SolutionDisplayBoard spec={this.state.spec}/>  : <></>}*/}
