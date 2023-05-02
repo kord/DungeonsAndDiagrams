@@ -12,8 +12,8 @@ export class OptionsButton extends Component<OptionsProps> {
 
     showModal = (event: React.MouseEvent<HTMLButtonElement>) => {
         MySwal.fire({
-            title: '<h1>Options</h1>',
-            icon: 'question',
+            title: <h1>Options</h1>,
+            // icon: 'question',
             // html: <p>hamburger</p>,
             html: <Options onChangeFn={this.props.onChangeFn}/>,
             width: '80%',

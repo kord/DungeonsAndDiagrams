@@ -15,7 +15,6 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
         treasure: MutableGrid.fromLocs(s.walls.size, s.treasures),
         throneCount: s.treasures.length,
         floors: floors,
-        restarts: 0,
     };
 }
 

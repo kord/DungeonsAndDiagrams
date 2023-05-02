@@ -27,7 +27,8 @@ export type DDBoardSpec = {
 
     wallCounts: Linestats,
 
-    restarts: number,
+    generationTimeMs?: number,
+    restarts?: number,
 }
 
 // Try to place a throne in a sensible manner.
@@ -170,6 +171,7 @@ export function monsterChoices(g: MutableGrid) {
 // Generate a board with the specified requirements, ensuring only to return one with a unique solution.
 export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     console.time('generateDDBoard');
+    const startTime = performance.now();
     let ret: DDBoardSpec;
     let restarts = 0;
     do {
@@ -212,5 +214,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     } while (hasMultipleSolutions(ret));
     console.timeEnd('generateDDBoard');
 
+    const stopTime = performance.now();
+    ret.generationTimeMs = stopTime - startTime;
     return ret;
 }

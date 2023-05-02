@@ -51,6 +51,18 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
 
                     <p className={'stat-name'}>Graph Diameter</p>
                     <p className={'stat-value'}>{stats.diameter}</p>
+
+                    {stats.generationTimeMs ? <>
+                        <p className={'stat-name'}>Generator time</p>
+                        <p className={'stat-value'}>{`${Math.ceil(stats.generationTimeMs)}ms`}</p>
+                    </> : <></>}
+
+                    {
+                        stats.restarts !== undefined ? <>
+                            <p className={'stat-name'}>Generator restarts</p>
+                            <p className={'stat-value'}>{stats.restarts}</p>
+                        </> : <></>
+                    }
                 </div>
             </div>
         );
@@ -68,6 +80,8 @@ type PuzzleStats = {
     diameter: number,
     rowDensityVariance: number,
     columnDensityVariance: number,
+    restarts?: number,
+    generationTimeMs?: number,
 }
 
 function generateStats(board: DDBoardSpec): PuzzleStats {
@@ -87,6 +101,8 @@ function generateStats(board: DDBoardSpec): PuzzleStats {
         diameter: diameter ? diameter.distance : -1,
         rowDensityVariance: sampleVariance(board.wallCounts.rows),
         columnDensityVariance: sampleVariance(board.wallCounts.cols),
+        restarts: board.restarts,
+        generationTimeMs: board.generationTimeMs,
     }
 }
 
