@@ -5,9 +5,9 @@ import {PlayBoard} from "./playBoard";
 import {MutableGrid} from "../boardgen/mutableGrid";
 import UrlReader from "../boardgen/urlReader";
 import {RulesButton} from "./rules";
-import {OptionsButton} from "./options";
 import {getStoredBool, getStoredSize} from "../localStorage";
 import StatsPanel from "./statsPanel";
+import {OptionsButton} from "./optionsButton";
 import '../css/puzzleGame.css';
 
 export type PuzzleGameProps = {};
@@ -76,15 +76,17 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         return (<>
                 <button onClick={this.newGame} key={'new'}>New Game</button>
                 &nbsp;
-                <RulesButton/>
-                &nbsp;
-                <OptionsButton/>
+                <RulesButton/>                &nbsp;
+                <OptionsButton onChangeFn={() => this.forceUpdate()}/>
                 <br/>
                 <button onClick={e => this.gameRef.current!.attemptUndo()}
-                        disabled={this.state.spec === undefined}>Undo
+                        disabled={this.state.spec === undefined}>
+                    Undo
                 </button>
                 &nbsp;
-                <button onClick={e => this.gameRef.current!.reset()} disabled={this.state.spec === undefined}>Reset
+                <button onClick={e => this.gameRef.current!.reset()}
+                        disabled={this.state.spec === undefined}>
+                    Reset
                 </button>
 
                 <div className={'puzzle-display-panel'}>

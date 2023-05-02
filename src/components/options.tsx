@@ -1,37 +1,39 @@
 import React, {Component} from 'react';
-import '../css/options.css';
 import {Size} from "../boardgen/types";
-import Swal from "sweetalert2";
-import withReactContent from 'sweetalert2-react-content';
 import {getStoredBool, getStoredSize, setStoredBool, setStoredValue} from "../localStorage";
 
-const MySwal = withReactContent(Swal)
+import '../css/options.css'
 
-type OptionsProps = {};
+export type OptionsProps = {
+    onChangeFn?: VoidFunction,
+};
+
 type OptionsState = {
     size: Size,
     showStats: boolean,
+    lockWhenSolved: boolean,
 };
 
-class Options extends Component<OptionsProps, OptionsState> {
+export class Options extends Component<OptionsProps, OptionsState> {
     constructor(props: OptionsProps) {
         super(props);
         this.state = {
             size: getStoredSize(),
             showStats: getStoredBool('showStats'),
+            lockWhenSolved: getStoredBool('lockWhenSolved'),
         }
     }
 
     setHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
         const height = +event.target.value;
-        this.setState({size: {height: height, width: this.state.size.width}});
+        this.setState({size: {height: height, width: this.state.size.width}}, this.props.onChangeFn);
         if (Number.isInteger(height) && height > 1) setStoredValue('height', height.toString());
     }
 
     setWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
         const width = +event.target.value;
-        this.setState({size: {width: width, height: this.state.size.height}});
         if (Number.isInteger(width) && width > 1) setStoredValue('width', width.toString());
+        this.setState({size: {width: width, height: this.state.size.height}}, this.props.onChangeFn);
     }
 
     setCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +41,7 @@ class Options extends Component<OptionsProps, OptionsState> {
         setStoredBool(name, checked);
         let newState = {[name as keyof OptionsState]: checked};
         // @ts-ignore
-        this.setState(newState);
+        this.setState(newState, this.props.onChangeFn);
     }
 
     render() {
@@ -58,31 +60,17 @@ class Options extends Component<OptionsProps, OptionsState> {
                     <input type={'checkbox'} className={'options__checkbox'} name={'showStats'} id={'showStats'}
                            checked={this.state.showStats} onChange={this.setCheckbox}/>
                 </label>
+                <br/>
+                <label htmlFor={'lockWhenSolved'}>Lock puzzle when solved:
+                    <input type={'checkbox'} className={'options__checkbox'} name={'lockWhenSolved'}
+                           id={'lockWhenSolved'}
+                           checked={this.state.lockWhenSolved} onChange={this.setCheckbox}/>
+                </label>
+
+                <p>Start a new game for the selected options to take effect.</p>
             </div>
         );
     }
 }
 
-function showModal(p1: React.MouseEvent<HTMLButtonElement>) {
-    MySwal.fire({
-        title: '<strong>Options</strong>',
-        icon: 'question',
-        html: <Options/>,
-        width: '80%',
-        showCloseButton: true,
-        showConfirmButton: false,
-    });
-}
-
-
-export class OptionsButton extends Component {
-    render() {
-        return (
-            <button className={'options-button'}
-                    onClick={showModal}>Options</button>
-        );
-    }
-}
-
-
-export default Options;
+export default {Options};
