@@ -76,7 +76,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         return (<>
                 <button onClick={this.newGame} key={'new'}>New Game</button>
                 &nbsp;
-                <RulesButton/>                &nbsp;
+                <RulesButton/>
+                &nbsp;
                 <OptionsButton onChangeFn={() => this.forceUpdate()}/>
                 <br/>
                 <button onClick={e => this.gameRef.current!.attemptUndo()}
