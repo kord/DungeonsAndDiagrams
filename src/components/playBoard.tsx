@@ -9,6 +9,7 @@ import '../css/monsters.css';
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
+    lockWhenSolved: boolean,
 };
 
 type PlayBoardState = {
@@ -50,6 +51,64 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             assignedWalls: new MutableGrid(size, false),
             assignedFloors: new MutableGrid(size, false),
         };
+    }
+
+    render() {
+        const {size, throneSpec} = this.props.spec.rules;
+        const st = {
+            '--board-height': size.height,
+            '--board-width': size.width,
+        } as CSSProperties;
+
+        const solved = this.isSolved();
+        const boardClasses = classNames({
+            'play-board': true,
+            'play-board--completed': solved,
+            'play-board--incomplete': !solved,
+        });
+
+        const solutionWalls = this.props.spec.wallCounts;
+        const userWalls = this.state.assignedWalls.profile(true);
+        const userFloors = this.state.assignedFloors.profile(true);
+
+        // Just a single pass to figure out which rows/cols are overfilled.
+        const rows = new Set<number>();
+        const cols = new Set<number>();
+        for (let i = 0; i < size.height; i++) if (userWalls.rows[i] > solutionWalls.rows[i]) rows.add(i);
+        for (let j = 0; j < size.width; j++) if (userWalls.cols[j] > solutionWalls.cols[j]) cols.add(j);
+        const overflowCounts: OverFlowCounter = {cols: cols, rows: rows};
+
+        return (<>
+
+                <div className={boardClasses} style={st} key={'itstheboard'}>
+                    <div className={'play-board__grid'} key={'itsthegrid'}>
+                        {this.columnHints()}
+                        {gridLocations(size).map((row, j) => {
+                                return <>
+                                    <div className={this.counterClasses('row', j)}
+                                         key={`rowhint${j}`}>
+                                        {solutionWalls.rows[j]}
+                                        {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                                    </div>
+                                    {row.map(loc =>
+                                        <div className={this.blockSquareClassnames(loc, overflowCounts)}
+                                             key={loc2Str(loc)}
+                                             onMouseDown={this.mouseDownFn(loc)}
+                                             onMouseEnter={(e) => {
+                                                 if (e.buttons === this.mouseBehaviour?.initialButtons)
+                                                     this.performClickBehaviour(loc);
+                                             }}
+                                        >
+                                        </div>
+                                    )}
+                                </>;
+                            }
+                        )}
+                    </div>
+                </div>
+                <br/>
+            </>
+        );
     }
 
     public reset(size?: Size) {
@@ -123,25 +182,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         });
     }
 
-    private performBehaviour(loc: Location) {
-        if (!this.mouseBehaviour) {
-            console.log(`performBehaviour with no mouseBehaviour set`);
-            return;
-        }
-        let newState: BlockState | undefined;
-        switch (this.blockState(loc)) {
-            case "user-wall":
-                newState = this.mouseBehaviour.mouseAction.userwall;
-                break;
-            case "user-floor":
-                newState = this.mouseBehaviour.mouseAction.userfloor;
-                break;
-            case "user-untouched":
-                newState = this.mouseBehaviour.mouseAction.useruntouched;
-                break;
-        }
-        this.setBlockState(loc, newState);
-    }
+    private isSolved = () => this.state.assignedWalls.equals(this.props.spec.walls);
 
     private setBlockState(loc: Location, newState: BlockState | undefined) {
         // console.log(`setBlockState ${loc2Str(loc)} ${newState}`)
@@ -238,61 +279,27 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         });
     }
 
-    render() {
-        const {size, throneSpec} = this.props.spec.rules;
-        const st = {
-            '--board-height': size.height,
-            '--board-width': size.width,
-        } as CSSProperties;
+    private performClickBehaviour(loc: Location) {
+        if (!this.mouseBehaviour) {
+            console.log(`performBehaviour with no mouseBehaviour set`);
+            return;
+        }
+        // Can't monkey with a solved puzzle.
+        if (this.props.lockWhenSolved && this.isSolved()) return;
 
-        const boardClasses = classNames({
-            'play-board': true,
-            'play-board--completed': this.state.assignedWalls.equals(this.props.spec.walls),
-            'play-board--incomplete': !this.state.assignedWalls.equals(this.props.spec.walls),
-        });
-
-        const solutionWalls = this.props.spec.wallCounts;
-        const userWalls = this.state.assignedWalls.profile(true);
-        const userFloors = this.state.assignedFloors.profile(true);
-
-        // Just a single pass to figure out which rows/cols are overfilled.
-        const rows = new Set<number>();
-        const cols = new Set<number>();
-        for (let i = 0; i < size.height; i++) if (userWalls.rows[i] > solutionWalls.rows[i]) rows.add(i);
-        for (let j = 0; j < size.width; j++) if (userWalls.cols[j] > solutionWalls.cols[j]) cols.add(j);
-        const overflowCounts: OverFlowCounter = {cols: cols, rows: rows};
-
-        return (<>
-
-                <div className={boardClasses} style={st} key={'itstheboard'}>
-                    <div className={'play-board__grid'} key={'itsthegrid'}>
-                        {this.columnHints()}
-                        {gridLocations(size).map((row, j) => {
-                                return <>
-                                    <div className={this.counterClasses('row', j)}
-                                         key={`rowhint${j}`}>
-                                        {solutionWalls.rows[j]}
-                                        {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
-                                    </div>
-                                    {row.map(loc =>
-                                        <div className={this.blockSquareClassnames(loc, overflowCounts)}
-                                             key={loc2Str(loc)}
-                                             onMouseDown={this.mouseDownFn(loc)}
-                                             onMouseEnter={(e) => {
-                                                 if (e.buttons === this.mouseBehaviour?.initialButtons)
-                                                     this.performBehaviour(loc);
-                                             }}
-                                        >
-                                        </div>
-                                    )}
-                                </>;
-                            }
-                        )}
-                    </div>
-                </div>
-                <br/>
-            </>
-        );
+        let newState: BlockState | undefined;
+        switch (this.blockState(loc)) {
+            case "user-wall":
+                newState = this.mouseBehaviour.mouseAction.userwall;
+                break;
+            case "user-floor":
+                newState = this.mouseBehaviour.mouseAction.userfloor;
+                break;
+            case "user-untouched":
+                newState = this.mouseBehaviour.mouseAction.useruntouched;
+                break;
+        }
+        this.setBlockState(loc, newState);
     }
 
     // square it is over when the mouse if first pressed.
@@ -343,7 +350,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 initialBlockState: initialBlockState,
                 mouseAction: action,
             }
-            this.performBehaviour(loc);
+            this.performClickBehaviour(loc);
         }
     }
 

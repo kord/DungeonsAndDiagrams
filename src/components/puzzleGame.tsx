@@ -90,7 +90,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 </button>
 
                 <div className={'puzzle-display-panel'}>
-                    <div>{this.state.spec ? <PlayBoard spec={this.state.spec} ref={this.gameRef}/> : <></>}</div>
+                    <div>{this.state.spec ?
+                        <PlayBoard
+                            spec={this.state.spec}
+                            lockWhenSolved={getStoredBool('lockWhenSolved')}
+                            ref={this.gameRef}/>
+                        : <></>}</div>
                     {this.state.spec && getStoredBool('showStats') ?
                         <StatsPanel puzzle={this.state.spec} ref={this.statsRef}/> : <></>}
                 </div>
