@@ -6,6 +6,7 @@ import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "../boardgen/mutableGrid";
 import '../css/playBoard.css';
 import '../css/monsters.css';
+import {getStoredBool} from "../localStorage";
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
@@ -65,6 +66,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             'play-board': true,
             'play-board--completed': solved,
             'play-board--incomplete': !solved,
+            'play-board--colorful-counters': getStoredBool('colorfulLineCounters'),
         });
 
         const solutionWalls = this.props.spec.wallCounts;

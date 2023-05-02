@@ -51,6 +51,7 @@
 
 .play-board__count {
     background-color: rgba(165, 42, 42, 0.32);
+    color: black;
     font-size: x-large;
     font-weight: bold;
 }
@@ -74,19 +75,19 @@
 /*    !*vertical-align: center;*!*/
 /*    position: relative;*/
 /*}*/
-.play-board__count--undersatisfied {
+.play-board--colorful-counters .play-board__count--undersatisfied {
     color: black;
 }
 
-.play-board__count--floor-saturated {
+.play-board--colorful-counters .play-board__count--floor-saturated {
     color: #ffff71;
 }
 
-.play-board__count--satisfied {
+.play-board--colorful-counters .play-board__count--satisfied {
     color: green;
 }
 
-.play-board__count--oversatisfied {
+.play-board--colorful-counters .play-board__count--oversatisfied {
     color: red;
 }
 
