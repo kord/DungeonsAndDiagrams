@@ -2,6 +2,7 @@ import {Linestats, Location, Size} from "./types";
 import {gridLocations, loc2Str, shuffle} from "./graphUtils";
 import {MutableGrid} from "./mutableGrid";
 import {hasMultipleSolutions} from "./ddSolver";
+import UrlReader from "./urlReader";
 
 type ThroneDemand = {
     attemptFirst: number,
@@ -26,6 +27,8 @@ export type DDBoardSpec = {
     monsterChoices: Map<string, number>,
 
     wallCounts: Linestats,
+
+    url: string,
 
     generationTimeMs?: number,
     restarts?: number,
@@ -208,6 +211,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             throneCount: throneLocs.length,
             wallCounts: wallCounts,
             restarts: restarts,
+            url: UrlReader.urlFromPuzzle(walls, treasure),
         }
 
         restarts += board.restarts;

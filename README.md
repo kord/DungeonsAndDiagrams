@@ -23,6 +23,9 @@ I dug it so I recreated it for fun.
 - Rules can be opaque for first-timers.
                   
 ## Some Puzzles
+ [8x8](https://dandd.therestinmotion.com/?h=8&w=8&p=SGAIbxGxgT8%3D&t=MSwxLzEsNQ%3D%3D)
+ [8x8](https://dandd.therestinmotion.com/?h=8&w=8&p=AOqiCNURZBE%3D&t=NSwyLzQsNQ%3D%3D)
+ [8x8](https://dandd.therestinmotion.com/?h=8&w=8&p=QRVoBmkCtAE%3D&t=NiwxLzQsNA%3D%3D)
  [11x11](https://dandd.therestinmotion.com/?h=11&w=11&p=uDSIUY2IE8%2BDQhQi8DoAAA%3D%3D&t=NCwzLzIsNy8xMCw3)
  [15x8](https://dandd.therestinmotion.com/?h=8&w=15&p=AEJ7TKCoVRQniuhEpD4G&t=MTEsMi8zLDQvNiw2)
  [15x8](https://dandd.therestinmotion.com/?h=8&w=15&p=LUDEjpTIYMQFEvSJNMTA&t=MTEsMi8zLDY%3D)

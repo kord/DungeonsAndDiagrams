@@ -60,7 +60,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         });
 
         // TODO: Get some better behaviour on this.
-        window.history.pushState({state: 'puzzle!'}, '', UrlReader.urlFromPuzzle(puz));
+        window.history.pushState({state: 'puzzle!'}, '', puz.url);
     }
 
     something = () => {
