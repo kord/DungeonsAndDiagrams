@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import '../css/statsPanel.css';
+import {hasBeenSolved} from "../utils/localStorage";
 
 type StatsPanelProps = {
     puzzle: DDBoardSpec,
@@ -31,8 +32,8 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
                     <p className={'stat-name'}>Hint Density</p>
                     <p className={'stat-value'}>{`${Math.floor(stats.hintDensity * 1000) / 10}%`}</p>
 
-                    <p className={'stat-name'}>Wall-count Variance (rows/cols)</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.rowDensityVariance * 100) / 100}, ${Math.floor(100 * stats.columnDensityVariance) / 100}`}</p>
+                    <p className={'stat-name'}>Wall-count SD (rows/cols)</p>
+                    <p className={'stat-value'}>{`${Math.floor(stats.rowDensitySD * 100) / 100}, ${Math.floor(100 * stats.columnDensitySD) / 100}`}</p>
 
                     <p className={'stat-name'}>Wall Density</p>
                     <p className={'stat-value'}>{`${Math.floor(stats.wallDensity * 1000) / 10}%`}</p>
@@ -51,6 +52,9 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
 
                     <p className={'stat-name'}>Graph Diameter</p>
                     <p className={'stat-value'}>{stats.diameter}</p>
+
+                    <p className={'stat-name'}>Has been solved</p>
+                    <p className={'stat-value'}>{stats.solved ? <strong>Solved</strong> : 'Unsolved'}</p>
 
                     {stats.generationTimeMs ? <>
                         <p className={'stat-name'}>Generator time</p>
@@ -78,8 +82,9 @@ type PuzzleStats = {
     wallDensity: number,
     hintDensity: number,
     diameter: number,
-    rowDensityVariance: number,
-    columnDensityVariance: number,
+    rowDensitySD: number,
+    columnDensitySD: number,
+    solved: boolean,
     restarts?: number,
     generationTimeMs?: number,
 }
@@ -99,8 +104,9 @@ function generateStats(board: DDBoardSpec): PuzzleStats {
         // We could maybe count treasure rooms as larger for this purpose.
         hintDensity: (deadEndCount + board.throneCount) / totalLocs,
         diameter: diameter ? diameter.distance : -1,
-        rowDensityVariance: sampleVariance(board.wallCounts.rows),
-        columnDensityVariance: sampleVariance(board.wallCounts.cols),
+        rowDensitySD: Math.sqrt(sampleVariance(board.wallCounts.rows)),
+        columnDensitySD: Math.sqrt(sampleVariance(board.wallCounts.cols)),
+        solved: hasBeenSolved(board),
         restarts: board.restarts,
         generationTimeMs: board.generationTimeMs,
     }

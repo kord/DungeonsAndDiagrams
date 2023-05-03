@@ -1,4 +1,5 @@
 import {Size} from "./types";
+import {DDBoardSpec} from "../boardgen/ddBoardgen";
 
 type Defaults = {
     height: string,
@@ -38,7 +39,6 @@ export function getStoredBool(valueName: string): boolean {
     return false;
 }
 
-
 export function getStoredSize() {
     return {
         height: getStorednumber('height'),
@@ -59,4 +59,19 @@ export function setStoredNumber(valueName: string, value: number) {
 export function setStoredBool(valueName: string, value: boolean) {
     const key = `dnd_${valueName}`;
     localStorage.setItem(key, value.toString());
+}
+
+const solvedValueMarker = 'solved';
+
+export function markAsSolved(puzzle: DDBoardSpec) {
+    const url = puzzle.url;
+    const key = `dnd_solved_${url}`
+    localStorage.setItem(key, solvedValueMarker);
+}
+
+export function hasBeenSolved(puzzle: DDBoardSpec) {
+    const url = puzzle.url;
+    const key = `dnd_solved_${url}`
+    const val = localStorage.getItem(key);
+    return val === solvedValueMarker;
 }

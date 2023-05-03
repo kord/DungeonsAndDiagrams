@@ -13,6 +13,7 @@ type OptionsState = {
     showPuzzleInfo: boolean,
     lockWhenSolved: boolean,
     colorfulLineCounters: boolean,
+    countdownCounters: boolean,
 };
 
 export class Options extends Component<OptionsProps, OptionsState> {
@@ -23,6 +24,7 @@ export class Options extends Component<OptionsProps, OptionsState> {
             showPuzzleInfo: getStoredBool('showPuzzleInfo'),
             lockWhenSolved: getStoredBool('lockWhenSolved'),
             colorfulLineCounters: getStoredBool('colorfulLineCounters'),
+            countdownCounters: getStoredBool('countdownCounters'),
         }
     }
 
@@ -58,12 +60,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
                 &nbsp;
 
                 <br/>
-                <label htmlFor={'colorfulLineCounters'}>Color the wall counters indicating completion:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'colorfulLineCounters'}
-                           id={'colorfulLineCounters'}
-                           checked={this.state.colorfulLineCounters} onChange={this.setCheckbox}/>
-                </label>
-                <br/>
                 <label htmlFor={'showPuzzleInfo'}>Show puzzle info:
                     <input type={'checkbox'} className={'options__checkbox'} name={'showPuzzleInfo'}
                            id={'showPuzzleInfo'}
@@ -74,6 +70,21 @@ export class Options extends Component<OptionsProps, OptionsState> {
                     <input type={'checkbox'} className={'options__checkbox'} name={'lockWhenSolved'}
                            id={'lockWhenSolved'}
                            checked={this.state.lockWhenSolved} onChange={this.setCheckbox}/>
+                </label>
+
+                <br/>
+                <label htmlFor={'colorfulLineCounters'}>Color the wall counters indicating completion:
+                    <input type={'checkbox'} className={'options__checkbox'} name={'colorfulLineCounters'}
+                           id={'colorfulLineCounters'}
+                           checked={this.state.colorfulLineCounters} onChange={this.setCheckbox}/>
+                </label>
+
+                <br/>
+                <label htmlFor={'countdownCounters'}>Wall counters show unallocated wall count, instead of total wall
+                    count:
+                    <input type={'checkbox'} className={'options__checkbox'} name={'countdownCounters'}
+                           id={'countdownCounters'}
+                           checked={this.state.countdownCounters} onChange={this.setCheckbox}/>
                 </label>
 
                 <p>Start a new game for the selected options to take effect.</p>

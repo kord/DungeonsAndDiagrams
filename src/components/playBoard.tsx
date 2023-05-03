@@ -6,7 +6,7 @@ import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "../utils/mutableGrid";
 import '../css/playBoard.css';
 import '../css/monsters.css';
-import {getStoredBool} from "../utils/localStorage";
+import {getStoredBool, markAsSolved} from "../utils/localStorage";
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
@@ -56,12 +56,17 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
     render() {
         const {size, throneSpec} = this.props.spec.rules;
+        const countdownCounters = getStoredBool('countdownCounters');
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
         } as CSSProperties;
 
         const solved = this.isSolved();
+
+        // Probably a dumb place to be doing this work, but at least we know it'll get done!
+        if (solved) markAsSolved(this.props.spec);
+
         const boardClasses = classNames({
             'play-board': true,
             'play-board--completed': solved,
@@ -84,15 +89,16 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
                 <div className={boardClasses} style={st} key={'itstheboard'}>
                     <div className={'play-board__grid'} key={'itsthegrid'}>
-                        {this.columnHints()}
+                        {this.columnHints(countdownCounters)}
                         {gridLocations(size).map((row, j) => {
-                                return <>
-                                    <div className={this.counterClasses('row', j)}
-                                         key={`rowhint${j}`}>
-                                        {solutionWalls.rows[j]}
-                                        {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
-                                    </div>
-                                    {row.map(loc =>
+                            return <>
+                                <div className={this.counterClasses('row', j)}
+                                     key={`rowhint${j}`}>
+                                    {solutionWalls.rows[j] - (countdownCounters ? this.state.assignedWalls.countTruesInRow(j) : 0)}
+
+                                    {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                                </div>
+                                {row.map(loc =>
                                         <div className={this.blockSquareClassnames(loc, overflowCounts)}
                                              key={loc2Str(loc)}
                                              onMouseDown={this.mouseDownFn(loc)}
@@ -356,14 +362,15 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         }
     }
 
-    private columnHints() {
+    private columnHints(countdownCounters: boolean) {
         const solutionWalls = this.props.spec.wallCounts;
+
         return <>
             <div className={'play-board--topcorner'} key={'topcorner'}/>
             {solutionWalls.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', i)}
                      key={`colhint${i}`}>
-                    {cnt}
+                    {cnt - (countdownCounters ? this.state.assignedWalls.countTruesInColumn(i) : 0)}
                     {/*<p className={'play-board__count__text'}> {cnt}</p>*/}
                 </div>)}
 

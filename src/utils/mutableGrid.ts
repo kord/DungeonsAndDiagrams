@@ -150,6 +150,22 @@ export class MutableGrid {
 
     neighbourCount = (loc: Location) => this.neighbourFunction(loc).filter(n => this.check(n)).length;
 
+    countTruesInColumn = (colNum: number) => {
+        let ret = 0;
+        for (let i = 0; i < this.size.height; i++) {
+            if (this.check({x: colNum, y: i})) ret++;
+        }
+        return ret;
+    }
+
+    countTruesInRow = (rowNum: number) => {
+        let ret = 0;
+        for (let i = 0; i < this.size.width; i++) {
+            if (this.check({y: rowNum, x: i})) ret++;
+        }
+        return ret;
+    }
+
     trueLocs(value = true): Location[] {
         const ret = [];
         for (let j = 0; j < this.size.height; j++) {
