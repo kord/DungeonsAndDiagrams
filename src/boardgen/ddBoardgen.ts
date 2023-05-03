@@ -1,8 +1,8 @@
-import {Linestats, Location, Size} from "./types";
+import {Linestats, Location, Size} from "../utils/types";
 import {gridLocations, loc2Str, shuffle} from "./graphUtils";
-import {MutableGrid} from "./mutableGrid";
+import {MutableGrid} from "../utils/mutableGrid";
 import {hasMultipleSolutions} from "./ddSolver";
-import UrlReader from "./urlReader";
+import UrlReader from "../utils/urlReader";
 
 type ThroneDemand = {
     attemptFirst: number,

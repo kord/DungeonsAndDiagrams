@@ -1,6 +1,6 @@
-import {DDBoardSpec, monsterChoices} from "./ddBoardgen";
+import {DDBoardSpec, monsterChoices} from "../boardgen/ddBoardgen";
 import {MutableGrid} from "./mutableGrid";
-import {loc2Str, locFromStr} from "./graphUtils";
+import {loc2Str, locFromStr} from "../boardgen/graphUtils";
 import {Location, SolnRecord} from "./types";
 
 

@@ -1,5 +1,5 @@
 import {Linestats, Location, Size} from "./types";
-import {gridLocations, gridNeighbourFunc, loc2Str, locFromStr} from "./graphUtils";
+import {gridLocations, gridNeighbourFunc, loc2Str, locFromStr} from "../boardgen/graphUtils";
 
 type MaxDistance = {
     source: Location,

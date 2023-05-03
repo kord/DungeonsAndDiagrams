@@ -1,4 +1,4 @@
-import {Size} from "./boardgen/types";
+import {Size} from "./types";
 
 type Defaults = {
     height: string,

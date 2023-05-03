@@ -1,4 +1,4 @@
-import {MutableGrid} from "./mutableGrid";
+import {MutableGrid} from "../utils/mutableGrid";
 import {gridLocations, loc2Str, locFromStr} from "./graphUtils";
 
 var Logic = require('logic-solver');

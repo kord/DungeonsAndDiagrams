@@ -1,6 +1,6 @@
 import React, {Component, CSSProperties} from 'react';
 import classNames from "classnames";
-import {Location} from "../boardgen/types";
+import {Location} from "../utils/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import '../css/solutionDisplayBoard.css';

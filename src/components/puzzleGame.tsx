@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import {Size, SolnRecord} from "../boardgen/types";
+import {Size, SolnRecord} from "../utils/types";
 import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
 import {PlayBoard} from "./playBoard";
-import {MutableGrid} from "../boardgen/mutableGrid";
-import UrlReader from "../boardgen/urlReader";
+import {MutableGrid} from "../utils/mutableGrid";
+import UrlReader from "../utils/urlReader";
 import {RulesButton} from "./rules";
-import {getStoredBool, getStoredSize} from "../localStorage";
+import {getStoredBool, getStoredSize} from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import {OptionsButton} from "./optionsButton";
 import '../css/puzzleGame.css';

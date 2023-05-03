@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Size} from "../boardgen/types";
-import {getStoredBool, getStoredSize, setStoredBool, setStoredValue} from "../localStorage";
+import {Size} from "../utils/types";
+import {getStoredBool, getStoredSize, setStoredBool, setStoredValue} from "../utils/localStorage";
 
 import '../css/options.css'
 

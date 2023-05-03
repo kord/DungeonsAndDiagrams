@@ -1,12 +1,12 @@
 import React, {Component, CSSProperties, MouseEventHandler} from 'react';
 import classNames from "classnames";
-import {Location, RangeReport, Size} from "../boardgen/types";
+import {Location, RangeReport, Size} from "../utils/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
-import {MutableGrid} from "../boardgen/mutableGrid";
+import {MutableGrid} from "../utils/mutableGrid";
 import '../css/playBoard.css';
 import '../css/monsters.css';
-import {getStoredBool} from "../localStorage";
+import {getStoredBool} from "../utils/localStorage";
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,

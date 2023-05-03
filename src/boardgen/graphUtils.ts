@@ -1,4 +1,4 @@
-import {Location, Size} from "./types";
+import {Location, Size} from "../utils/types";
 
 export function loc2Str(loc: Location) {
     return `${loc.x},${loc.y}`;
