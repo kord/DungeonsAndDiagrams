@@ -11,7 +11,6 @@ import {getStoredBool, markAsSolved} from "../utils/localStorage";
 export type PlayBoardProps = {
     spec: DDBoardSpec,
     lockWhenSolved: boolean,
-
 };
 
 type PlayBoardState = {
