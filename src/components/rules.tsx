@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import Swal from 'sweetalert2';
+import React, { Component } from 'react';
+import { Modal } from './modal';
 import '../css/rulesModal.css';
 
 const rulesList = [
@@ -12,35 +12,39 @@ const rulesList = [
     `Mark walls with left click, floors with right click, and press Z to undo. Sorry if you're on a touch device.`,
 ];
 
+type RulesButtonState = {
+    open: boolean;
+};
 
-let liClasses = 'rules__list-item';
-const rli = rulesList.map((r, i) => `<li key=${i} class="${liClasses}">${r}</li>`).join('\n')
+export class RulesButton extends Component<{}, RulesButtonState> {
+    constructor(props: {}) {
+        super(props);
+        this.state = { open: false };
+    }
 
-function showModal(p1: React.MouseEvent<HTMLButtonElement>) {
-    Swal.fire({
-        title: '<strong>Rules</strong>',
-        icon: 'info',
-        html:
-            '<ol>' +
-            rli +
-            '</ol>' +
-            '<br/>' +
-            `This is an original puzzle by <a href='https://en.wikipedia.org/wiki/Zachtronics'>` +
-            `Zachtronics</a> from <a href='https://www.zachtronics.com/last-call-bbs/'>` +
-            `Last Call BBS</a>.`,
+    open = () => this.setState({ open: true });
+    close = () => this.setState({ open: false });
 
-        width: '80%',
-        showCloseButton: false,
-        showConfirmButton: false,
-    });
-}
-
-export class RulesButton extends Component {
     render() {
         return (
-            <button onClick={showModal}>Rules</button>
+            <>
+                <button onClick={this.open}>Rules</button>
+                {this.state.open && (
+                    <Modal title="Rules" onClose={this.close}>
+                        <ol className="rules__list">
+                            {rulesList.map((r, i) => (
+                                <li key={i} className="rules__list-item">{r}</li>
+                            ))}
+                        </ol>
+                        <p className="rules__credit">
+                            This is an original puzzle by{' '}
+                            <a href="https://en.wikipedia.org/wiki/Zachtronics">Zachtronics</a>
+                            {' '}from{' '}
+                            <a href="https://www.zachtronics.com/last-call-bbs/">Last Call BBS</a>.
+                        </p>
+                    </Modal>
+                )}
+            </>
         );
     }
 }
-
-

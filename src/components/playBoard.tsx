@@ -38,7 +38,6 @@ type OverFlowCounter = {
 }
 
 export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
-    // canvasRef: React.RefObject<HTMLCanvasElement>;
     undoStack: PlayBoardState[];
     stateBeforeClick?: PlayBoardState;
     mouseBehaviour?: MouseBehaviour;
@@ -46,7 +45,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     constructor(props: PlayBoardProps) {
         super(props);
         this.undoStack = [];
-        // this.canvasRef = React.createRef();
         const size = props.spec.rules.size;
         this.state = {
             assignedWalls: new MutableGrid(size, false),

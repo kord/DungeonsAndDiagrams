@@ -1,4 +1,16 @@
+.rules__list {
+    padding-left: 1.25rem;
+    margin: 0;
+}
+
 .rules__list-item {
-    margin-top: 5px;
+    margin-bottom: 6px;
     text-align: left;
+    line-height: 1.35;
+}
+
+.rules__credit {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #666;
 }
