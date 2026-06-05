@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {Size, SolnRecord} from "../utils/types";
-import {DDBoardSpec, generateDDBoard} from "../boardgen/ddBoardgen";
-import {PlayBoard} from "./playBoard";
+import React, { Component } from 'react';
+import { Size, SolnRecord } from "../utils/types";
+import { DDBoardSpec, generateDDBoard } from "../boardgen/ddBoardgen";
+import { PlayBoard } from "./playBoard";
 import UrlReader from "../utils/urlReader";
-import {RulesButton} from "./rules";
-import {getStoredBool, getStoredSize} from "../utils/localStorage";
+import { RulesButton } from "./rules";
+import { getStoredBool, getStoredSize } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
-import {OptionsButton} from "./optionsButton";
+import { OptionsButton } from "./optionsButton";
 import '../css/puzzleGame.css';
 
 export type PuzzleGameProps = {};
@@ -28,11 +28,29 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         const urlPuzzle = UrlReader.puzzleFromUrl();
         this.state = {
             spec: urlPuzzle,
-            size: urlPuzzle?.rules.size || {height: 8, width: 8},
+            size: urlPuzzle?.rules.size || { height: 8, width: 8 },
             solns: [],
         };
     }
 
+
+    componentDidMount(): void {
+        window.addEventListener('popstate', this.onPopState);
+    }
+
+    componentWillUnmount(): void {
+        window.removeEventListener('popstate', this.onPopState);
+    }
+
+    onPopState = () => {
+        const urlPuzzle = UrlReader.puzzleFromUrl();
+        if (urlPuzzle) {
+            this.setState({ spec: urlPuzzle, size: urlPuzzle.rules.size }, () => {
+                this.gameRef.current?.reset(urlPuzzle.rules.size);
+                this.statsRef.current?.update();
+            });
+        }
+    };
 
     newGame = () => {
         const puz = generateDDBoard({
@@ -43,7 +61,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             }
         });
 
-        this.setState({spec: puz, solns: [],}, () => {
+        this.setState({ spec: puz, solns: [], }, () => {
             if (this.gameRef.current) {
                 this.gameRef.current.reset(puz.rules.size);
             }
@@ -52,40 +70,40 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             }
         });
 
-        // TODO: Get some better behaviour on this.
-        window.history.pushState({state: 'puzzle!'}, '', puz.url);
+        // Replace current URL so back button leaves the site, not cycles puzzles
+        window.history.replaceState({}, '', puz.url);
     }
 
     render() {
         return (<>
-                <button onClick={this.newGame} key={'new'}>New Game</button>
-                &nbsp;
-                <RulesButton/>
-                &nbsp;
-                <OptionsButton onChangeFn={() => this.forceUpdate()}/>
-                <br/>
-                <button onClick={e => this.gameRef.current!.attemptUndo()}
-                        disabled={this.state.spec === undefined}>
-                    Undo
-                </button>
-                &nbsp;
-                <button onClick={e => this.gameRef.current!.reset()}
-                        disabled={this.state.spec === undefined}>
-                    Reset
-                </button>
+            <button onClick={this.newGame} key={'new'}>New Game</button>
+            &nbsp;
+            <RulesButton />
+            &nbsp;
+            <OptionsButton onChangeFn={() => this.forceUpdate()} />
+            <br />
+            <button onClick={e => this.gameRef.current!.attemptUndo()}
+                disabled={this.state.spec === undefined}>
+                Undo
+            </button>
+            &nbsp;
+            <button onClick={e => this.gameRef.current!.reset()}
+                disabled={this.state.spec === undefined}>
+                Reset
+            </button>
 
-                <div className={'puzzle-display-panel'}>
-                    <div>{this.state.spec ?
-                        <PlayBoard
-                            spec={this.state.spec}
-                            lockWhenSolved={getStoredBool('lockWhenSolved')}
-                            ref={this.gameRef}/>
-                        : <></>}</div>
-                    {this.state.spec && getStoredBool('showPuzzleInfo') ?
-                        <StatsPanel puzzle={this.state.spec} ref={this.statsRef}/> : <></>}
-                </div>
+            <div className={'puzzle-display-panel'}>
+                <div>{this.state.spec ?
+                    <PlayBoard
+                        spec={this.state.spec}
+                        lockWhenSolved={getStoredBool('lockWhenSolved')}
+                        ref={this.gameRef} />
+                    : <></>}</div>
+                {this.state.spec && getStoredBool('showPuzzleInfo') ?
+                    <StatsPanel puzzle={this.state.spec} ref={this.statsRef} /> : <></>}
+            </div>
 
-            </>
+        </>
         );
     }
 }

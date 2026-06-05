@@ -1,7 +1,7 @@
-import {DDBoardSpec, monsterChoices} from "../boardgen/ddBoardgen";
-import {MutableGrid} from "./mutableGrid";
-import {loc2Str, locFromStr} from "../boardgen/graphUtils";
-import {Location, SolnRecord} from "./types";
+import { DDBoardSpec, monsterChoices } from "../boardgen/ddBoardgen";
+import { MutableGrid } from "./mutableGrid";
+import { loc2Str, locFromStr } from "../boardgen/graphUtils";
+import { Location, SolnRecord } from "./types";
 
 
 function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
@@ -11,7 +11,7 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
     return {
         walls: s.walls,
         wallCounts: s.walls.profile(true),
-        rules: {size: s.walls.size, throneSpec: {attemptFirst: 1, attemptSubsequent: 1}},
+        rules: { size: s.walls.size, throneSpec: { attemptFirst: 1, attemptSubsequent: 1 } },
         deadends: floors.leafGrid(),
         monsterChoices: monsterChoices(floors),
         treasure: treasure,
@@ -37,9 +37,9 @@ class UrlReader {
         const t = thrones === null ? [] : atob(thrones).split('/').map(locFromStr);
         if (t.some(l => !l)) return undefined;
 
-        const size = {height: +height, width: +width};
+        const size = { height: +height, width: +width };
         const ret = MutableGrid.fromString(size, puzzleString);
-        return buildPuzzleSpec({walls: ret, treasures: t as Location[]});
+        return buildPuzzleSpec({ walls: ret, treasures: t as Location[] });
     }
 
     // static urlFromBoardSpec(p: DDBoardSpec): string {
@@ -64,8 +64,7 @@ class UrlReader {
         const wallSequenceString = walls.stringEncoding();
         const throneSequenceString = btoa(treasure.trueLocs().map(loc2Str).join('/'));
 
-        const baseURL = window.location.href;
-        // console.log(baseURL);
+        const baseURL = window.location.origin + window.location.pathname;
         const myUrl = new URL(baseURL);
         myUrl.searchParams.set('h', size.height.toString());
         myUrl.searchParams.set('w', size.width.toString());
