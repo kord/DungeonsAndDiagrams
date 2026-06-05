@@ -25,4 +25,6 @@ yarn-error.log*
 # IDE
 .idea/
 /src/assets/dalle/
-/.firebase
+/.firebase/
+/.vscode/
+/.idea/
