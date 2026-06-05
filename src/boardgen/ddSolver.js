@@ -1,5 +1,5 @@
-import {MutableGrid} from "../utils/mutableGrid";
-import {gridLocations, loc2Str, locFromStr} from "./graphUtils";
+import { MutableGrid } from "../utils/mutableGrid";
+import { gridLocations, loc2Str, locFromStr } from "./graphUtils";
 
 var Logic = require('logic-solver');
 
@@ -20,31 +20,31 @@ const locationGenerators = (size) => {
     },
     boxCenteredAt: (loc) => {
       return [
-        {x: loc.x - 1, y: loc.y - 1},
-        {x: loc.x - 1, y: loc.y},
-        {x: loc.x - 1, y: loc.y + 1},
-        {x: loc.x, y: loc.y - 1},
-        {x: loc.x, y: loc.y},
-        {x: loc.x, y: loc.y + 1},
-        {x: loc.x + 1, y: loc.y - 1},
-        {x: loc.x + 1, y: loc.y},
-        {x: loc.x + 1, y: loc.y + 1},
+        { x: loc.x - 1, y: loc.y - 1 },
+        { x: loc.x - 1, y: loc.y },
+        { x: loc.x - 1, y: loc.y + 1 },
+        { x: loc.x, y: loc.y - 1 },
+        { x: loc.x, y: loc.y },
+        { x: loc.x, y: loc.y + 1 },
+        { x: loc.x + 1, y: loc.y - 1 },
+        { x: loc.x + 1, y: loc.y },
+        { x: loc.x + 1, y: loc.y + 1 },
       ].filter(l => l.x >= 0 && l.y >= 0 && l.x < size.width && l.y < size.height);
     },
     fenceAround: (loc) => {
       return [
-        {x: loc.x - 2, y: loc.y - 1},
-        {x: loc.x - 2, y: loc.y},
-        {x: loc.x - 2, y: loc.y + 1},
-        {x: loc.x + 2, y: loc.y - 1},
-        {x: loc.x + 2, y: loc.y},
-        {x: loc.x + 2, y: loc.y + 1},
-        {y: loc.y - 2, x: loc.x - 1},
-        {y: loc.y - 2, x: loc.x},
-        {y: loc.y - 2, x: loc.x + 1},
-        {y: loc.y + 2, x: loc.x - 1},
-        {y: loc.y + 2, x: loc.x},
-        {y: loc.y + 2, x: loc.x + 1},
+        { x: loc.x - 2, y: loc.y - 1 },
+        { x: loc.x - 2, y: loc.y },
+        { x: loc.x - 2, y: loc.y + 1 },
+        { x: loc.x + 2, y: loc.y - 1 },
+        { x: loc.x + 2, y: loc.y },
+        { x: loc.x + 2, y: loc.y + 1 },
+        { y: loc.y - 2, x: loc.x - 1 },
+        { y: loc.y - 2, x: loc.x },
+        { y: loc.y - 2, x: loc.x + 1 },
+        { y: loc.y + 2, x: loc.x - 1 },
+        { y: loc.y + 2, x: loc.x },
+        { y: loc.y + 2, x: loc.x + 1 },
       ].filter(l => l.x >= 0 && l.y >= 0 && l.x < size.width && l.y < size.height);
     },
 
@@ -59,10 +59,10 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
 
   var solver = new Logic.Solver();
 
-  let {size} = spec.rules;
-  const {onBoundary, row, col, fenceAround, boxCenteredAt} = locationGenerators(size);
+  let { size } = spec.rules;
+  const { onBoundary, row, col, fenceAround, boxCenteredAt } = locationGenerators(size);
 
-  const interior = gridLocations({height: size.height - 2, width: size.width - 2}, {x: 1, y: 1}).flat();
+  const interior = gridLocations({ height: size.height - 2, width: size.width - 2 }, { x: 1, y: 1 }).flat();
   const rim = gridLocations(size).filter(l => onBoundary(l, size)).flat();
   const treasureCount = spec.treasure.trueLocs().length;
   const deadEnds = spec.deadends.trueLocs();
@@ -110,17 +110,17 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
 
   const treasureRoomOriginsContainingMe = (loc) => {
     return [
-      {x: loc.x + 1, y: loc.y + 1},
-      {x: loc.x, y: loc.y + 1},
-      {x: loc.x + 1, y: loc.y},
-      {x: loc.x, y: loc.y},
+      { x: loc.x + 1, y: loc.y + 1 },
+      { x: loc.x, y: loc.y + 1 },
+      { x: loc.x + 1, y: loc.y },
+      { x: loc.x, y: loc.y },
     ].filter(l => !onBoundary(l, size));
   }
 
   // No 2x2 floor constraints.
-  const twox2Origins = gridLocations({height: size.height - 1, width: size.width - 1}).flat();
+  const twox2Origins = gridLocations({ height: size.height - 1, width: size.width - 1 }).flat();
   twox2Origins.forEach(loc => {
-    const sq = gridLocations({height: 2, width: 2}, loc).flat();
+    const sq = gridLocations({ height: 2, width: 2 }, loc).flat();
     const thr = treasureRoomOriginsContainingMe(loc, size).map(treasureString);
     solver.require(Logic.or(...thr, ...sq.map(loc2Str)));
   });
@@ -165,7 +165,7 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
 }
 
 export function hasMultipleSolutions(spec) {
-  return ddSolve(spec, 2).length > 1;
+  return ddSolve(spec, 2).length !== 1;
 }
 
 function solutionDetails(size, soln) {

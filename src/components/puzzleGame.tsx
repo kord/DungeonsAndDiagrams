@@ -43,6 +43,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
     }
 
     onPopState = () => {
+        // Only reload if the URL actually changed from what we're showing.
+        if (this.state.spec && window.location.href === this.state.spec.url) return;
         const urlPuzzle = UrlReader.puzzleFromUrl();
         if (urlPuzzle) {
             this.setState({ spec: urlPuzzle, size: urlPuzzle.rules.size }, () => {

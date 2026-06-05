@@ -7,7 +7,9 @@ import { Location, SolnRecord } from "./types";
 function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
     const floors = s.walls.inverted();
     const treasure = MutableGrid.fromLocs(s.walls.size, s.treasures);
-    const url = UrlReader.urlFromPuzzle(s.walls, treasure)
+    // Preserve the exact current URL rather than regenerating it, so the stored
+    // url always matches what's in the browser's address bar.
+    const url = window.location.href;
     return {
         walls: s.walls,
         wallCounts: s.walls.profile(true),
