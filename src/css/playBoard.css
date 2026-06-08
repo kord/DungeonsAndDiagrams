@@ -1,10 +1,9 @@
-
 .play-board {
     --board-height: 7;
     --board-width: 7;
 
-    --side-color: black;
-    --top-bottom-color: black;
+    --side-color: var(--board-side-color);
+    --top-bottom-color: var(--board-top-bottom-color);
 
     --scale: 1.0;
     --default-square-size: 50px;
@@ -28,15 +27,13 @@
 }
 
 .play-board--completed {
-    --side-color: green;
-    --top-bottom-color: green;
+    --side-color: var(--board-completed-color);
+    --top-bottom-color: var(--board-completed-color);
     /*border-width: 10px;*/
     /*background-color: green;*/
 }
 
-.play-board--incomplete {
-
-}
+.play-board--incomplete {}
 
 .play-board__grid {
     display: grid;
@@ -45,13 +42,11 @@
     grid-template-rows: var(--hint-height) repeat(var(--board-height), var(--square-size));
 }
 
-.play-board--topcorner {
-
-}
+.play-board--topcorner {}
 
 .play-board__count {
-    background-color: rgba(165, 42, 42, 0.32);
-    color: black;
+    background-color: var(--count-bg);
+    color: var(--count-text);
     font-size: x-large;
     font-weight: bold;
 }
@@ -76,19 +71,19 @@
 /*    position: relative;*/
 /*}*/
 .play-board--colorful-counters .play-board__count--undersatisfied {
-    color: black;
+    color: var(--count-undersatisfied);
 }
 
 .play-board--colorful-counters .play-board__count--floor-saturated {
-    color: #ffff71;
+    color: var(--count-floor-saturated);
 }
 
 .play-board--colorful-counters .play-board__count--satisfied {
-    color: green;
+    color: var(--count-satisfied);
 }
 
 .play-board--colorful-counters .play-board__count--oversatisfied {
-    color: red;
+    color: var(--count-oversatisfied);
 }
 
 

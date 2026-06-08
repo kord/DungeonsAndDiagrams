@@ -12,5 +12,5 @@
 .rules__credit {
     margin-top: 1rem;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-secondary);
 }

@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {Size} from "../utils/types";
-import {getStoredBool, getStoredSize, setStoredBool, setStoredValue} from "../utils/localStorage";
+import React, { Component } from 'react';
+import { Size } from "../utils/types";
+import { applyTheme, getStoredBool, getStoredSize, setStoredBool, setStoredValue } from "../utils/localStorage";
 
 import '../css/options.css'
 
@@ -14,6 +14,7 @@ type OptionsState = {
     lockWhenSolved: boolean,
     colorfulLineCounters: boolean,
     countdownCounters: boolean,
+    darkMode: boolean,
 };
 
 export class Options extends Component<OptionsProps, OptionsState> {
@@ -25,27 +26,31 @@ export class Options extends Component<OptionsProps, OptionsState> {
             lockWhenSolved: getStoredBool('lockWhenSolved'),
             colorfulLineCounters: getStoredBool('colorfulLineCounters'),
             countdownCounters: getStoredBool('countdownCounters'),
+            darkMode: getStoredBool('darkMode'),
         }
     }
 
     setHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
         const height = +event.target.value;
-        this.setState({size: {height: height, width: this.state.size.width}}, this.props.onChangeFn);
+        this.setState({ size: { height: height, width: this.state.size.width } }, this.props.onChangeFn);
         if (Number.isInteger(height) && height > 1) setStoredValue('height', height.toString());
     }
 
     setWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
         const width = +event.target.value;
         if (Number.isInteger(width) && width > 1) setStoredValue('width', width.toString());
-        this.setState({size: {width: width, height: this.state.size.height}}, this.props.onChangeFn);
+        this.setState({ size: { width: width, height: this.state.size.height } }, this.props.onChangeFn);
     }
 
     setCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, checked} = event.target;
+        const { name, checked } = event.target;
         setStoredBool(name, checked);
-        let newState = {[name as keyof OptionsState]: checked};
+        let newState = { [name as keyof OptionsState]: checked };
         // @ts-ignore
-        this.setState(newState, this.props.onChangeFn);
+        this.setState(newState, () => {
+            if (name === 'darkMode') applyTheme();
+            if (this.props.onChangeFn) this.props.onChangeFn();
+        });
     }
 
     render() {
@@ -53,38 +58,45 @@ export class Options extends Component<OptionsProps, OptionsState> {
             <div className={'options'}>
 
                 Width: &nbsp;
-                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'} key={'width'}/>
+                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'} key={'width'} />
                 &nbsp;
                 Height: &nbsp;
-                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'}/>
+                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'} />
                 &nbsp;
 
-                <br/>
+                <br />
                 <label htmlFor={'showPuzzleInfo'}>Show puzzle info:
                     <input type={'checkbox'} className={'options__checkbox'} name={'showPuzzleInfo'}
-                           id={'showPuzzleInfo'}
-                           checked={this.state.showPuzzleInfo} onChange={this.setCheckbox}/>
+                        id={'showPuzzleInfo'}
+                        checked={this.state.showPuzzleInfo} onChange={this.setCheckbox} />
                 </label>
-                <br/>
+                <br />
                 <label htmlFor={'lockWhenSolved'}>Lock puzzle when solved:
                     <input type={'checkbox'} className={'options__checkbox'} name={'lockWhenSolved'}
-                           id={'lockWhenSolved'}
-                           checked={this.state.lockWhenSolved} onChange={this.setCheckbox}/>
+                        id={'lockWhenSolved'}
+                        checked={this.state.lockWhenSolved} onChange={this.setCheckbox} />
                 </label>
 
-                <br/>
+                <br />
                 <label htmlFor={'colorfulLineCounters'}>Color the wall counters indicating completion:
                     <input type={'checkbox'} className={'options__checkbox'} name={'colorfulLineCounters'}
-                           id={'colorfulLineCounters'}
-                           checked={this.state.colorfulLineCounters} onChange={this.setCheckbox}/>
+                        id={'colorfulLineCounters'}
+                        checked={this.state.colorfulLineCounters} onChange={this.setCheckbox} />
                 </label>
 
-                <br/>
+                <br />
                 <label htmlFor={'countdownCounters'}>Wall counters show unallocated wall count, instead of total wall
                     count:
                     <input type={'checkbox'} className={'options__checkbox'} name={'countdownCounters'}
-                           id={'countdownCounters'}
-                           checked={this.state.countdownCounters} onChange={this.setCheckbox}/>
+                        id={'countdownCounters'}
+                        checked={this.state.countdownCounters} onChange={this.setCheckbox} />
+                </label>
+
+                <br />
+                <label htmlFor={'darkMode'}>Dark mode:
+                    <input type={'checkbox'} className={'options__checkbox'} name={'darkMode'}
+                        id={'darkMode'}
+                        checked={this.state.darkMode} onChange={this.setCheckbox} />
                 </label>
 
                 <p>Start a new game for the selected options to take effect.</p>
@@ -93,4 +105,4 @@ export class Options extends Component<OptionsProps, OptionsState> {
     }
 }
 
-export default {Options};
+export default { Options };

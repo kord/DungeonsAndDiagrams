@@ -1,5 +1,5 @@
-import {Size} from "./types";
-import {DDBoardSpec} from "../boardgen/ddBoardgen";
+import { Size } from "./types";
+import { DDBoardSpec } from "../boardgen/ddBoardgen";
 
 type Defaults = {
     height: string,
@@ -7,6 +7,7 @@ type Defaults = {
     showPuzzleInfo: string,
     lockWhenSolved: string,
     colorfulLineCounters: string,
+    darkMode: string,
 }
 
 const defaultValues: Defaults = {
@@ -15,6 +16,7 @@ const defaultValues: Defaults = {
     showPuzzleInfo: 'false',
     lockWhenSolved: 'true',
     colorfulLineCounters: 'true',
+    darkMode: 'false',
 }
 
 export function getStoredValue(valueName: string): string | undefined {
@@ -74,4 +76,10 @@ export function hasBeenSolved(puzzle: DDBoardSpec) {
     const key = `dnd_solved_${url}`
     const val = localStorage.getItem(key);
     return val === solvedValueMarker;
+}
+
+/** Apply the current darkMode setting from localStorage to the DOM. */
+export function applyTheme() {
+    const dark = getStoredBool('darkMode');
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }

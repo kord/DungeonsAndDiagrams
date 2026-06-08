@@ -1,6 +1,6 @@
 .stats-panel {
     /*width: 18%;*/
-    border: black 1px solid;
+    border: var(--border-color) 1px solid;
     margin: 10px;
     /*padding: 10px;*/
     /*grid-template-rows: 20px*/
@@ -11,7 +11,8 @@
     grid-template-columns: 1fr .5fr;
 }
 
-.stat-name, .stat-value {
+.stat-name,
+.stat-value {
     margin: 5px;
     margin-left: 10px;
 }

@@ -1,5 +1,5 @@
-import {Linestats, Location, Size} from "./types";
-import {gridLocations, gridNeighbourFunc, loc2Str, locFromStr} from "../boardgen/graphUtils";
+import { Linestats, Location, Size } from "./types";
+import { gridLocations, gridNeighbourFunc, loc2Str, locFromStr } from "../boardgen/graphUtils";
 
 type MaxDistance = {
     source: Location,
@@ -71,12 +71,12 @@ export class MutableGrid {
     }
 
     // Find the first location of a true element in the grid, starting in the top-left and scanning across rows first.
-    firstTrue(startloc: Location = {x: 0, y: 0}): Location | undefined {
+    firstTrue(startloc: Location = { x: 0, y: 0 }): Location | undefined {
         // Only use a nonzero start for out x-coordinate the first time through.
         let iStart = startloc.x;
         for (let j = startloc.y; j < this.size.height; j++) {
             for (let i = iStart; i < this.size.width; i++) {
-                if (this.grid[j][i]) return ({x: i, y: j});
+                if (this.grid[j][i]) return ({ x: i, y: j });
             }
             iStart = 0;
         }
@@ -143,7 +143,7 @@ export class MutableGrid {
         if (loc.x + size.width > this.size.width || loc.y + size.height > this.size.height) return false;
         for (let j = 0; j < size.height; j++)
             for (let i = 0; i < size.width; i++) {
-                if (!this.check({x: loc.x + i, y: loc.y + j})) return false;
+                if (!this.check({ x: loc.x + i, y: loc.y + j })) return false;
             }
         return true;
     }
@@ -153,7 +153,7 @@ export class MutableGrid {
     countTruesInColumn = (colNum: number) => {
         let ret = 0;
         for (let i = 0; i < this.size.height; i++) {
-            if (this.check({x: colNum, y: i})) ret++;
+            if (this.check({ x: colNum, y: i })) ret++;
         }
         return ret;
     }
@@ -161,7 +161,7 @@ export class MutableGrid {
     countTruesInRow = (rowNum: number) => {
         let ret = 0;
         for (let i = 0; i < this.size.width; i++) {
-            if (this.check({y: rowNum, x: i})) ret++;
+            if (this.check({ y: rowNum, x: i })) ret++;
         }
         return ret;
     }
@@ -170,7 +170,7 @@ export class MutableGrid {
         const ret = [];
         for (let j = 0; j < this.size.height; j++) {
             for (let i = 0; i < this.size.width; i++) {
-                if (this.grid[j][i] === value) ret.push({x: i, y: j});
+                if (this.grid[j][i] === value) ret.push({ x: i, y: j });
             }
         }
         return ret;
@@ -188,7 +188,7 @@ export class MutableGrid {
         for (let j = 0; j < this.size.height; j++) {
             const row = [];
             for (let i = 0; i < this.size.width; i++) {
-                const loc = {x: i, y: j};
+                const loc = { x: i, y: j };
                 if (!this.check(loc)) row.push(wallChar);
                 else {
                     row.push(this.isLeaf(loc) ? leafChar : emptyChar);
@@ -214,7 +214,7 @@ export class MutableGrid {
                 }
             }
         }
-        return {rows: rows, cols: cols,}
+        return { rows: rows, cols: cols, }
     }
 
     copy(): MutableGrid {
@@ -249,7 +249,7 @@ export class MutableGrid {
         if (!(this.size.height === other.size.height && this.size.width === other.size.width)) return false;
         for (let j = 0; j < this.size.height; j++) {
             for (let i = 0; i < this.size.width; i++) {
-                const loc = {x: i, y: j,};
+                const loc = { x: i, y: j, };
                 if (this.check(loc) !== other.check(loc)) return false;
             }
         }
@@ -287,7 +287,7 @@ export class MutableGrid {
         do {
             const newDistance = this.maxDistance(maxDistance.destination);
             // We're done if the number doesn't improve.
-            if (newDistance.distance == maxDistance.distance) return newDistance;
+            if (newDistance.distance === maxDistance.distance) return newDistance;
             maxDistance = newDistance;
         } while (true)
     }

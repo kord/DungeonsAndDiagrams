@@ -1,0 +1,77 @@
+/* ===== Light theme (default) ===== */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-header: #282c34;
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --text-header: #ffffff;
+    --text-muted: #999999;
+    --border-color: #000000;
+    --modal-bg: #ffffff;
+    --modal-border: #eeeeee;
+    --modal-overlay: rgba(0, 0, 0, 0.45);
+    --modal-close: #666666;
+    --modal-close-hover: #222222;
+    --button-bg: #efefef;
+    --button-text: #000000;
+    --button-border: #767676;
+    --button-hover-bg: #e0e0e0;
+    --count-bg: rgba(165, 42, 42, 0.32);
+    --count-text: #000000;
+    --count-undersatisfied: #000000;
+    --count-floor-saturated: #ffff71;
+    --count-satisfied: green;
+    --count-oversatisfied: red;
+    --solution-count-bg: #98e7ff;
+    --solution-count-undersatisfied: blue;
+    --solution-count-satisfied: green;
+    --solution-count-oversatisfied: red;
+    --block-present: whitesmoke;
+    --block-absent: darkgray;
+    --block-1neighbour: #bbfabb;
+    --block-longest-path: #ffacac;
+    --link-color: #61dafb;
+    --board-side-color: black;
+    --board-top-bottom-color: black;
+    --board-completed-color: green;
+}
+
+/* ===== Dark theme ===== */
+[data-theme="dark"] {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-header: #0f3460;
+    --text-primary: #e0e0e0;
+    --text-secondary: #aaaaaa;
+    --text-header: #e0e0e0;
+    --text-muted: #777777;
+    --border-color: #444466;
+    --modal-bg: #1e1e32;
+    --modal-border: #333355;
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --modal-close: #aaaaaa;
+    --modal-close-hover: #e0e0e0;
+    --button-bg: #2a2a4a;
+    --button-text: #e0e0e0;
+    --button-border: #555577;
+    --button-hover-bg: #3a3a5a;
+    --count-bg: rgba(139, 90, 43, 0.4);
+    --count-text: #e0e0e0;
+    --count-undersatisfied: #cccccc;
+    --count-floor-saturated: #b8b84d;
+    --count-satisfied: #4caf50;
+    --count-oversatisfied: #f44336;
+    --solution-count-bg: #1a5276;
+    --solution-count-undersatisfied: #64b5f6;
+    --solution-count-satisfied: #4caf50;
+    --solution-count-oversatisfied: #f44336;
+    --block-present: #3a3a5c;
+    --block-absent: #1a1a2e;
+    --block-1neighbour: #2d5a2d;
+    --block-longest-path: #5c2d2d;
+    --link-color: #61dafb;
+    --board-side-color: #555577;
+    --board-top-bottom-color: #555577;
+    --board-completed-color: #4caf50;
+}

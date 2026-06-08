@@ -25,9 +25,6 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
 
 
 class UrlReader {
-    constructor() {
-    }
-
     static puzzleFromUrl() {
         const queryParams = new URLSearchParams(window.location.search);
         const height = queryParams.get('h');

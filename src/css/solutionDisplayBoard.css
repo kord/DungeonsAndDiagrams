@@ -1,10 +1,9 @@
-
 .simple-grid-board {
     --board-height: 7;
     --board-width: 7;
 
-    --side-color: black;
-    --top-bottom-color: black;
+    --side-color: var(--board-side-color);
+    --top-bottom-color: var(--board-top-bottom-color);
 
     --scale: 1.0;
     --square-size: calc(40px * var(--scale));
@@ -30,12 +29,10 @@
     grid-template-rows: var(--hint-height) repeat(var(--board-height), var(--square-size));
 }
 
-.simple-grid-board--topcorner {
-
-}
+.simple-grid-board--topcorner {}
 
 .simple-grid-board__count {
-    background-color: #98e7ff;
+    background-color: var(--solution-count-bg);
     font-size: x-large;
     font-weight: bold;
 }
@@ -61,15 +58,15 @@
 /*}*/
 
 .simple-grid-board__count--undersatisfied {
-    color: blue;
+    color: var(--solution-count-undersatisfied);
 }
 
 .simple-grid-board__count--satisfied {
-    color: green;
+    color: var(--solution-count-satisfied);
 }
 
 .simple-grid-board__count--oversatisfied {
-    color: red;
+    color: var(--solution-count-oversatisfied);
 }
 
 
@@ -79,18 +76,19 @@
 }
 
 .block-square--present {
-    background-color: whitesmoke;
+    background-color: var(--block-present);
 }
 
 .block-square--absent {
-    background-color: darkgray;
+    background-color: var(--block-absent);
 }
 
 .block-square--1neighbour {
-    background-color: #bbfabb;
+    background-color: var(--block-1neighbour);
 }
 
-.block-square--treasure, .block-square--center {
+.block-square--treasure,
+.block-square--center {
     /*background-color: gold;*/
     background-image: url("../assets/treasure-chest-svgrepo-com.svg");
     background-size: contain;
@@ -98,5 +96,5 @@
 }
 
 .block-square--with-longest-path {
-    background-color: #ffacac;
+    background-color: var(--block-longest-path);
 }
