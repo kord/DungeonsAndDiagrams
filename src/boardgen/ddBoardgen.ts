@@ -1,7 +1,7 @@
-import {Linestats, Location, Size} from "../utils/types";
-import {gridLocations, loc2Str, shuffle} from "./graphUtils";
-import {MutableGrid} from "../utils/mutableGrid";
-import {hasMultipleSolutions} from "./ddSolver";
+import { Linestats, Location, Size } from "../utils/types";
+import { gridLocations, loc2Str, shuffle, createRng, hashString } from "./graphUtils";
+import { MutableGrid } from "../utils/mutableGrid";
+import { hasMultipleSolutions } from "./ddSolver";
 import UrlReader from "../utils/urlReader";
 
 type ThroneDemand = {
@@ -39,7 +39,7 @@ export type DDBoardSpec = {
 // found for such a room.
 function installThrone(grid: MutableGrid) {
     // console.log(`Entered installThrone`)
-    const throneSize: Size = {width: 3, height: 3};
+    const throneSize: Size = { width: 3, height: 3 };
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
     let foundone = false;
@@ -58,7 +58,7 @@ function installThrone(grid: MutableGrid) {
 
         if (grid.checkBlock(loc, throneSize)) {
             // We have a candidate location...
-            core = {x: loc!.x + 1, y: loc!.y + 1};
+            core = { x: loc!.x + 1, y: loc!.y + 1 };
             const room = gridLocations(throneSize, loc!).flat();
             const roomstrs = new Set(room.map(loc2Str));
             const roomneighbours = room.map(loc => grid.neighbourFunction(loc)).flat().filter(loc => !roomstrs.has(loc2Str(loc)));
@@ -95,7 +95,7 @@ function installThrone(grid: MutableGrid) {
 }
 
 function generateRandomFloorplan(spec: DDBoardgenSpec) {
-    const disallowedBlockSize = {height: 2, width: 2};
+    const disallowedBlockSize = { height: 2, width: 2 };
     const randomInt = (n: number) => Math.floor(Math.random() * n);
 
     let grid: MutableGrid;
@@ -107,7 +107,7 @@ function generateRandomFloorplan(spec: DDBoardgenSpec) {
         grid = new MutableGrid(spec.size, true);
 
         // Install treasures
-        const {throneSpec} = spec;
+        const { throneSpec } = spec;
 
         throneLocs = [];
         const installFirst = Math.random() <= throneSpec.attemptFirst;
@@ -135,7 +135,7 @@ function generateRandomFloorplan(spec: DDBoardgenSpec) {
         twox2Done = blockPossibilities.every(loc => {
             let success = true;
             if (grid.checkBlock(loc, disallowedBlockSize)) {
-                const candidates = shuffle(gridLocations({width: 2, height: 2}, loc).flat());
+                const candidates = shuffle(gridLocations({ width: 2, height: 2 }, loc).flat());
                 success = candidates.some(cl => {
                     grid.markSafe();
                     grid.setLoc(cl, false);
@@ -152,7 +152,7 @@ function generateRandomFloorplan(spec: DDBoardgenSpec) {
     throneLocs.forEach(loc => grid.setLoc(loc, true));
     grid.markSafe();
 
-    return {grid: grid, throneLocs: throneLocs, restarts: loopCount};
+    return { grid: grid, throneLocs: throneLocs, restarts: loopCount };
 }
 
 // Wiggle a point into one of its 9 neighbours uniformly at random.
@@ -163,11 +163,13 @@ function offCenter(loc: Location): Location {
     }
 }
 
-// Generate a random selection of monsters for all of the squares marked true in the passed grid.
-export function monsterChoices(g: MutableGrid) {
+// Generate a deterministic selection of monsters for all of the squares marked true in the passed grid.
+// The seed should be derived from the puzzle definition so the same puzzle always gets the same monsters.
+export function monsterChoices(g: MutableGrid, seed: number) {
     const maxMonster = 16;
+    const rng = createRng(seed);
     const monsterChoice = new Map<string, number>();
-    g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(Math.random() * maxMonster)));
+    g.leaves().forEach(loc => monsterChoice.set(loc2Str(loc), 1 + Math.floor(rng() * maxMonster)));
     return monsterChoice;
 }
 
@@ -180,7 +182,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     do {
         let board = generateRandomFloorplan(spec);
 
-        const {grid, throneLocs} = board;
+        const { grid, throneLocs } = board;
         // grid.show();
 
         const walls = new MutableGrid(spec.size, true);
@@ -201,12 +203,16 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
 
         const wallCounts = grid.profile(false);
 
+        // Derive a deterministic seed from walls + treasure so monsters are stable.
+        const puzzleSeed = hashString(walls.stringEncoding() + '|' +
+            treasure.trueLocs().map(loc2Str).sort().join(','));
+
         ret = {
             rules: spec,
             floors: grid,
             walls: walls,
             deadends: deadends,
-            monsterChoices: monsterChoices(grid),
+            monsterChoices: monsterChoices(grid, puzzleSeed),
             treasure: treasure,
             throneCount: throneLocs.length,
             wallCounts: wallCounts,
