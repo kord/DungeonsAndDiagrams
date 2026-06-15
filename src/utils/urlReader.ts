@@ -1,6 +1,6 @@
 import { DDBoardSpec, monsterChoices } from "../boardgen/ddBoardgen";
 import { MutableGrid } from "./mutableGrid";
-import { loc2Str, locFromStr, hashString, gridLocations } from "../boardgen/graphUtils";
+import { loc2Str, locFromStr, hashString, gridLocations, createRng } from "../boardgen/graphUtils";
 import { Location, Size, SolnRecord } from "./types";
 
 
@@ -20,16 +20,63 @@ function gridFromBytes(size: Size, bytes: Uint8Array, offset: number): MutableGr
     return grid;
 }
 
-/** Standard base64 → base64url (RFC 4648 §5). */
-function toBase64url(b64: string): string {
-    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+/** Encode a byte array as base62 (0-9A-Za-z), preserving leading zeros. */
+function toBase62(bytes: Uint8Array): string {
+    const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+    // Count and strip leading zero bytes; we restore them after encoding.
+    let leadingZeros = 0;
+    while (leadingZeros < bytes.length && bytes[leadingZeros] === 0) leadingZeros++;
+
+    if (leadingZeros === bytes.length) return '0'.repeat(leadingZeros);
+
+    const num = Array.from(bytes.slice(leadingZeros));
+    const digits: number[] = [];
+    while (num.some(b => b !== 0)) {
+        let remainder = 0;
+        for (let i = 0; i < num.length; i++) {
+            const n = remainder * 256 + num[i];
+            num[i] = Math.floor(n / 62);
+            remainder = n % 62;
+        }
+        digits.push(remainder);
+    }
+
+    return '0'.repeat(leadingZeros) + digits.reverse().map(d => ALPHABET[d]).join('');
 }
 
-/** base64url → standard base64. */
-function fromBase64url(s: string): string {
-    let b64 = s.replace(/-/g, '+').replace(/_/g, '/');
-    while (b64.length % 4) b64 += '=';
-    return b64;
+/** Decode a base62 string back into a byte array. */
+function fromBase62(str: string): Uint8Array {
+    const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const charMap = new Map<string, number>();
+    for (let i = 0; i < ALPHABET.length; i++) charMap.set(ALPHABET[i], i);
+
+    // Count and strip leading zeros; we restore them after decoding.
+    let leadingZeros = 0;
+    while (leadingZeros < str.length && str[leadingZeros] === '0') leadingZeros++;
+
+    if (leadingZeros === str.length) return new Uint8Array(leadingZeros);
+
+    const bytes: number[] = [];
+    for (const ch of str.slice(leadingZeros)) {
+        const val = charMap.get(ch);
+        if (val === undefined) throw new Error(`Invalid base62 character: ${ch}`);
+
+        let carry = val;
+        for (let i = bytes.length - 1; i >= 0; i--) {
+            const n = bytes[i] * 62 + carry;
+            bytes[i] = n & 0xFF;
+            carry = n >>> 8;
+        }
+        while (carry > 0) {
+            bytes.unshift(carry & 0xFF);
+            carry >>>= 8;
+        }
+    }
+
+    const result = new Uint8Array(leadingZeros + bytes.length);
+    result.set(bytes, leadingZeros);
+    return result;
 }
 
 
@@ -108,7 +155,10 @@ class UrlReader {
         return myUrl.toString();
     }
 
-    // --- Compact format:  [height:1B][width:1B][wall bits][treasure bits] → base64url ---
+    // --- Compact format:  [height:1B][width:1B][wall bits][treasure bits] → XOR → base62 ---
+
+    // Fixed seed so the XOR stream is deterministic across all puzzles.
+    private static readonly XOR_SEED = 0x444E44;  // "DND"
 
     static encodeCompact(walls: MutableGrid, treasure: MutableGrid): string {
         // Reuse the existing bit-packing (LSB-first per byte) via stringEncoding → base64-decode.
@@ -122,13 +172,24 @@ class UrlReader {
         packed.set(wallBytes, 2);
         packed.set(treasureBytes, 2 + wallBytes.length);
 
-        return toBase64url(btoa(String.fromCharCode(...packed)));
+        // XOR with a deterministic PRNG stream to break up repeated "A" runs.
+        const rng = createRng(UrlReader.XOR_SEED);
+        for (let i = 0; i < packed.length; i++) {
+            packed[i] ^= (rng() * 256) | 0;
+        }
+
+        return toBase62(packed);
     }
 
     static decodeCompact(encoded: string): { walls: MutableGrid; treasure: MutableGrid } | undefined {
         try {
-            const raw = atob(fromBase64url(encoded));
-            const bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
+            const bytes = fromBase62(encoded);
+
+            // Reverse the XOR obfuscation.
+            const rng = createRng(UrlReader.XOR_SEED);
+            for (let i = 0; i < bytes.length; i++) {
+                bytes[i] ^= (rng() * 256) | 0;
+            }
 
             const height = bytes[0];
             const width = bytes[1];
