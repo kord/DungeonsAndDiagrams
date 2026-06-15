@@ -20,12 +20,12 @@
 
 .stats-panel__title {
     margin: 0;
-    font-size: 15px;
+    font-size: calc(var(--panel-font-size) + 3px);
     font-weight: 600;
 }
 
 .stats-panel__solved-badge {
-    font-size: 12px;
+    font-size: calc(var(--panel-font-size) - 2px);
     padding: 3px 8px;
     border-radius: 10px;
     background: var(--button-bg);
@@ -50,7 +50,7 @@
 .stats-panel__section-title {
     margin: 0;
     padding: 4px 14px 6px;
-    font-size: 11px;
+    font-size: calc(var(--panel-font-size) - 2px);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -71,13 +71,13 @@
 }
 
 .stat-name {
-    font-size: 12px;
+    font-size: var(--panel-font-size);
     color: var(--text-secondary);
     white-space: nowrap;
 }
 
 .stat-value {
-    font-size: 13px;
+    font-size: calc(var(--panel-font-size) + 1px);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     text-align: right;

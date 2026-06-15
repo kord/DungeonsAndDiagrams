@@ -1,5 +1,6 @@
 /* ===== Light theme (default) ===== */
 :root {
+    --panel-font-size: 15px;
     --bg-primary: #ffffff;
     --bg-secondary: #f5f5f5;
     --bg-header: #282c34;

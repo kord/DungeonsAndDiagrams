@@ -10,7 +10,7 @@
 
 .options__section-title {
     margin: 0 0 10px;
-    font-size: 11px;
+    font-size: calc(var(--panel-font-size) - 2px);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -28,7 +28,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    font-size: 12px;
+    font-size: calc(var(--panel-font-size) - 1px);
     color: var(--text-secondary);
     font-weight: 500;
 }
@@ -36,7 +36,7 @@
 .options__size-input {
     width: 56px;
     padding: 6px 8px;
-    font-size: 14px;
+    font-size: calc(var(--panel-font-size) + 3px);
     font-family: inherit;
     text-align: center;
     border: 1px solid var(--button-border);
@@ -53,7 +53,7 @@
 }
 
 .options__size-sep {
-    font-size: 16px;
+    font-size: calc(var(--panel-font-size) + 3px);
     color: var(--text-muted);
     margin-top: 16px;
 }
@@ -81,7 +81,7 @@
 }
 
 .options__toggle-label {
-    font-size: 13px;
+    font-size: var(--panel-font-size);
     color: var(--text-primary);
     flex: 1;
     line-height: 1.4;
@@ -126,7 +126,7 @@
 .options__note {
     margin: 14px 0 0;
     padding: 10px 12px;
-    font-size: 12px;
+    font-size: calc(var(--panel-font-size) - 1px);
     color: var(--text-muted);
     background: var(--bg-primary);
     border-radius: 5px;

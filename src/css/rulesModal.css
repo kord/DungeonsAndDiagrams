@@ -24,7 +24,7 @@
 }
 
 .rules__icon {
-    font-size: 18px;
+    font-size: calc(var(--panel-font-size) + 6px);
     flex-shrink: 0;
     width: 28px;
     text-align: center;
@@ -32,7 +32,7 @@
 }
 
 .rules__text {
-    font-size: 13px;
+    font-size: calc(var(--panel-font-size) + 1px);
     line-height: 1.45;
     color: var(--text-primary);
     text-align: left;
@@ -42,7 +42,7 @@
     margin-top: 16px;
     padding-top: 12px;
     border-top: 1px solid var(--border-color);
-    font-size: 12px;
+    font-size: calc(var(--panel-font-size) - 1px);
     color: var(--text-muted);
     text-align: center;
 }
