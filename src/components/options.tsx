@@ -52,37 +52,51 @@ export class Options extends Component<OptionsProps, OptionsState> {
         return (
             <div className={'options'}>
 
-                Width: &nbsp;
-                <input onChange={this.setWidth} value={this.state.size.width} className={'sizeinput'} key={'width'} />
-                &nbsp;
-                Height: &nbsp;
-                <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'} />
-                &nbsp;
+                <div className={'options__section'}>
+                    <h3 className={'options__section-title'}>Board Size</h3>
+                    <div className={'options__size-row'}>
+                        <label className={'options__size-label'}>
+                            Width
+                            <input onChange={this.setWidth} value={this.state.size.width}
+                                className={'options__size-input'} key={'width'}
+                                type={'number'} min={2} max={50} />
+                        </label>
+                        <span className={'options__size-sep'}>&times;</span>
+                        <label className={'options__size-label'}>
+                            Height
+                            <input onChange={this.setHeight} value={this.state.size.height}
+                                className={'options__size-input'} key={'height'}
+                                type={'number'} min={2} max={50} />
+                        </label>
+                    </div>
+                </div>
 
-                <br />
-                <label htmlFor={'lockWhenSolved'}>Lock puzzle when solved:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'lockWhenSolved'}
-                        id={'lockWhenSolved'}
-                        checked={this.state.lockWhenSolved} onChange={this.setCheckbox} />
-                </label>
+                <div className={'options__section'}>
+                    <h3 className={'options__section-title'}>Gameplay</h3>
 
-                <br />
-                <label htmlFor={'colorfulLineCounters'}>Color the wall counters indicating completion:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'colorfulLineCounters'}
-                        id={'colorfulLineCounters'}
-                        checked={this.state.colorfulLineCounters} onChange={this.setCheckbox} />
-                </label>
+                    <label className={'options__toggle'}>
+                        <span className={'options__toggle-label'}>Lock puzzle when solved</span>
+                        <input type={'checkbox'} name={'lockWhenSolved'}
+                            checked={this.state.lockWhenSolved} onChange={this.setCheckbox} />
+                        <span className={'options__toggle-switch'} />
+                    </label>
 
-                <br />
-                <label htmlFor={'countdownCounters'}>Wall counters show unallocated wall count, instead of total wall
-                    count:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'countdownCounters'}
-                        id={'countdownCounters'}
-                        checked={this.state.countdownCounters} onChange={this.setCheckbox} />
-                </label>
+                    <label className={'options__toggle'}>
+                        <span className={'options__toggle-label'}>Color wall counters on completion</span>
+                        <input type={'checkbox'} name={'colorfulLineCounters'}
+                            checked={this.state.colorfulLineCounters} onChange={this.setCheckbox} />
+                        <span className={'options__toggle-switch'} />
+                    </label>
 
-                <br />
-                <p>Start a new game for the selected options to take effect.</p>
+                    <label className={'options__toggle'}>
+                        <span className={'options__toggle-label'}>Show remaining wall count (instead of total)</span>
+                        <input type={'checkbox'} name={'countdownCounters'}
+                            checked={this.state.countdownCounters} onChange={this.setCheckbox} />
+                        <span className={'options__toggle-switch'} />
+                    </label>
+                </div>
+
+                <p className={'options__note'}>Start a new game for size changes to take effect.</p>
             </div>
         );
     }
