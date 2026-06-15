@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal } from './modal';
+// @ts-ignore
 import '../css/rulesModal.css';
 
 const rulesList = [

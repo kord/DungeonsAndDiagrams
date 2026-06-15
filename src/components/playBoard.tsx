@@ -4,9 +4,11 @@ import { Location, RangeReport, Size } from "../utils/types";
 import { gridLocations, loc2Str } from "../boardgen/graphUtils";
 import { DDBoardSpec } from "../boardgen/ddBoardgen";
 import { MutableGrid } from "../utils/mutableGrid";
-import '../css/playBoard.css';
-import '../css/monsters.css';
 import { getStoredBool, markAsSolved } from "../utils/localStorage";
+// @ts-ignore
+import '../css/playBoard.css';
+// @ts-ignore
+import '../css/monsters.css';
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
