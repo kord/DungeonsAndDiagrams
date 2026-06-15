@@ -92,7 +92,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 <div className={'play-board__grid'} key={'itsthegrid'}>
                     {this.columnHints(countdownCounters)}
                     {gridLocations(size).map((row, j) => {
-                        return <>
+                        return <React.Fragment key={`row-${j}`}>
                             <div className={this.counterClasses('row', j)}
                                 key={`rowhint${j}`}>
                                 {solutionWalls.rows[j] - (countdownCounters ? this.state.assignedWalls.countTruesInRow(j) : 0)}
@@ -110,7 +110,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                                 >
                                 </div>
                             )}
-                        </>;
+                        </React.Fragment>;
                     }
                     )}
                 </div>
