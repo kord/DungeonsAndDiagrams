@@ -57,6 +57,10 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
                 <div className={'stats-panel__section'}>
                     <h3 className={'stats-panel__section-title'}>Structure</h3>
                     <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Size</span>
+                        <span className={'stat-value'}>{`${stats.rows} × ${stats.columns}`}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
                         <span className={'stat-name'}>Treasure Rooms</span>
                         <span className={'stat-value'}>{stats.treasureRoomCount}</span>
                     </div>
@@ -102,6 +106,8 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
 
 type PuzzleStats = {
     totalLocs: number,
+    rows: number,
+    columns: number,
     treasureRoomCount: number,
     deadEndCount: number,
     wallCount: number,
@@ -122,6 +128,8 @@ function generateStats(board: DDBoardSpec): PuzzleStats {
     const deadEndCount = board.deadends.trueLocs().length;
     return {
         totalLocs: totalLocs,
+        rows: board.rules.size.height,
+        columns: board.rules.size.width,
         treasureRoomCount: board.throneCount,
         deadEndCount: deadEndCount,
         wallCount: wallCount,
