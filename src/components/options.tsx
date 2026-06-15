@@ -10,7 +10,6 @@ export type OptionsProps = {
 
 type OptionsState = {
     size: Size,
-    showPuzzleInfo: boolean,
     lockWhenSolved: boolean,
     colorfulLineCounters: boolean,
     countdownCounters: boolean,
@@ -21,7 +20,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
         super(props);
         this.state = {
             size: getStoredSize(),
-            showPuzzleInfo: getStoredBool('showPuzzleInfo'),
             lockWhenSolved: getStoredBool('lockWhenSolved'),
             colorfulLineCounters: getStoredBool('colorfulLineCounters'),
             countdownCounters: getStoredBool('countdownCounters'),
@@ -61,12 +59,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
                 <input onChange={this.setHeight} value={this.state.size.height} className={'sizeinput'} key={'height'} />
                 &nbsp;
 
-                <br />
-                <label htmlFor={'showPuzzleInfo'}>Show puzzle info:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'showPuzzleInfo'}
-                        id={'showPuzzleInfo'}
-                        checked={this.state.showPuzzleInfo} onChange={this.setCheckbox} />
-                </label>
                 <br />
                 <label htmlFor={'lockWhenSolved'}>Lock puzzle when solved:
                     <input type={'checkbox'} className={'options__checkbox'} name={'lockWhenSolved'}

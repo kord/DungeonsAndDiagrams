@@ -1,28 +1,85 @@
 .stats-panel {
-    /*width: 18%;*/
-    border: var(--border-color) 1px solid;
+    min-width: 220px;
+    max-width: 280px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     margin: 10px;
-    /*padding: 10px;*/
-    /*grid-template-rows: 20px*/
+    background: var(--bg-secondary);
+    overflow: hidden;
 }
 
-.stats-panel--interior {
-    display: grid;
-    grid-template-columns: 1fr .5fr;
+/* ===== Header ===== */
+.stats-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-primary);
 }
 
-.stat-name,
-.stat-value {
-    margin: 5px;
-    margin-left: 10px;
+.stats-panel__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.stats-panel__solved-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: var(--button-bg);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stats-panel__solved-badge--yes {
+    background: #2e7d32;
+    color: #ffffff;
+}
+
+/* ===== Sections ===== */
+.stats-panel__section {
+    padding: 8px 0;
+}
+
+.stats-panel__section+.stats-panel__section {
+    border-top: 1px solid var(--border-color);
+}
+
+.stats-panel__section-title {
+    margin: 0;
+    padding: 4px 14px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+/* ===== Rows ===== */
+.stats-panel__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 14px;
+    gap: 12px;
+}
+
+.stats-panel__row:hover {
+    background: var(--bg-primary);
 }
 
 .stat-name {
-    font-style: italic;
-    text-align: left;
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
 }
 
 .stat-value {
-    text-align: left;
-
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
 }

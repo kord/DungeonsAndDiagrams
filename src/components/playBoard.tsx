@@ -1,16 +1,17 @@
-import React, {Component, CSSProperties, MouseEventHandler} from 'react';
+import React, { Component, CSSProperties, MouseEventHandler } from 'react';
 import classNames from "classnames";
-import {Location, RangeReport, Size} from "../utils/types";
-import {gridLocations, loc2Str} from "../boardgen/graphUtils";
-import {DDBoardSpec} from "../boardgen/ddBoardgen";
-import {MutableGrid} from "../utils/mutableGrid";
+import { Location, RangeReport, Size } from "../utils/types";
+import { gridLocations, loc2Str } from "../boardgen/graphUtils";
+import { DDBoardSpec } from "../boardgen/ddBoardgen";
+import { MutableGrid } from "../utils/mutableGrid";
 import '../css/playBoard.css';
 import '../css/monsters.css';
-import {getStoredBool, markAsSolved} from "../utils/localStorage";
+import { getStoredBool, markAsSolved } from "../utils/localStorage";
 
 export type PlayBoardProps = {
     spec: DDBoardSpec,
     lockWhenSolved: boolean,
+    onBoardChange?: () => void,
 };
 
 type PlayBoardState = {
@@ -53,7 +54,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     render() {
-        const {size, throneSpec} = this.props.spec.rules;
+        const { size, throneSpec } = this.props.spec.rules;
         const countdownCounters = getStoredBool('countdownCounters');
         const st = {
             '--board-height': size.height,
@@ -81,39 +82,39 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const cols = new Set<number>();
         for (let i = 0; i < size.height; i++) if (userWalls.rows[i] > solutionWalls.rows[i]) rows.add(i);
         for (let j = 0; j < size.width; j++) if (userWalls.cols[j] > solutionWalls.cols[j]) cols.add(j);
-        const overflowCounts: OverFlowCounter = {cols: cols, rows: rows};
+        const overflowCounts: OverFlowCounter = { cols: cols, rows: rows };
 
         return (<>
 
-                <div className={boardClasses} style={st} key={'itstheboard'}>
-                    <div className={'play-board__grid'} key={'itsthegrid'}>
-                        {this.columnHints(countdownCounters)}
-                        {gridLocations(size).map((row, j) => {
-                            return <>
-                                <div className={this.counterClasses('row', j)}
-                                     key={`rowhint${j}`}>
-                                    {solutionWalls.rows[j] - (countdownCounters ? this.state.assignedWalls.countTruesInRow(j) : 0)}
+            <div className={boardClasses} style={st} key={'itstheboard'}>
+                <div className={'play-board__grid'} key={'itsthegrid'}>
+                    {this.columnHints(countdownCounters)}
+                    {gridLocations(size).map((row, j) => {
+                        return <>
+                            <div className={this.counterClasses('row', j)}
+                                key={`rowhint${j}`}>
+                                {solutionWalls.rows[j] - (countdownCounters ? this.state.assignedWalls.countTruesInRow(j) : 0)}
 
-                                    {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                                {/*<p className={'play-board__count__text'}> {wallCounts.rows[i]}</p>*/}
+                            </div>
+                            {row.map(loc =>
+                                <div className={this.blockSquareClassnames(loc, overflowCounts)}
+                                    key={loc2Str(loc)}
+                                    onMouseDown={this.mouseDownFn(loc)}
+                                    onMouseEnter={(e) => {
+                                        if (e.buttons === this.mouseBehaviour?.initialButtons)
+                                            this.performClickBehaviour(loc);
+                                    }}
+                                >
                                 </div>
-                                {row.map(loc =>
-                                        <div className={this.blockSquareClassnames(loc, overflowCounts)}
-                                             key={loc2Str(loc)}
-                                             onMouseDown={this.mouseDownFn(loc)}
-                                             onMouseEnter={(e) => {
-                                                 if (e.buttons === this.mouseBehaviour?.initialButtons)
-                                                     this.performClickBehaviour(loc);
-                                             }}
-                                        >
-                                        </div>
-                                    )}
-                                </>;
-                            }
-                        )}
-                    </div>
+                            )}
+                        </>;
+                    }
+                    )}
                 </div>
-                <br/>
-            </>
+            </div>
+            <br />
+        </>
         );
     }
 
@@ -124,15 +125,17 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         this.setState({
             assignedFloors: new MutableGrid(size, false),
             assignedWalls: new MutableGrid(size, false)
-        });
+        }, () => this.props.onBoardChange?.());
     }
 
     mouseUpGlobal = (e: MouseEvent) => {
         // console.log('mouseUpGlobal fired');
         if (!this.stateBeforeClick) return;
-        if (!this.stateBeforeClick.assignedFloors.equals(this.state.assignedFloors) ||
-            !this.stateBeforeClick.assignedWalls.equals(this.state.assignedWalls)) {
+        const changed = !this.stateBeforeClick.assignedFloors.equals(this.state.assignedFloors) ||
+            !this.stateBeforeClick.assignedWalls.equals(this.state.assignedWalls);
+        if (changed) {
             this.undoStack.push(this.stateBeforeClick);
+            this.props.onBoardChange?.();
         }
         this.mouseBehaviour = undefined;
         this.stateBeforeClick = undefined;
@@ -168,7 +171,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     public attemptUndo() {
         const p = this.undoStack.pop();
         console.log(`undo`);
-        if (p) this.setState(p)
+        if (p) {
+            this.setState(p);
+            this.props.onBoardChange?.();
+        }
     }
 
     // Set the sort of action the mouse held down over other elements will produce, depending on the status of the
@@ -249,7 +255,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
     // Whether the player should ba allowed to change the appearance of a square in any way while playing.
     isImmutable(loc: Location) {
-        const {deadends, treasure} = this.props.spec;
+        const { deadends, treasure } = this.props.spec;
         return deadends.check(loc) || treasure.check(loc);
     }
 
@@ -261,11 +267,11 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     blockSquareClassnames = (loc: Location, overflows: OverFlowCounter) => {
-        const {assignedWalls, assignedFloors} = this.state;
+        const { assignedWalls, assignedFloors } = this.state;
         const isUserFloor = assignedFloors.check(loc);
         const isUserWall = assignedWalls.check(loc);
 
-        const {floors, deadends, treasure, monsterChoices} = this.props.spec;
+        const { floors, deadends, treasure, monsterChoices } = this.props.spec;
         const isDeadend = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const isImmutable = this.isImmutable(loc);
@@ -324,25 +330,25 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
                 // Left click
                 switch (initialBlockState) {
                     case "user-untouched":
-                        action = {useruntouched: 'user-wall',}
+                        action = { useruntouched: 'user-wall', }
                         break;
                     case "user-floor":
-                        action = {useruntouched: 'user-wall', userfloor: 'user-wall'}
+                        action = { useruntouched: 'user-wall', userfloor: 'user-wall' }
                         break;
                     case "user-wall":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                        action = { userwall: 'user-untouched', userfloor: 'user-untouched' }
                 }
             } else if (initialButtons === 2) {
                 // Right click
                 switch (initialBlockState) {
                     case "user-untouched":
-                        action = {useruntouched: 'user-floor',}
+                        action = { useruntouched: 'user-floor', }
                         break;
                     case "user-wall":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                        action = { userwall: 'user-untouched', userfloor: 'user-untouched' }
                         break;
                     case "user-floor":
-                        action = {userwall: 'user-untouched', userfloor: 'user-untouched'}
+                        action = { userwall: 'user-untouched', userfloor: 'user-untouched' }
                         break;
                 }
             }
@@ -364,10 +370,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         const solutionWalls = this.props.spec.wallCounts;
 
         return <>
-            <div className={'play-board--topcorner'} key={'topcorner'}/>
+            <div className={'play-board--topcorner'} key={'topcorner'} />
             {solutionWalls.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', i)}
-                     key={`colhint${i}`}>
+                    key={`colhint${i}`}>
                     {cnt - (countdownCounters ? this.state.assignedWalls.countTruesInColumn(i) : 0)}
                     {/*<p className={'play-board__count__text'}> {cnt}</p>*/}
                 </div>)}

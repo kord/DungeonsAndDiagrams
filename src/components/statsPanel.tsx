@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {DDBoardSpec} from "../boardgen/ddBoardgen";
+import React, { Component } from 'react';
+import { DDBoardSpec } from "../boardgen/ddBoardgen";
 // @ts-ignore
 import '../css/statsPanel.css';
-import {hasBeenSolved} from "../utils/localStorage";
+import { hasBeenSolved } from "../utils/localStorage";
 
 type StatsPanelProps = {
     puzzle: DDBoardSpec,
@@ -21,54 +21,80 @@ class StatsPanel extends Component<StatsPanelProps, StatsPanelState> {
     }
 
     update() {
-        this.setState({puzzleStats: generateStats(this.props.puzzle)});
+        this.setState({ puzzleStats: generateStats(this.props.puzzle) });
     }
 
     render() {
         const stats = this.state.puzzleStats;
+        const solved = hasBeenSolved(this.props.puzzle);
         return (
             <div className={'stats-panel'}>
-                <h2>Stats</h2>
-                <div className={'stats-panel--interior'}>
-                    <p className={'stat-name'}>Hint Density</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.hintDensity * 1000) / 10}%`}</p>
-
-                    <p className={'stat-name'}>Wall-count SD (rows/cols)</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.rowDensitySD * 100) / 100}, ${Math.floor(100 * stats.columnDensitySD) / 100}`}</p>
-
-                    <p className={'stat-name'}>Wall Density</p>
-                    <p className={'stat-value'}>{`${Math.floor(stats.wallDensity * 1000) / 10}%`}</p>
-
-                    <p className={'stat-name'}>Treasure Rooms</p>
-                    <p className={'stat-value'}>{stats.treasureRoomCount}</p>
-
-                    <p className={'stat-name'}>Dead Ends</p>
-                    <p className={'stat-value'}>{stats.deadEndCount}</p>
-
-                    <p className={'stat-name'}>Walls</p>
-                    <p className={'stat-value'}>{stats.wallCount}</p>
-
-                    <p className={'stat-name'}>Wall Components</p>
-                    <p className={'stat-value'}>{stats.wallComponentCount}</p>
-
-                    <p className={'stat-name'}>Graph Diameter</p>
-                    <p className={'stat-value'}>{stats.diameter}</p>
-
-                    <p className={'stat-name'}>Has been solved</p>
-                    <p className={'stat-value'}>{stats.solved ? <strong>Solved</strong> : 'Unsolved'}</p>
-
-                    {stats.generationTimeMs ? <>
-                        <p className={'stat-name'}>Generator time</p>
-                        <p className={'stat-value'}>{`${Math.ceil(stats.generationTimeMs)}ms`}</p>
-                    </> : <></>}
-
-                    {
-                        stats.restarts !== undefined ? <>
-                            <p className={'stat-name'}>Generator restarts</p>
-                            <p className={'stat-value'}>{stats.restarts}</p>
-                        </> : <></>
-                    }
+                <div className={'stats-panel__header'}>
+                    <h2 className={'stats-panel__title'}>Stats</h2>
+                    <span className={`stats-panel__solved-badge ${solved ? 'stats-panel__solved-badge--yes' : ''}`}>
+                        {solved ? '✅ Solved' : '⏳ Unsolved'}
+                    </span>
                 </div>
+
+                <div className={'stats-panel__section'}>
+                    <h3 className={'stats-panel__section-title'}>Density</h3>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Wall Density</span>
+                        <span className={'stat-value'}>{`${Math.floor(stats.wallDensity * 1000) / 10}%`}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Hint Density</span>
+                        <span className={'stat-value'}>{`${Math.floor(stats.hintDensity * 1000) / 10}%`}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Wall-count SD</span>
+                        <span className={'stat-value'}>
+                            {`rows ${Math.floor(stats.rowDensitySD * 100) / 100}, cols ${Math.floor(100 * stats.columnDensitySD) / 100}`}
+                        </span>
+                    </div>
+                </div>
+
+                <div className={'stats-panel__section'}>
+                    <h3 className={'stats-panel__section-title'}>Structure</h3>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Treasure Rooms</span>
+                        <span className={'stat-value'}>{stats.treasureRoomCount}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Dead Ends</span>
+                        <span className={'stat-value'}>{stats.deadEndCount}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Walls</span>
+                        <span className={'stat-value'}>{stats.wallCount}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Wall Components</span>
+                        <span className={'stat-value'}>{stats.wallComponentCount}</span>
+                    </div>
+                    <div className={'stats-panel__row'}>
+                        <span className={'stat-name'}>Graph Diameter</span>
+                        <span className={'stat-value'}>{stats.diameter}</span>
+                    </div>
+                </div>
+
+                {(stats.generationTimeMs !== undefined || stats.restarts !== undefined) && (
+                    <div className={'stats-panel__section'}>
+                        <h3 className={'stats-panel__section-title'}>Generation</h3>
+                        {stats.generationTimeMs !== undefined && (
+                            <div className={'stats-panel__row'}>
+                                <span className={'stat-name'}>Generator Time</span>
+                                <span className={'stat-value'}>{`${Math.ceil(stats.generationTimeMs)}ms`}</span>
+                            </div>
+                        )}
+                        {stats.restarts !== undefined && (
+                            <div className={'stats-panel__row'}>
+                                <span className={'stat-name'}>Restarts</span>
+                                <span className={'stat-value'}>{stats.restarts}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         );
     }
@@ -85,7 +111,6 @@ type PuzzleStats = {
     diameter: number,
     rowDensitySD: number,
     columnDensitySD: number,
-    solved: boolean,
     restarts?: number,
     generationTimeMs?: number,
 }
@@ -107,7 +132,6 @@ function generateStats(board: DDBoardSpec): PuzzleStats {
         diameter: diameter ? diameter.distance : -1,
         rowDensitySD: Math.sqrt(sampleVariance(board.wallCounts.rows)),
         columnDensitySD: Math.sqrt(sampleVariance(board.wallCounts.cols)),
-        solved: hasBeenSolved(board),
         restarts: board.restarts,
         generationTimeMs: board.generationTimeMs,
     }

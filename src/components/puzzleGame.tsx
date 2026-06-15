@@ -4,7 +4,7 @@ import { DDBoardSpec, generateDDBoard } from "../boardgen/ddBoardgen";
 import { PlayBoard } from "./playBoard";
 import UrlReader from "../utils/urlReader";
 import { RulesButton } from "./rules";
-import { getStoredBool, getStoredSize } from "../utils/localStorage";
+import { getStoredBool, getStoredSize, setStoredBool } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import { OptionsButton } from "./optionsButton";
 // @ts-ignore
@@ -18,6 +18,7 @@ type PuzzleGameState = {
     size: Size,
     spec?: DDBoardSpec,
     solns: SolnRecord[],
+    showStats: boolean,
 };
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
@@ -33,6 +34,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             spec: urlPuzzle,
             size: urlPuzzle?.rules.size || { height: 8, width: 8 },
             solns: [],
+            showStats: getStoredBool('showPuzzleInfo'),
         };
     }
 
@@ -79,6 +81,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         window.history.replaceState({}, '', puz.url);
     }
 
+    toggleStats = () => {
+        const next = !this.state.showStats;
+        setStoredBool('showPuzzleInfo', next);
+        this.setState({ showStats: next });
+    };
+
     render() {
         return (<>
             <div className={'toolbar'}>
@@ -88,6 +96,13 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                     </button>
                     <RulesButton />
                     <OptionsButton onChangeFn={() => this.forceUpdate()} />
+                    <button
+                        className={`btn ${this.state.showStats ? 'btn--active' : ''}`}
+                        onClick={this.toggleStats}
+                        title={this.state.showStats ? 'Hide stats panel' : 'Show stats panel'}
+                    >
+                        📊 Stats
+                    </button>
                 </div>
 
                 <div className={'toolbar__spacer'} />
@@ -110,9 +125,10 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                     <PlayBoard
                         spec={this.state.spec}
                         lockWhenSolved={getStoredBool('lockWhenSolved')}
+                        onBoardChange={() => this.statsRef.current?.update()}
                         ref={this.gameRef} />
                     : <></>}</div>
-                {this.state.spec && getStoredBool('showPuzzleInfo') ?
+                {this.state.spec && this.state.showStats ?
                     <StatsPanel puzzle={this.state.spec} ref={this.statsRef} /> : <></>}
             </div>
 
