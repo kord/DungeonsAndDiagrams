@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
+// @ts-ignore
 import '../css/statsPanel.css';
 import {hasBeenSolved} from "../utils/localStorage";
 

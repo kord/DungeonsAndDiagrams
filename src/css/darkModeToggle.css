@@ -1,0 +1,23 @@
+.dark-mode-toggle {
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    z-index: 1000;
+    background: transparent;
+    border: 1px solid var(--button-border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.dark-mode-toggle:hover {
+    background: var(--button-hover-bg);
+}

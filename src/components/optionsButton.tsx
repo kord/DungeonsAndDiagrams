@@ -11,8 +11,8 @@ export class OptionsButton extends Component<OptionsProps> {
     render() {
         return (
             <>
-                <button className="options-button" onClick={this.open}>
-                    Options
+                <button className="btn options-button" onClick={this.open}>
+                    ⚙ Options
                 </button>
                 {this.state.open && (
                     <Modal title="Options" onClose={this.close}>

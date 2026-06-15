@@ -1,0 +1,102 @@
+/* ===== Toolbar ===== */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.toolbar__group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toolbar__separator {
+    width: 1px;
+    height: 22px;
+    background: var(--border-color);
+    opacity: 0.4;
+    margin: 0 4px;
+}
+
+.toolbar__spacer {
+    flex: 1;
+    min-width: 8px;
+}
+
+/* ===== Base button ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    border: 1px solid var(--button-border);
+    border-radius: 5px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--button-hover-bg);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ===== Primary button ===== */
+.btn--primary {
+    background: #4a6cf7;
+    color: #ffffff;
+    border-color: #4a6cf7;
+    font-weight: 600;
+}
+
+.btn--primary:hover:not(:disabled) {
+    background: #3b5de7;
+    border-color: #3b5de7;
+}
+
+/* ===== Danger button ===== */
+.btn--danger:hover:not(:disabled) {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.btn--danger:active:not(:disabled) {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* ===== Keyboard shortcut badge ===== */
+.btn__shortcut {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    opacity: 0.6;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.btn--primary .btn__shortcut {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+    opacity: 1;
+}

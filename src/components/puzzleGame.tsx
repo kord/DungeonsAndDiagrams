@@ -7,7 +7,10 @@ import { RulesButton } from "./rules";
 import { getStoredBool, getStoredSize } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import { OptionsButton } from "./optionsButton";
+// @ts-ignore
 import '../css/puzzleGame.css';
+// @ts-ignore
+import '../css/toolbar.css';
 
 export type PuzzleGameProps = {};
 
@@ -78,21 +81,29 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-            <button onClick={this.newGame} key={'new'}>New Game</button>
-            &nbsp;
-            <RulesButton />
-            &nbsp;
-            <OptionsButton onChangeFn={() => this.forceUpdate()} />
-            <br />
-            <button onClick={e => this.gameRef.current!.attemptUndo()}
-                disabled={this.state.spec === undefined}>
-                Undo
-            </button>
-            &nbsp;
-            <button onClick={e => this.gameRef.current!.reset()}
-                disabled={this.state.spec === undefined}>
-                Reset
-            </button>
+            <div className={'toolbar'}>
+                <div className={'toolbar__group'}>
+                    <button className={'btn btn--primary'} onClick={this.newGame} key={'new'}>
+                        🎲 New Game
+                    </button>
+                    <RulesButton />
+                    <OptionsButton onChangeFn={() => this.forceUpdate()} />
+                </div>
+
+                <div className={'toolbar__spacer'} />
+
+                <div className={'toolbar__group'}>
+                    <button className={'btn'} onClick={e => this.gameRef.current!.attemptUndo()}
+                        disabled={this.state.spec === undefined}>
+                        ↩ Undo
+                        <span className={'btn__shortcut'}>Z</span>
+                    </button>
+                    <button className={'btn btn--danger'} onClick={e => this.gameRef.current!.reset()}
+                        disabled={this.state.spec === undefined}>
+                        ↺ Reset
+                    </button>
+                </div>
+            </div>
 
             <div className={'puzzle-display-panel'}>
                 <div>{this.state.spec ?

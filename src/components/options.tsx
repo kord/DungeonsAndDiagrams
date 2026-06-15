@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Size } from "../utils/types";
-import { applyTheme, getStoredBool, getStoredSize, setStoredBool, setStoredValue } from "../utils/localStorage";
-
+import { getStoredBool, getStoredSize, setStoredBool, setStoredValue } from "../utils/localStorage";
+// @ts-ignore
 import '../css/options.css'
 
 export type OptionsProps = {
@@ -14,7 +14,6 @@ type OptionsState = {
     lockWhenSolved: boolean,
     colorfulLineCounters: boolean,
     countdownCounters: boolean,
-    darkMode: boolean,
 };
 
 export class Options extends Component<OptionsProps, OptionsState> {
@@ -26,7 +25,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
             lockWhenSolved: getStoredBool('lockWhenSolved'),
             colorfulLineCounters: getStoredBool('colorfulLineCounters'),
             countdownCounters: getStoredBool('countdownCounters'),
-            darkMode: getStoredBool('darkMode'),
         }
     }
 
@@ -48,7 +46,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
         let newState = { [name as keyof OptionsState]: checked };
         // @ts-ignore
         this.setState(newState, () => {
-            if (name === 'darkMode') applyTheme();
             if (this.props.onChangeFn) this.props.onChangeFn();
         });
     }
@@ -93,12 +90,6 @@ export class Options extends Component<OptionsProps, OptionsState> {
                 </label>
 
                 <br />
-                <label htmlFor={'darkMode'}>Dark mode:
-                    <input type={'checkbox'} className={'options__checkbox'} name={'darkMode'}
-                        id={'darkMode'}
-                        checked={this.state.darkMode} onChange={this.setCheckbox} />
-                </label>
-
                 <p>Start a new game for the selected options to take effect.</p>
             </div>
         );

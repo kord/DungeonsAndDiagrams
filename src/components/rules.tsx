@@ -28,7 +28,7 @@ export class RulesButton extends Component<{}, RulesButtonState> {
     render() {
         return (
             <>
-                <button onClick={this.open}>Rules</button>
+                <button className={'btn'} onClick={this.open}>📜 Rules</button>
                 {this.state.open && (
                     <Modal title="Rules" onClose={this.close}>
                         <ol className="rules__list">
