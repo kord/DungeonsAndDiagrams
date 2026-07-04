@@ -12,6 +12,7 @@ type ThroneDemand = {
 export type DDBoardgenSpec = {
     size: Size,
     throneSpec: ThroneDemand,
+    maxHintDensity?: number,
 }
 
 export type DDBoardSpec = {
@@ -180,6 +181,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
     const startTime = performance.now();
     let ret: DDBoardSpec;
     let restarts = 0;
+    let densityOk = true;
     do {
         let board = generateRandomFloorplan(spec);
 
@@ -223,7 +225,17 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
         }
 
         restarts += board.restarts;
-    } while (hasMultipleSolutions(ret));
+
+        // If a max hint density is specified, reject boards that exceed it.
+        densityOk = true;
+        if (spec.maxHintDensity !== undefined) {
+            const deadEndCount = ret.deadends.trueLocs().length;
+            const totalLocs = spec.size.height * spec.size.width;
+            const hintDensity = (deadEndCount + ret.throneCount) / totalLocs;
+            densityOk = hintDensity <= spec.maxHintDensity;
+            if (!densityOk) restarts++;
+        }
+    } while (!densityOk || hasMultipleSolutions(ret));
     console.timeEnd('generateDDBoard');
 
     const stopTime = performance.now();

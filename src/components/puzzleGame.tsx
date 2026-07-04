@@ -87,6 +87,23 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState({ showStats: next });
     };
 
+    devSearchLowDensity = () => {
+        const puz = generateDDBoard({
+            size: getStoredSize(),
+            throneSpec: {
+                attemptFirst: .8,
+                attemptSubsequent: 0.9,
+            },
+            maxHintDensity: 0.04,
+        });
+
+        this.setState({ spec: puz, solns: [] }, () => {
+            this.gameRef.current?.reset(puz.rules.size);
+            this.statsRef.current?.update();
+        });
+        window.history.replaceState({}, '', puz.url);
+    };
+
     render() {
         return (<>
             <div className={'toolbar'}>
@@ -94,6 +111,15 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                     <button className={'btn btn--primary'} onClick={this.newGame} key={'new'}>
                         🎲 New Game
                     </button>
+                    {process.env.NODE_ENV === 'development' && (
+                        <button
+                            className={'btn'}
+                            onClick={this.devSearchLowDensity}
+                            title={'Dev: search for a puzzle with hint density ≤ 3% (1 min timeout)'}
+                        >
+                            🔍 Low-Density
+                        </button>
+                    )}
                     <RulesButton />
                     <OptionsButton onChangeFn={() => this.forceUpdate()} />
                     <button

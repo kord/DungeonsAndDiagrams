@@ -65,6 +65,15 @@ I dug it so I recreated it for fun.
  [15x7](https://dandd.therestinmotion.com/?h=7&w=15&p=QYAoWhTtcYyCQF2AIAA%3D&t=MywwLzksMS8wLDQvMTIsNA%3D%3D)
  [14x8](https://dandd.therestinmotion.com/?h=8&w=14&p=CGDZgxUJRNyBgCsiiig%3D&t=MTEsMi80LDUvNyw3)
 
+ <!-- 
+ 
+https://dandd.therestinmotion.com/?z=sDAiELO8g90ck5qgYq1msXSw6WSyt5cXQGLlQfOLwYu hard, sparse
+https://dandd.therestinmotion.com/?z=sDCoKMEfl2sDgUKAMRt4a2BrLYrfiG59G9xR7u1QK9M hard, sparse
+https://dandd.therestinmotion.com/?z=16fEoCmMXDyJWcpWbQrjibtFrkqRBlawUhXbPvOPSgh5LjXXGa9N hard, sparse
+https://dandd.therestinmotion.com/?z=JNxHr5xcBcwTCH7S1OKrXxcZa5fPq0x17x3IsQBGnt3jw96bd9UGUr hard, sparse
+
+ -->
+
                       
 ## Links
 
