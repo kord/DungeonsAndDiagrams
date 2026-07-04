@@ -27,6 +27,7 @@ export type DDBoardSpec = {
     monsterChoices: Map<string, number>,
 
     wallCounts: Linestats,
+    floorCounts: Linestats,
 
     url: string,
 
@@ -216,6 +217,7 @@ export function generateDDBoard(spec: DDBoardgenSpec): DDBoardSpec {
             treasure: treasure,
             throneCount: throneLocs.length,
             wallCounts: wallCounts,
+            floorCounts: grid.profile(true),
             restarts: restarts,
             url: UrlReader.urlFromPuzzle(walls, treasure),
         }

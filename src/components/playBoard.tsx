@@ -189,10 +189,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         return classNames({
             'play-board__count': true,
             [`play-board__count--${orientation}`]: true,
-            'play-board__count--undersatisfied': report.userWallCount < report.required,
-            'play-board__count--satisfied': report.userWallCount === report.required,
-            'play-board__count--oversatisfied': report.userWallCount > report.required,
-            'play-board__count--floor-saturated': report.userFloorCount + symbolCount + report.required === report.size,
+            'play-board__count--undersatisfied': report.userWallCount < report.requiredWalls,
+            'play-board__count--satisfied': report.userWallCount === report.requiredWalls,
+            'play-board__count--oversatisfied': report.userWallCount > report.requiredWalls || report.userFloorCount + report.treasureCount + report.deadEndCount > report.requiredFloors,
+            'play-board__count--floor-saturated': report.userFloorCount + symbolCount + report.requiredWalls === report.size,
         });
     }
 
@@ -226,9 +226,10 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     }
 
     rangeReport(orientation: 'row' | 'col', order: number) {
-        let requiredWalls, userWalls, userFloors, size, treasureCounts, deadEndCounts;
+        let requiredWalls, requiredFloors, userWalls, userFloors, size, treasureCounts, deadEndCounts;
         if (orientation === 'row') {
             requiredWalls = this.props.spec.wallCounts.rows;
+            requiredFloors = this.props.spec.floorCounts.rows;
             size = this.props.spec.rules.size.width;
             userWalls = this.state.assignedWalls.profile(true).rows;
             userFloors = this.state.assignedFloors.profile(true).rows;
@@ -236,6 +237,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             deadEndCounts = this.props.spec.deadends.profile(true).rows;
         } else if (orientation === 'col') {
             requiredWalls = this.props.spec.wallCounts.cols;
+            requiredFloors = this.props.spec.floorCounts.cols;
             size = this.props.spec.rules.size.height;
             userWalls = this.state.assignedWalls.profile(true).cols;
             userFloors = this.state.assignedFloors.profile(true).cols;
@@ -247,7 +249,8 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
             order: order,
             orientation: orientation,
             size: size,
-            required: requiredWalls[order],
+            requiredWalls: requiredWalls[order],
+            requiredFloors: requiredFloors[order],
             userWallCount: userWalls[order],
             userFloorCount: userFloors[order],
             deadEndCount: deadEndCounts[order],

@@ -1,4 +1,4 @@
-import {MutableGrid} from "./mutableGrid";
+import { MutableGrid } from "./mutableGrid";
 
 export type Size = {
     height: number,
@@ -27,7 +27,8 @@ export type RangeReport = {
     order: number,
     orientation: 'row' | 'col',
     size: number,
-    required: number,
+    requiredWalls: number,
+    requiredFloors: number,
     userWallCount: number,
     userFloorCount: number,
     treasureCount: number,

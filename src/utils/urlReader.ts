@@ -94,6 +94,7 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
     return {
         walls: s.walls,
         wallCounts: s.walls.profile(true),
+        floorCounts: floors.profile(true),
         rules: { size: s.walls.size, throneSpec: { attemptFirst: 1, attemptSubsequent: 1 } },
         deadends: floors.leafGrid(),
         monsterChoices: monsterChoices(floors, puzzleSeed),
