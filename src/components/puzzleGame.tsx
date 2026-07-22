@@ -3,11 +3,12 @@ import { Size, SolnRecord } from "../utils/types";
 import { DDBoardSpec, generateDDBoard } from "../boardgen/ddBoardgen";
 import { PlayBoard } from "./playBoard";
 import UrlReader from "../utils/urlReader";
-import { getStoredBool, getStoredSize, markAsUnsolved, setStoredBool } from "../utils/localStorage";
+import { getAllPuzzleRecords, getStoredBool, getStoredSize, markAsUnsolved, setStoredBool } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import { Toolbar } from "./toolbar";
 import { hasMultipleSolutions } from "../boardgen/ddSolver";
 import { AlternativeSolutionsPanel } from "./alternativeSolutions";
+import { HistoryModal } from "./historyModal";
 // @ts-ignore
 import '../css/puzzleGame.css';
 
@@ -19,6 +20,7 @@ type PuzzleGameState = {
     solns: SolnRecord[],
     showStats: boolean,
     showAlternatives: boolean,
+    showHistory: boolean,
     devDensity: number,
 };
 
@@ -37,6 +39,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             solns: [],
             showStats: getStoredBool('showPuzzleInfo'),
             showAlternatives: false,
+            showHistory: false,
             devDensity: 4,
         };
     }
@@ -97,6 +100,10 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState({ showAlternatives: !this.state.showAlternatives });
     };
 
+    toggleHistory = () => {
+        this.setState({ showHistory: !this.state.showHistory });
+    };
+
     devSearchLowDensity = () => {
         const puz = generateDDBoard({
             size: getStoredSize(),
@@ -142,6 +149,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 onDevSolve={this.devSolve}
                 showAlternatives={this.state.showAlternatives}
                 onToggleAlternatives={this.toggleAlternatives}
+                showHistory={this.state.showHistory}
+                onToggleHistory={this.toggleHistory}
             />
 
             <div className={'puzzle-display-panel'}>
@@ -158,6 +167,13 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
             {this.state.spec && this.state.showAlternatives ?
                 <AlternativeSolutionsPanel spec={this.state.spec} /> : <></>}
+
+            {this.state.showHistory ?
+                <HistoryModal
+                    records={getAllPuzzleRecords()}
+                    onClose={this.toggleHistory}
+                    onClear={() => this.forceUpdate()}
+                /> : <></>}
 
         </>
         );

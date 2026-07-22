@@ -8,12 +8,14 @@ import '../css/toolbar.css';
 export type ToolbarProps = {
     showStats: boolean;
     showAlternatives: boolean;
+    showHistory: boolean;
     specLoaded: boolean;
     devDensity: number;
     gameRef: React.RefObject<PlayBoard>;
     onNewGame: () => void;
     onToggleStats: () => void;
     onToggleAlternatives: () => void;
+    onToggleHistory: () => void;
     onDevSearchLowDensity: () => void;
     onDevDensityChange: (density: number) => void;
     onOptionsChange: () => void;
@@ -23,8 +25,8 @@ export type ToolbarProps = {
 export class Toolbar extends Component<ToolbarProps> {
     render() {
         const {
-            showStats, showAlternatives, specLoaded, devDensity, gameRef,
-            onNewGame, onToggleStats, onToggleAlternatives, onDevSearchLowDensity,
+            showStats, showAlternatives, showHistory, specLoaded, devDensity, gameRef,
+            onNewGame, onToggleStats, onToggleAlternatives, onToggleHistory, onDevSearchLowDensity,
             onDevDensityChange, onOptionsChange, onDevSolve,
         } = this.props;
 
@@ -65,6 +67,13 @@ export class Toolbar extends Component<ToolbarProps> {
                             🧙 Solve
                         </button>
                     )}
+                    <button
+                        className={`btn ${showHistory ? 'btn--active' : ''}`}
+                        onClick={onToggleHistory}
+                        title={showHistory ? 'Close history' : 'View puzzle history'}
+                    >
+                        📜 History
+                    </button>
                     <RulesButton />
                     <OptionsButton onChangeFn={onOptionsChange} />
                     <button

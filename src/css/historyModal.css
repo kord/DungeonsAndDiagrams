@@ -1,0 +1,223 @@
+.history-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--modal-overlay);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 4vh;
+    z-index: 1000;
+}
+
+.history-modal {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    max-width: 1100px;
+    width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    position: relative;
+    color: var(--text-primary);
+}
+
+.history-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--modal-close);
+}
+
+.history-modal__close:hover {
+    color: var(--modal-close-hover);
+}
+
+.history-modal__title {
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+}
+
+.history-modal__body {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* ── Left: Stats ──────────────────────────────── */
+
+.history-stats {
+    flex: 0 0 260px;
+}
+
+.history-stats__title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.history-stats__empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.history-stats__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.history-stats__table th,
+.history-stats__table td {
+    padding: 0.3rem 0.4rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-stats__table th {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.history-stats__clear-btn {
+    margin-top: 0.75rem;
+    width: 100%;
+    padding: 0.4rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--button-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.history-stats__clear-btn--confirm {
+    background: #c62828;
+    color: #fff;
+    border-color: #c62828;
+    font-weight: 600;
+}
+
+
+.history-stats__clear-btn--confirm:hover {
+    background: #b71c1c;
+    border-color: #b71c1c;
+}
+
+
+/* ── Right: List ──────────────────────────────── */
+
+.history-list {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-list__toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.history-list__toggle-btn {
+    flex: 1;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--button-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.history-list__toggle-btn--active {
+    background: var(--bg-header);
+    color: var(--text-header);
+    border-color: var(--bg-header);
+}
+
+.history-list__empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ── Card ─────────────────────────────────────── */
+
+.history-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--bg-secondary);
+}
+
+.history-card__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.history-card__nav button {
+    background: var(--button-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0.2rem 0.6rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.history-card__nav button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.history-card__info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.history-card__size {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.history-card__status {
+    font-size: 0.8rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+}
+
+.history-card__status--solved {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.history-card__status--unsolved {
+    background: #e65100;
+    color: #fff;
+}
+
+.history-card__times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.history-card__board {
+    margin-top: 0.75rem;
+    /* overflow: auto; */
+}
+
+.history-card__board-fallback {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}

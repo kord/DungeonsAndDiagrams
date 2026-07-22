@@ -80,12 +80,9 @@ function fromBase62(str: string): Uint8Array {
 }
 
 
-function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
+function buildPuzzleSpec(s: SolnRecord, sourceUrl: string): DDBoardSpec {
     const floors = s.walls.inverted();
     const treasure = MutableGrid.fromLocs(s.walls.size, s.treasures);
-    // Preserve the exact current URL rather than regenerating it, so the stored
-    // url always matches what's in the browser's address bar.
-    const url = window.location.href;
 
     // Derive the same deterministic seed used at generation time.
     const puzzleSeed = hashString(s.walls.stringEncoding() + '|' +
@@ -101,7 +98,7 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
         treasure: treasure,
         throneCount: s.treasures.length,
         floors: floors,
-        url: url,
+        url: sourceUrl,
     };
 }
 
@@ -113,8 +110,11 @@ class UrlReader {
 
     // --- Decoding (supports both legacy and compact formats) ---
 
-    static puzzleFromUrl() {
-        const queryParams = new URLSearchParams(window.location.search);
+    /** Decode a puzzle from the current page URL.  Pass sourceUrl to decode from
+     *  an arbitrary stored URL instead (used by the history panel). */
+    static puzzleFromUrl(sourceUrl?: string): DDBoardSpec | undefined {
+        const url = sourceUrl ?? window.location.href;
+        const queryParams = new URLSearchParams(new URL(url).search);
 
         // Try the new compact format first:  ?z=<base64url>
         const compact = queryParams.get('z');
@@ -124,7 +124,7 @@ class UrlReader {
                 return buildPuzzleSpec({
                     walls: decoded.walls,
                     treasures: decoded.treasure.trueLocs(),
-                });
+                }, url);
             }
             return undefined;
         }
@@ -141,7 +141,7 @@ class UrlReader {
 
         const size = { height: +height, width: +width };
         const ret = MutableGrid.fromString(size, puzzleString);
-        return buildPuzzleSpec({ walls: ret, treasures: t as Location[] });
+        return buildPuzzleSpec({ walls: ret, treasures: t as Location[] }, url);
     }
 
     // --- Encoding (only outputs the new compact format) ---
