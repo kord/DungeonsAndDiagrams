@@ -7,7 +7,6 @@ type Defaults = {
     showPuzzleInfo: string,
     lockWhenSolved: string,
     colorfulLineCounters: string,
-    darkMode: string,
 }
 
 const defaultValues: Defaults = {
@@ -16,7 +15,6 @@ const defaultValues: Defaults = {
     showPuzzleInfo: 'false',
     lockWhenSolved: 'true',
     colorfulLineCounters: 'true',
-    darkMode: 'false',
 }
 
 export function getStoredValue(valueName: string): string | undefined {
@@ -78,8 +76,17 @@ export function hasBeenSolved(puzzle: DDBoardSpec) {
     return val === solvedValueMarker;
 }
 
+/** Determine dark mode preference: stored value first, then system default. */
+export function getDarkModePreference(): boolean {
+    const stored = getStoredValue('darkMode');
+    if (stored !== undefined) {
+        return stored === 'true';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 /** Apply the current darkMode setting from localStorage to the DOM. */
 export function applyTheme() {
-    const dark = getStoredBool('darkMode');
+    const dark = getDarkModePreference();
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }

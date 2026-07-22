@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { applyTheme, getStoredBool, setStoredBool } from '../utils/localStorage';
+import { applyTheme, getDarkModePreference, setStoredBool } from '../utils/localStorage';
 import '../css/darkModeToggle.css';
 
 type DarkModeToggleState = {
@@ -9,7 +9,7 @@ type DarkModeToggleState = {
 export class DarkModeToggle extends Component<{}, DarkModeToggleState> {
     constructor(props: {}) {
         super(props);
-        this.state = { dark: getStoredBool('darkMode') };
+        this.state = { dark: getDarkModePreference() };
     }
 
     toggle = () => {
