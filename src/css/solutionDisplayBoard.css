@@ -103,3 +103,13 @@
 .block-square--with-longest-path {
     background-color: var(--block-longest-path);
 }
+
+.btn--copy {
+    margin-top: 0.5rem;
+}
+
+.btn--copy-done {
+    background: #2e7d32;
+    color: #fff;
+    border-color: #2e7d32;
+}

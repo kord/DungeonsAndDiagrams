@@ -15,7 +15,9 @@ export type SolutionDisplayBoardProps = {
     /** When true, hides the wall/floor solution — only clues (treasures, dead-ends) are visible. */
     hideSolution?: boolean,
 };
-type SolutionDisplayBoardState = {};
+type SolutionDisplayBoardState = {
+    copied: boolean;
+};
 
 export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, SolutionDisplayBoardState> {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -23,8 +25,14 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
     constructor(props: SolutionDisplayBoardProps) {
         super(props);
         this.canvasRef = React.createRef();
-        this.state = {};
+        this.state = { copied: false };
     }
+
+    handleCopy = () => {
+        navigator.clipboard.writeText(this.props.spec.url);
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 2000);
+    };
 
     blockSquareClassnames = (loc: Location) => {
         const { floors, deadends, treasure } = this.props.spec;
@@ -83,7 +91,17 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
                     )}
                 </div>
             </div>
-            {/*<br/>*/}
+            {this.props.hideSolution ||
+                <>
+                    <br />
+
+                    <button
+                        className={`btn btn--copy ${this.state.copied ? 'btn--copy-done' : ''}`}
+                        onClick={this.handleCopy}
+                    >
+                        {this.state.copied ? '✅ Copied!' : '📋 Copy puzzle URL'}
+                    </button></>
+            }
         </>
         );
     }
