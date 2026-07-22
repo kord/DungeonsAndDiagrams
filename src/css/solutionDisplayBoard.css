@@ -23,8 +23,11 @@
 }
 
 .simple-grid-board--solved {
-    border-color: var(--board-completed-color);
     border-color: green;
+}
+
+.simple-grid-board--unsolved {
+    cursor: pointer;
 }
 
 .simple-grid-board__grid {

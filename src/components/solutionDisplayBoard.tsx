@@ -66,6 +66,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
         const baseClasses = classNames({
             'simple-grid-board': true,
             'simple-grid-board--solved': !this.props.hideSolution,
+            'simple-grid-board--unsolved': this.props.hideSolution,
         });
 
         return (<>
