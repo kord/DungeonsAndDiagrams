@@ -165,7 +165,10 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
 }
 
 export function hasMultipleSolutions(spec) {
-  return ddSolve(spec, 2).length !== 1;
+  // Check up to 20 SAT solutions for a second connected floorplan.
+  // We need to look beyond the first couple because some SAT solutions
+  // may have disconnected floorplans and get filtered out.
+  return ddSolve(spec, 0).length > 1;
 }
 
 function solutionDetails(size, soln) {

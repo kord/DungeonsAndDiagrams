@@ -7,11 +7,13 @@ import '../css/toolbar.css';
 
 export type ToolbarProps = {
     showStats: boolean;
+    showAlternatives: boolean;
     specLoaded: boolean;
     devDensity: number;
     gameRef: React.RefObject<PlayBoard>;
     onNewGame: () => void;
     onToggleStats: () => void;
+    onToggleAlternatives: () => void;
     onDevSearchLowDensity: () => void;
     onDevDensityChange: (density: number) => void;
     onOptionsChange: () => void;
@@ -21,8 +23,8 @@ export type ToolbarProps = {
 export class Toolbar extends Component<ToolbarProps> {
     render() {
         const {
-            showStats, specLoaded, devDensity, gameRef,
-            onNewGame, onToggleStats, onDevSearchLowDensity,
+            showStats, showAlternatives, specLoaded, devDensity, gameRef,
+            onNewGame, onToggleStats, onToggleAlternatives, onDevSearchLowDensity,
             onDevDensityChange, onOptionsChange, onDevSolve,
         } = this.props;
 
@@ -72,6 +74,14 @@ export class Toolbar extends Component<ToolbarProps> {
                     >
                         📊 Stats
                     </button>
+                    {process.env.NODE_ENV === 'development' && (<button
+                        className={`btn ${showAlternatives ? 'btn--active' : ''}`}
+                        onClick={onToggleAlternatives}
+                        disabled={!specLoaded}
+                        title={showAlternatives ? 'Hide solver solutions' : 'Show all valid solutions from solver'}
+                    >
+                        🔍 Solutions
+                    </button>)}
                 </div>
 
                 <div className={'toolbar__spacer'} />

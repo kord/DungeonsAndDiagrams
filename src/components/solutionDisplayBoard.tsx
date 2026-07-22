@@ -4,11 +4,14 @@ import {Location} from "../utils/types";
 import {gridLocations, loc2Str} from "../boardgen/graphUtils";
 import {DDBoardSpec} from "../boardgen/ddBoardgen";
 import '../css/solutionDisplayBoard.css';
+// @ts-ignore
+import '../css/monsters.css';
 
 export type SolutionDisplayBoardProps = {
     spec: DDBoardSpec,
     annotation?: string,
     scale?: number,
+    monsterChoices?: Map<string, number>,
 };
 type SolutionDisplayBoardState = {};
 
@@ -23,9 +26,11 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
     blockSquareClassnames = (loc: Location) => {
         const {floors, deadends, treasure} = this.props.spec;
+        const { monsterChoices } = this.props;
         const isFloor = floors.check(loc);
         const isLeaf = deadends.check(loc);
         const isTreasure = treasure.check(loc);
+        const monsterId = monsterChoices?.get(loc2Str(loc));
 
         return classNames({
             'block-square': true,
@@ -33,7 +38,8 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
             'block-square--absent': !isFloor,
             'block-square--1neighbour': isLeaf,
             'block-square--treasure': isTreasure,
-            // 'block-square--center': isCenter,
+            'block-square--deadend': isLeaf && monsterId !== undefined,
+            [`block-square--monster${monsterId}`]: isLeaf && monsterId !== undefined,
         });
     }
 

@@ -7,6 +7,7 @@ import { getStoredBool, getStoredSize, setStoredBool } from "../utils/localStora
 import StatsPanel from "./statsPanel";
 import { Toolbar } from "./toolbar";
 import { hasMultipleSolutions } from "../boardgen/ddSolver";
+import { AlternativeSolutionsPanel } from "./alternativeSolutions";
 // @ts-ignore
 import '../css/puzzleGame.css';
 
@@ -17,6 +18,7 @@ type PuzzleGameState = {
     spec?: DDBoardSpec,
     solns: SolnRecord[],
     showStats: boolean,
+    showAlternatives: boolean,
     devDensity: number,
 };
 
@@ -34,6 +36,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             size: urlPuzzle?.rules.size || { height: 8, width: 8 },
             solns: [],
             showStats: getStoredBool('showPuzzleInfo'),
+            showAlternatives: false,
             devDensity: 4,
         };
     }
@@ -87,6 +90,10 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         this.setState({ showStats: next });
     };
 
+    toggleAlternatives = () => {
+        this.setState({ showAlternatives: !this.state.showAlternatives });
+    };
+
     devSearchLowDensity = () => {
         const puz = generateDDBoard({
             size: getStoredSize(),
@@ -130,6 +137,8 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 onDevDensityChange={(d: number) => this.setState({ devDensity: d })}
                 onOptionsChange={() => this.forceUpdate()}
                 onDevSolve={this.devSolve}
+                showAlternatives={this.state.showAlternatives}
+                onToggleAlternatives={this.toggleAlternatives}
             />
 
             <div className={'puzzle-display-panel'}>
@@ -143,6 +152,9 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 {this.state.spec && this.state.showStats ?
                     <StatsPanel puzzle={this.state.spec} ref={this.statsRef} /> : <></>}
             </div>
+
+            {this.state.spec && this.state.showAlternatives ?
+                <AlternativeSolutionsPanel spec={this.state.spec} /> : <></>}
 
         </>
         );
