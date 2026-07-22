@@ -6,6 +6,7 @@ import UrlReader from "../utils/urlReader";
 import { getStoredBool, getStoredSize, setStoredBool } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import { Toolbar } from "./toolbar";
+import { hasMultipleSolutions } from "../boardgen/ddSolver";
 // @ts-ignore
 import '../css/puzzleGame.css';
 
@@ -103,6 +104,19 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
         window.history.replaceState({}, '', puz.url);
     };
 
+    devSolve = () => {
+        const { spec } = this.state;
+        if (!spec) return;
+
+        // Apply the known solution.
+        this.gameRef.current?.loadSolution(spec.walls);
+
+        // Check for multiple solutions.
+        if (hasMultipleSolutions(spec)) {
+            alert('⚠️ This puzzle has multiple valid solutions!');
+        }
+    };
+
     render() {
         return (<>
             <Toolbar
@@ -115,6 +129,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 onDevSearchLowDensity={this.devSearchLowDensity}
                 onDevDensityChange={(d: number) => this.setState({ devDensity: d })}
                 onOptionsChange={() => this.forceUpdate()}
+                onDevSolve={this.devSolve}
             />
 
             <div className={'puzzle-display-panel'}>

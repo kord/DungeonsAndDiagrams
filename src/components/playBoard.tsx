@@ -179,6 +179,15 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         }
     }
 
+    /** Load a wall configuration directly onto the board (dev tool). */
+    public loadSolution(walls: MutableGrid) {
+        this.undoStack = [];
+        this.setState({
+            assignedWalls: walls.copy(),
+            assignedFloors: new MutableGrid(walls.size, false),
+        }, () => this.props.onBoardChange?.());
+    }
+
     // Set the sort of action the mouse held down over other elements will produce, depending on the status of the
     counterClasses(orientation: 'row' | 'col', order: number) {
         const report = this.rangeReport(orientation, order);

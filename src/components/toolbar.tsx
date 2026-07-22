@@ -15,6 +15,7 @@ export type ToolbarProps = {
     onDevSearchLowDensity: () => void;
     onDevDensityChange: (density: number) => void;
     onOptionsChange: () => void;
+    onDevSolve: () => void;
 };
 
 export class Toolbar extends Component<ToolbarProps> {
@@ -22,7 +23,7 @@ export class Toolbar extends Component<ToolbarProps> {
         const {
             showStats, specLoaded, devDensity, gameRef,
             onNewGame, onToggleStats, onDevSearchLowDensity,
-            onDevDensityChange, onOptionsChange,
+            onDevDensityChange, onOptionsChange, onDevSolve,
         } = this.props;
 
         return (
@@ -51,6 +52,16 @@ export class Toolbar extends Component<ToolbarProps> {
                                 ))}
                             </select>
                         </>
+                    )}
+                    {process.env.NODE_ENV === 'development' && (
+                        <button
+                            className={'btn'}
+                            onClick={onDevSolve}
+                            disabled={!specLoaded}
+                            title={'Dev: auto-solve the current puzzle'}
+                        >
+                            🧙 Solve
+                        </button>
                     )}
                     <RulesButton />
                     <OptionsButton onChangeFn={onOptionsChange} />
