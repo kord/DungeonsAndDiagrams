@@ -3,14 +3,11 @@ import { Size, SolnRecord } from "../utils/types";
 import { DDBoardSpec, generateDDBoard } from "../boardgen/ddBoardgen";
 import { PlayBoard } from "./playBoard";
 import UrlReader from "../utils/urlReader";
-import { RulesButton } from "./rules";
 import { getStoredBool, getStoredSize, setStoredBool } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
-import { OptionsButton } from "./optionsButton";
+import { Toolbar } from "./toolbar";
 // @ts-ignore
 import '../css/puzzleGame.css';
-// @ts-ignore
-import '../css/toolbar.css';
 
 export type PuzzleGameProps = {};
 
@@ -108,57 +105,17 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
 
     render() {
         return (<>
-            <div className={'toolbar'}>
-                <div className={'toolbar__group'}>
-                    <button className={'btn btn--primary'} onClick={this.newGame} key={'new'}>
-                        🎲 New Game
-                    </button>
-                    {process.env.NODE_ENV === 'development' && (
-                        <>
-                            <button
-                                className={'btn'}
-                                onClick={this.devSearchLowDensity}
-                                title={`Dev: search for a puzzle with hint density ≤ ${this.state.devDensity}%`}
-                            >
-                                🔍 Low-Density
-                            </button>
-                            <select
-                                className={'btn'}
-                                value={this.state.devDensity}
-                                onChange={e => this.setState({ devDensity: Number(e.target.value) })}
-                                title={'Target max hint density %'}
-                            >
-                                {[2, 3, 4, 5, 6, 8, 10].map(n => (
-                                    <option key={n} value={n}>{n}%</option>
-                                ))}
-                            </select>
-                        </>
-                    )}
-                    <RulesButton />
-                    <OptionsButton onChangeFn={() => this.forceUpdate()} />
-                    <button
-                        className={`btn ${this.state.showStats ? 'btn--active' : ''}`}
-                        onClick={this.toggleStats}
-                        title={this.state.showStats ? 'Hide stats panel' : 'Show stats panel'}
-                    >
-                        📊 Stats
-                    </button>
-                </div>
-
-                <div className={'toolbar__spacer'} />
-
-                <div className={'toolbar__group'}>
-                    <button className={'btn'} onClick={e => this.gameRef.current!.attemptUndo()}
-                        disabled={this.state.spec === undefined}>
-                        ↩ Undo
-                        <span className={'btn__shortcut'}>Z</span>
-                    </button>
-                    <button className={'btn btn--danger'} onClick={e => this.gameRef.current!.reset()}
-                        disabled={this.state.spec === undefined}>
-                        ↺ Reset
-                    </button>
-                </div>
-            </div>
+            <Toolbar
+                showStats={this.state.showStats}
+                specLoaded={this.state.spec !== undefined}
+                devDensity={this.state.devDensity}
+                gameRef={this.gameRef}
+                onNewGame={this.newGame}
+                onToggleStats={this.toggleStats}
+                onDevSearchLowDensity={this.devSearchLowDensity}
+                onDevDensityChange={(d: number) => this.setState({ devDensity: d })}
+                onOptionsChange={() => this.forceUpdate()}
+            />
 
             <div className={'puzzle-display-panel'}>
                 <div>{this.state.spec ?
