@@ -12,6 +12,8 @@ export type SolutionDisplayBoardProps = {
     annotation?: string,
     scale?: number,
     monsterChoices?: Map<string, number>,
+    /** When true, hides the wall/floor solution — only clues (treasures, dead-ends) are visible. */
+    hideSolution?: boolean,
 };
 type SolutionDisplayBoardState = {};
 
@@ -26,16 +28,18 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
     blockSquareClassnames = (loc: Location) => {
         const { floors, deadends, treasure } = this.props.spec;
-        const { monsterChoices } = this.props;
-        const isFloor = floors.check(loc);
+        const { monsterChoices, hideSolution } = this.props;
         const isLeaf = deadends.check(loc);
         const isTreasure = treasure.check(loc);
         const monsterId = monsterChoices?.get(loc2Str(loc));
 
+        // When hiding the solution, all cells look neutral except clues.
+        const isFloor = hideSolution ? false : floors.check(loc);
+
         return classNames({
             'block-square': true,
-            'block-square--present': isFloor,
-            'block-square--absent': !isFloor,
+            'block-square--present': isFloor && !hideSolution,
+            'block-square--absent': !isFloor || hideSolution,
             'block-square--1neighbour': isLeaf,
             'block-square--treasure': isTreasure,
             'block-square--deadend': isLeaf && monsterId !== undefined,

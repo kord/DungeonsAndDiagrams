@@ -228,7 +228,18 @@ function UnsolvedList({ records, index, onNavigate }: {
         return <p className={'history-list__empty'}>No puzzles in progress.</p>;
     }
     const r = records[index];
+
+    // Try to recover the full puzzle spec from the stored URL.
+    let spec: DDBoardSpec | undefined;
+    try {
+        spec = UrlReader.puzzleFromUrl(r.url);
+    } catch { /* URL may be unparseable */ }
+
     const genDate = r.generatedTime ? new Date(r.generatedTime).toLocaleDateString() : '?';
+
+    const handleClick = () => {
+        window.location.href = r.url;
+    };
 
     return (
         <div className={'history-card'}>
@@ -244,6 +255,21 @@ function UnsolvedList({ records, index, onNavigate }: {
             <div className={'history-card__times'}>
                 <span>Generated: {genDate}</span>
             </div>
+            {spec ? (
+                <div className={'history-card__board'} onClick={handleClick} title={'Click to resume this puzzle'}>
+                    <SolutionDisplayBoard
+                        spec={spec}
+                        scale={0.4}
+                        monsterChoices={spec.monsterChoices}
+                        hideSolution={true}
+                    />
+                </div>
+            ) : (
+                <p className={'history-card__board-fallback'}>
+                    (puzzle data unavailable —{' '}
+                    <a href={r.url}>open directly</a>)
+                </p>
+            )}
         </div>
     );
 }
