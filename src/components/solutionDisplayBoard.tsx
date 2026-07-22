@@ -1,8 +1,8 @@
-import React, {Component, CSSProperties} from 'react';
+import React, { Component, CSSProperties } from 'react';
 import classNames from "classnames";
-import {Location} from "../utils/types";
-import {gridLocations, loc2Str} from "../boardgen/graphUtils";
-import {DDBoardSpec} from "../boardgen/ddBoardgen";
+import { Location } from "../utils/types";
+import { gridLocations, loc2Str } from "../boardgen/graphUtils";
+import { DDBoardSpec } from "../boardgen/ddBoardgen";
 import '../css/solutionDisplayBoard.css';
 // @ts-ignore
 import '../css/monsters.css';
@@ -25,7 +25,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
     }
 
     blockSquareClassnames = (loc: Location) => {
-        const {floors, deadends, treasure} = this.props.spec;
+        const { floors, deadends, treasure } = this.props.spec;
         const { monsterChoices } = this.props;
         const isFloor = floors.check(loc);
         const isLeaf = deadends.check(loc);
@@ -45,7 +45,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
 
     render() {
-        const {size, throneSpec} = this.props.spec.rules;
+        const { size, throneSpec } = this.props.spec.rules;
         const st = {
             '--board-height': size.height,
             '--board-width': size.width,
@@ -55,28 +55,28 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
 
         return (<>
 
-                <div className={'simple-grid-board'} style={st} key={'simple-grid-board'}>
-                    <div className={'simple-grid-board__grid'} key={'simple-grid-board__grid'}>
-                        {this.columnHints()}
-                        {gridLocations(size).map((row, i) => {
-                                const wallCounts = this.props.spec.wallCounts;
-                                return <>
-                                    <div className={this.counterClasses('row', wallCounts.rows[i], 0)}
-                                         key={`rowhint${i}`}>
-                                        {wallCounts.rows[i]}
-                                    </div>
-                                    {row.map(loc =>
-                                        <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
-                                            {}
-                                        </div>
-                                    )}
-                                </>;
-                            }
-                        )}
-                    </div>
+            <div className={'simple-grid-board'} style={st} key={'simple-grid-board'}>
+                <div className={'simple-grid-board__grid'} key={'simple-grid-board__grid'}>
+                    {this.columnHints()}
+                    {gridLocations(size).map((row, i) => {
+                        const wallCounts = this.props.spec.wallCounts;
+                        return <>
+                            <div className={this.counterClasses('row', wallCounts.rows[i], 0)}
+                                key={`rowhint${i}`}>
+                                {wallCounts.rows[i]}
+                            </div>
+                            {row.map(loc =>
+                                <div className={this.blockSquareClassnames(loc)} key={loc2Str(loc)}>
+                                    { }
+                                </div>
+                            )}
+                        </>;
+                    }
+                    )}
                 </div>
-                {/*<br/>*/}
-            </>
+            </div>
+            {/*<br/>*/}
+        </>
         );
     }
 
@@ -94,7 +94,7 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
         return <>
             <div className={'simple-grid-board--topcorner'} key={'topcorner'}>{this.props.annotation}</div>
 
-            {}
+            { }
 
             {this.props.spec.wallCounts.cols.map((cnt, i) =>
                 <div className={this.counterClasses('col', cnt, 0)} key={`colhint${i}`}>

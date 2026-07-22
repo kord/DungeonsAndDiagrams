@@ -11,6 +11,10 @@
     background-image: url("../assets/demons/mummy-svgrepo-com.svg");
 }
 
+[data-theme="dark"] .block-square--monster2 {
+    filter: brightness(0.75);
+}
+
 .block-square--monster3 {
     background-image: url("../assets/demons/frankenstein-svgrepo-com.svg");
 }

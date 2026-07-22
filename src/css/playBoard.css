@@ -99,12 +99,16 @@
     background-size: 30%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: whitesmoke;
+    background-color: var(--block-user-untouched);
 }
 
 .block-square--user-wall {
-    background-color: saddlebrown;
+    background-color: var(--block-user-wall);
     background-image: url("../assets/brick-wall-wall-svgrepo-com.svg");
+}
+
+[data-theme="dark"] .block-square--user-wall {
+    filter: brightness(0.75);
 }
 
 /* To darken the block where we've put too many in its row or column. */
@@ -114,11 +118,11 @@
 }
 
 .block-square--user-untouched {
-    background-color: whitesmoke;
+    background-color: var(--block-user-untouched);
 }
 
 .block-square--immutable {
-    background-color: white;
+    background-color: var(--block-immutable);
 }
 
 .block-square--deadend {
@@ -132,4 +136,8 @@
     background-image: url("../assets/treasure-chest-svgrepo-com.svg");
     background-size: contain;
     background-position: center;
+}
+
+[data-theme="dark"] .block-square--treasure {
+    filter: brightness(0.75);
 }

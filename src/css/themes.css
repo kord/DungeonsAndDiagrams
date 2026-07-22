@@ -28,6 +28,9 @@
     --solution-count-undersatisfied: blue;
     --solution-count-satisfied: green;
     --solution-count-oversatisfied: red;
+    --block-user-untouched: whitesmoke;
+    --block-user-wall: saddlebrown;
+    --block-immutable: white;
     --block-present: whitesmoke;
     --block-absent: darkgray;
     --block-1neighbour: #bbfabb;
@@ -67,6 +70,9 @@
     --solution-count-undersatisfied: #64b5f6;
     --solution-count-satisfied: #4caf50;
     --solution-count-oversatisfied: #f44336;
+    --block-user-untouched: #2a2a4a;
+    --block-user-wall: #5c2e0a;
+    --block-immutable: #222240;
     --block-present: #3a3a5c;
     --block-absent: #1a1a2e;
     --block-1neighbour: #2d5a2d;
