@@ -184,8 +184,15 @@ describe('puzzle solved-status tracking', () => {
         expect(recB.size).toEqual({ height: 12, width: 10 });
     });
 
-    test('getAllPuzzleRecords: size is {0,0} when URL has no h/w params', () => {
-        markAsSolved(stubSpec('https://example.com/?z=compact'));
+    test('getAllPuzzleRecords: size from compact ?z= format (12×20 puzzle)', () => {
+        const compactUrl = 'https://example.com/?z=33ZdCZ3zvi5JuBcRjNnw5lx2Kw9F5JA55Hk4JKsdyh81Ii3NIhfqIyHe0r0gvN2W5daS1MUDmCCLPhK80CFT';
+        markAsSolved(stubSpec(compactUrl), 100);
+        const records = getAllPuzzleRecords();
+        expect(records[0].size).toEqual({ height: 12, width: 20 });
+    });
+
+    test('getAllPuzzleRecords: size is {0,0} when URL is unparseable', () => {
+        markAsSolved(stubSpec('not-a-valid-url'), 100);
         const records = getAllPuzzleRecords();
         expect(records[0].size).toEqual({ height: 0, width: 0 });
     });

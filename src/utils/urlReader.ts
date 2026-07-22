@@ -182,6 +182,24 @@ class UrlReader {
         return toBase62(packed);
     }
 
+    static decodeSize(encoded: string): Size | undefined {
+        try {
+            const bytes = fromBase62(encoded);
+
+            // Reverse the XOR obfuscation (same as decodeCompact).
+            const rng = createRng(UrlReader.XOR_SEED);
+            bytes[0] ^= (rng() * 256) | 0;
+            bytes[1] ^= (rng() * 256) | 0;
+
+            const height = bytes[0];
+            const width = bytes[1];
+            if (!height || !width || height > 100 || width > 100) return undefined;
+            return { height, width };
+        } catch {
+            return undefined;
+        }
+    }
+
     static decodeCompact(encoded: string): { walls: MutableGrid; treasure: MutableGrid } | undefined {
         try {
             const bytes = fromBase62(encoded);

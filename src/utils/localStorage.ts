@@ -1,5 +1,6 @@
 import { Size } from "./types";
 import { DDBoardSpec } from "../boardgen/ddBoardgen";
+import UrlReader from "./urlReader";
 
 const solvedEntryPrefix = 'dnd_solved_';
 
@@ -115,10 +116,17 @@ export function hasBeenSolved(puzzle: DDBoardSpec) {
     return val !== null && val.startsWith(solvedValueMarker);
 }
 
-/** Extract puzzle size from a URL (legacy ?h=X&w=Y format, or {0,0} if unavailable). */
+/** Extract puzzle size from a URL (compact ?z=<base62> or legacy ?h=X&w=Y). */
 function sizeFromUrl(url: string): Size {
     try {
         const params = new URLSearchParams(new URL(url).search);
+        // Compact format: ?z=<base62>
+        const z = params.get('z');
+        if (z) {
+            const size = UrlReader.decodeSize(z);
+            if (size) return size;
+        }
+        // Legacy format: ?h=X&w=Y
         const h = params.get('h');
         const w = params.get('w');
         if (h && w) return { height: +h, width: +w };
