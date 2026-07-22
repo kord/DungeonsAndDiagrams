@@ -168,7 +168,7 @@ export function hasMultipleSolutions(spec) {
   // Check up to 20 SAT solutions for a second connected floorplan.
   // We need to look beyond the first couple because some SAT solutions
   // may have disconnected floorplans and get filtered out.
-  return ddSolve(spec, 0).length > 1;
+  return ddSolve(spec, 50).length > 1;
 }
 
 function solutionDetails(size, soln) {

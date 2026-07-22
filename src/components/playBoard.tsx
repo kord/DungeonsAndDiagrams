@@ -55,6 +55,20 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         };
     }
 
+    /** When the board size changes, reset grids before render to avoid
+     *  out-of-bounds accesses on the old (smaller) grids. */
+    static getDerivedStateFromProps(props: PlayBoardProps, state: PlayBoardState): Partial<PlayBoardState> | null {
+        const newSize = props.spec.rules.size;
+        if (state.assignedWalls.size.height !== newSize.height ||
+            state.assignedWalls.size.width !== newSize.width) {
+            return {
+                assignedWalls: new MutableGrid(newSize, false),
+                assignedFloors: new MutableGrid(newSize, false),
+            };
+        }
+        return null;
+    }
+
     render() {
         const { size, throneSpec } = this.props.spec.rules;
         const countdownCounters = getStoredBool('countdownCounters');
@@ -168,6 +182,14 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         document.removeEventListener('mouseup', this.mouseUpGlobal);
         document.removeEventListener('contextmenu', this.onContextMenu);
         document.removeEventListener('keypress', this.keyPress);
+    }
+
+    componentDidUpdate(prevProps: PlayBoardProps): void {
+        const prevSize = prevProps.spec.rules.size;
+        const newSize = this.props.spec.rules.size;
+        if (prevSize.height !== newSize.height || prevSize.width !== newSize.width) {
+            this.undoStack = [];
+        }
     }
 
     public attemptUndo() {
