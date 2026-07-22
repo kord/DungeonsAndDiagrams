@@ -3,7 +3,7 @@ import { Size, SolnRecord } from "../utils/types";
 import { DDBoardSpec, generateDDBoard } from "../boardgen/ddBoardgen";
 import { PlayBoard } from "./playBoard";
 import UrlReader from "../utils/urlReader";
-import { getStoredBool, getStoredSize, setStoredBool } from "../utils/localStorage";
+import { getStoredBool, getStoredSize, markAsUnsolved, setStoredBool } from "../utils/localStorage";
 import StatsPanel from "./statsPanel";
 import { Toolbar } from "./toolbar";
 import { hasMultipleSolutions } from "../boardgen/ddSolver";
@@ -79,9 +79,12 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 this.statsRef.current.update();
             }
         });
+        const current_time_msec = Math.floor(Date.now());
 
-        // Replace current URL so back button leaves the site, not cycles puzzles
-        window.history.replaceState({}, '', puz.url);
+        markAsUnsolved(puz, current_time_msec);
+
+        // Push state so that the back button will return to the previous puzzle.
+        window.history.pushState({}, '', puz.url);
     }
 
     toggleStats = () => {

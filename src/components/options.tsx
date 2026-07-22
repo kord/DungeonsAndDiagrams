@@ -56,16 +56,16 @@ export class Options extends Component<OptionsProps, OptionsState> {
                     <h3 className={'options__section-title'}>Board Size</h3>
                     <div className={'options__size-row'}>
                         <label className={'options__size-label'}>
-                            Width
-                            <input onChange={this.setWidth} value={this.state.size.width}
-                                className={'options__size-input'} key={'width'}
+                            Height
+                            <input onChange={this.setHeight} value={this.state.size.height}
+                                className={'options__size-input'} key={'height'}
                                 type={'number'} min={2} max={50} />
                         </label>
                         <span className={'options__size-sep'}>&times;</span>
                         <label className={'options__size-label'}>
-                            Height
-                            <input onChange={this.setHeight} value={this.state.size.height}
-                                className={'options__size-input'} key={'height'}
+                            Width
+                            <input onChange={this.setWidth} value={this.state.size.width}
+                                className={'options__size-input'} key={'width'}
                                 type={'number'} min={2} max={50} />
                         </label>
                     </div>

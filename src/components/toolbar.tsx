@@ -72,7 +72,7 @@ export class Toolbar extends Component<ToolbarProps> {
                         onClick={onToggleStats}
                         title={showStats ? 'Hide stats panel' : 'Show stats panel'}
                     >
-                        📊 Stats
+                        📊 Board Stats
                     </button>
                     {process.env.NODE_ENV === 'development' && (<button
                         className={`btn ${showAlternatives ? 'btn--active' : ''}`}
