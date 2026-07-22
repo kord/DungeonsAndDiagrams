@@ -55,11 +55,15 @@ export class SolutionDisplayBoard extends Component<SolutionDisplayBoardProps, S
             '--board-width': size.width,
             '--scale': this.props.scale || 1.0,
         } as CSSProperties;
-
+        const baseClasses = classNames({
+            'simple-grid-board': true,
+            'simple-grid-board--solved': !this.props.hideSolution,
+        });
 
         return (<>
 
-            <div className={'simple-grid-board'} style={st} key={'simple-grid-board'}>
+
+            <div className={baseClasses} style={st} key={'simple-grid-board'}>
                 <div className={'simple-grid-board__grid'} key={'simple-grid-board__grid'}>
                     {this.columnHints()}
                     {gridLocations(size).map((row, i) => {

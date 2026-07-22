@@ -67,13 +67,6 @@ export class Toolbar extends Component<ToolbarProps> {
                             🧙 Solve
                         </button>
                     )}
-                    <button
-                        className={`btn ${showHistory ? 'btn--active' : ''}`}
-                        onClick={onToggleHistory}
-                        title={showHistory ? 'Close history' : 'View puzzle history'}
-                    >
-                        📜 History
-                    </button>
                     <RulesButton />
                     <OptionsButton onChangeFn={onOptionsChange} />
                     <button
@@ -82,6 +75,13 @@ export class Toolbar extends Component<ToolbarProps> {
                         title={showStats ? 'Hide stats panel' : 'Show stats panel'}
                     >
                         📊 Board Stats
+                    </button>
+                    <button
+                        className={`btn ${showHistory ? 'btn--active' : ''}`}
+                        onClick={onToggleHistory}
+                        title={showHistory ? 'Close history' : 'View puzzle history'}
+                    >
+                        📜 History
                     </button>
                     {process.env.NODE_ENV === 'development' && (<button
                         className={`btn ${showAlternatives ? 'btn--active' : ''}`}

@@ -22,6 +22,11 @@
 
 }
 
+.simple-grid-board--solved {
+    border-color: var(--board-completed-color);
+    border-color: green;
+}
+
 .simple-grid-board__grid {
     display: grid;
     gap: var(--gap);
@@ -65,7 +70,7 @@
     color: var(--solution-count-satisfied);
 }
 
-.simple-grid-board__count--`satisfied {
+.simple-grid-board__count--oversatisfied {
     color: var(--solution-count-oversatisfied);
 }
 
