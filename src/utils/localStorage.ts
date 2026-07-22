@@ -100,6 +100,7 @@ export function markAsSolved(puzzle: DDBoardSpec, solved_time?: number) {
     const { generatedTime, solvedTime: prevSolvedTime } = parseSolvedEntry(localStorage.getItem(key));
     const value = `${solvedValueMarker}|${generatedTime ?? ''}|${solved_time ?? prevSolvedTime ?? ''}`;
     localStorage.setItem(key, value);
+    console.log(`Puzzle at ${url} marked as solved.  Entry: ${value}`);
 }
 
 export function markAsUnsolved(puzzle: DDBoardSpec, generated_time?: number) {
@@ -107,6 +108,7 @@ export function markAsUnsolved(puzzle: DDBoardSpec, generated_time?: number) {
     const key = `${solvedEntryPrefix}${url}`;
     const value = `${unsolvedValueMarker}|${generated_time ?? ''}`;
     localStorage.setItem(key, value);
+    console.log(`Puzzle at ${url} marked as unsolved.  Entry: ${value}`);
 }
 
 export function hasBeenSolved(puzzle: DDBoardSpec) {

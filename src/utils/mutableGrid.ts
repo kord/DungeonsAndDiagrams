@@ -196,9 +196,9 @@ export class MutableGrid {
             }
             ret.push(row.join(''));
         }
-        console.log(ret.join('\n'));
+        // console.log(ret.join('\n'));
         // console.log(`${this.componentSizes()} componentsizes.`)
-        console.log(`${this.leaves().length} leaves.`)
+        // console.log(`${this.leaves().length} leaves.`)
     }
 
     // Get counts for the rows and columns having the given value.
@@ -331,7 +331,7 @@ export class MutableGrid {
             destination: minDegreeLoc,
             distance: distanceSets.length - 1,
         }
-        console.log(ret);
+        // console.log(ret);
         return ret;
     }
 }

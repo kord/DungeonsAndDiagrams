@@ -44,6 +44,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
     undoStack: PlayBoardState[];
     stateBeforeClick?: PlayBoardState;
     mouseBehaviour?: MouseBehaviour;
+    private solvedReported = false;
 
     constructor(props: PlayBoardProps) {
         super(props);
@@ -135,6 +136,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         // const {size} = this.props.spec.rules;
         if (size === undefined) size = this.props.spec.rules.size;
         this.undoStack = [];
+        this.solvedReported = false;
         this.setState({
             assignedFloors: new MutableGrid(size, false),
             assignedWalls: new MutableGrid(size, false)
@@ -181,17 +183,21 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         document.removeEventListener('keypress', this.keyPress);
     }
 
-    componentDidUpdate(prevProps: PlayBoardProps, prevState: PlayBoardState): void {
+    componentDidUpdate(prevProps: PlayBoardProps): void {
         const prevSize = prevProps.spec.rules.size;
         const newSize = this.props.spec.rules.size;
         if (prevSize.height !== newSize.height || prevSize.width !== newSize.width) {
             this.undoStack = [];
         }
 
-        // Mark as solved once when the user transitions from unsolved → solved.
-        const wasSolved = prevState.assignedWalls.equals(prevProps.spec.walls);
-        const isSolved = this.state.assignedWalls.equals(this.props.spec.walls);
-        if (!wasSolved && isSolved) {
+        // Reset the solved flag when a new puzzle loads.
+        if (prevProps.spec !== this.props.spec) {
+            this.solvedReported = false;
+        }
+
+        // Mark as solved exactly once per puzzle.
+        if (!this.solvedReported && this.isSolved()) {
+            this.solvedReported = true;
             markAsSolved(this.props.spec, Math.floor(Date.now()));
         }
     }
@@ -201,6 +207,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         console.log(`undo`);
         if (p) {
             this.setState(p);
+            this.solvedReported = false;
             this.props.onBoardChange?.();
         }
     }
