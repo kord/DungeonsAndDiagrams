@@ -19,6 +19,7 @@ type PuzzleGameState = {
     spec?: DDBoardSpec,
     solns: SolnRecord[],
     showStats: boolean,
+    devDensity: number,
 };
 
 export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
@@ -35,6 +36,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
             size: urlPuzzle?.rules.size || { height: 8, width: 8 },
             solns: [],
             showStats: getStoredBool('showPuzzleInfo'),
+            devDensity: 4,
         };
     }
 
@@ -94,7 +96,7 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                 attemptFirst: .8,
                 attemptSubsequent: 0.9,
             },
-            maxHintDensity: 0.04,
+            maxHintDensity: this.state.devDensity / 100,
         });
 
         this.setState({ spec: puz, solns: [] }, () => {
@@ -112,13 +114,25 @@ export class PuzzleGame extends Component<PuzzleGameProps, PuzzleGameState> {
                         🎲 New Game
                     </button>
                     {process.env.NODE_ENV === 'development' && (
-                        <button
-                            className={'btn'}
-                            onClick={this.devSearchLowDensity}
-                            title={'Dev: search for a puzzle with hint density ≤ 3% (1 min timeout)'}
-                        >
-                            🔍 Low-Density
-                        </button>
+                        <>
+                            <button
+                                className={'btn'}
+                                onClick={this.devSearchLowDensity}
+                                title={`Dev: search for a puzzle with hint density ≤ ${this.state.devDensity}%`}
+                            >
+                                🔍 Low-Density
+                            </button>
+                            <select
+                                className={'btn'}
+                                value={this.state.devDensity}
+                                onChange={e => this.setState({ devDensity: Number(e.target.value) })}
+                                title={'Target max hint density %'}
+                            >
+                                {[2, 3, 4, 5, 6, 8, 10].map(n => (
+                                    <option key={n} value={n}>{n}%</option>
+                                ))}
+                            </select>
+                        </>
                     )}
                     <RulesButton />
                     <OptionsButton onChangeFn={() => this.forceUpdate()} />
