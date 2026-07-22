@@ -79,9 +79,6 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
         const solved = this.isSolved();
 
-        // Probably a dumb place to be doing this work, but at least we know it'll get done!
-        if (solved) markAsSolved(this.props.spec);
-
         const boardClasses = classNames({
             'play-board': true,
             'play-board--completed': solved,
@@ -184,11 +181,18 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
         document.removeEventListener('keypress', this.keyPress);
     }
 
-    componentDidUpdate(prevProps: PlayBoardProps): void {
+    componentDidUpdate(prevProps: PlayBoardProps, prevState: PlayBoardState): void {
         const prevSize = prevProps.spec.rules.size;
         const newSize = this.props.spec.rules.size;
         if (prevSize.height !== newSize.height || prevSize.width !== newSize.width) {
             this.undoStack = [];
+        }
+
+        // Mark as solved once when the user transitions from unsolved → solved.
+        const wasSolved = prevState.assignedWalls.equals(prevProps.spec.walls);
+        const isSolved = this.state.assignedWalls.equals(this.props.spec.walls);
+        if (!wasSolved && isSolved) {
+            markAsSolved(this.props.spec, Math.floor(Date.now()));
         }
     }
 
