@@ -3,7 +3,6 @@ import { PuzzleSolutionRecord } from '../utils/localStorage';
 import UrlReader from '../utils/urlReader';
 import { SolutionDisplayBoard } from './solutionDisplayBoard';
 import { DDBoardSpec } from '../boardgen/ddBoardgen';
-// @ts-ignore
 import '../css/historyModal.css';
 
 type HistoryModalProps = {

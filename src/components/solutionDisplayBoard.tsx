@@ -4,7 +4,6 @@ import { Location } from "../utils/types";
 import { gridLocations, loc2Str } from "../boardgen/graphUtils";
 import { DDBoardSpec } from "../boardgen/ddBoardgen";
 import '../css/solutionDisplayBoard.css';
-// @ts-ignore
 import '../css/monsters.css';
 
 export type SolutionDisplayBoardProps = {

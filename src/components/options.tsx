@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Size } from "../utils/types";
 import { getStoredBool, getStoredSize, setStoredBool, setStoredValue } from "../utils/localStorage";
-// @ts-ignore
 import '../css/options.css'
 
 export type OptionsProps = {
@@ -41,9 +40,8 @@ export class Options extends Component<OptionsProps, OptionsState> {
     setCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, checked } = event.target;
         setStoredBool(name, checked);
-        let newState = { [name as keyof OptionsState]: checked };
-        // @ts-ignore
-        this.setState(newState, () => {
+        // @ts-ignore — dynamic key with setState partial is a known React typing gap
+        this.setState({ [name]: checked }, () => {
             if (this.props.onChangeFn) this.props.onChangeFn();
         });
     }

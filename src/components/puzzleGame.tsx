@@ -9,7 +9,6 @@ import { Toolbar } from "./toolbar";
 import { hasMultipleSolutions } from "../boardgen/ddSolver";
 import { AlternativeSolutionsPanel } from "./alternativeSolutions";
 import { HistoryModal } from "./historyModal";
-// @ts-ignore
 import '../css/puzzleGame.css';
 
 export type PuzzleGameProps = {};

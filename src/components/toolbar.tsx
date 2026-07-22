@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { RulesButton } from "./rules";
 import { OptionsButton } from "./optionsButton";
 import { PlayBoard } from "./playBoard";
-// @ts-ignore
 import '../css/toolbar.css';
 
 export type ToolbarProps = {

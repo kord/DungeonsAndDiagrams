@@ -4,7 +4,6 @@ import { ddSolve } from "../boardgen/ddSolver";
 import { MutableGrid } from "../utils/mutableGrid";
 import { SolutionDisplayBoard } from "./solutionDisplayBoard";
 import { hashString, loc2Str } from "../boardgen/graphUtils";
-// @ts-ignore
 import '../css/alternativeSolutions.css';
 
 export type AlternativeSolutionsProps = {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { PuzzleGame } from "./components/puzzleGame";
 import { DarkModeToggle } from "./components/darkModeToggle";
-// @ts-ignore
 import './css/App.css';
 
 function App() {

@@ -5,9 +5,8 @@ import { gridLocations, loc2Str } from "../boardgen/graphUtils";
 import { DDBoardSpec } from "../boardgen/ddBoardgen";
 import { MutableGrid } from "../utils/mutableGrid";
 import { getStoredBool, markAsSolved } from "../utils/localStorage";
-// @ts-ignore
+import { logDebug } from "../utils/logDebug";
 import '../css/playBoard.css';
-// @ts-ignore
 import '../css/monsters.css';
 
 export type PlayBoardProps = {
@@ -204,7 +203,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
     public attemptUndo() {
         const p = this.undoStack.pop();
-        console.log(`undo`);
+        logDebug(`undo`);
         if (p) {
             this.setState(p);
             this.solvedReported = false;
@@ -340,7 +339,7 @@ export class PlayBoard extends Component<PlayBoardProps, PlayBoardState> {
 
     private performClickBehaviour(loc: Location) {
         if (!this.mouseBehaviour) {
-            console.log(`performBehaviour with no mouseBehaviour set`);
+            logDebug(`performBehaviour with no mouseBehaviour set`);
             return;
         }
         // Can't monkey with a solved puzzle.
