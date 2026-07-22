@@ -108,6 +108,9 @@ function buildPuzzleSpec(s: SolnRecord): DDBoardSpec {
 
 class UrlReader {
 
+    // Fixed seed so the XOR stream is deterministic across all puzzles.
+    private static readonly XOR_SEED = 0x444E44;  // "DND"
+
     // --- Decoding (supports both legacy and compact formats) ---
 
     static puzzleFromUrl() {
@@ -157,9 +160,6 @@ class UrlReader {
     }
 
     // --- Compact format:  [height:1B][width:1B][wall bits][treasure bits] → XOR → base62 ---
-
-    // Fixed seed so the XOR stream is deterministic across all puzzles.
-    private static readonly XOR_SEED = 0x444E44;  // "DND"
 
     static encodeCompact(walls: MutableGrid, treasure: MutableGrid): string {
         // Reuse the existing bit-packing (LSB-first per byte) via stringEncoding → base64-decode.
