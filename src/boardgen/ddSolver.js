@@ -149,11 +149,11 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
     let solutionsFound = 0;
     soln = solver.solve();
     while (soln && solutionsFound < maxSolutionsReturned) {
-      solutionsFound++;
       let deets = solutionDetails(size, soln);
       // If the solution isn't topologically sound, we can't include it in the solutions, and we have to keep looking.
       if (deets.wallGrid.inverted().componentCount() === 1) {
         ret.push(deets);
+        solutionsFound++;
       }
       solver.forbid(soln.getFormula())
       soln = solver.solve();
@@ -165,10 +165,7 @@ export function ddSolve(spec, maxSolutionsReturned = 5) {
 }
 
 export function hasMultipleSolutions(spec) {
-  // Check up to 20 SAT solutions for a second connected floorplan.
-  // We need to look beyond the first couple because some SAT solutions
-  // may have disconnected floorplans and get filtered out.
-  return ddSolve(spec, 50).length > 1;
+  return ddSolve(spec, 2).length > 1;
 }
 
 function solutionDetails(size, soln) {

@@ -12,6 +12,10 @@ export class DarkModeToggle extends Component<{}, DarkModeToggleState> {
         this.state = { dark: getDarkModePreference() };
     }
 
+    componentDidMount(): void {
+        applyTheme();
+    }
+
     toggle = () => {
         const next = !this.state.dark;
         setStoredBool('darkMode', next);
