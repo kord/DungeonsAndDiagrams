@@ -131,7 +131,7 @@ export class HistoryModal extends Component<HistoryModalProps, HistoryModalState
                                     className={`history-list__toggle-btn ${this.state.view === 'unsolved' ? 'history-list__toggle-btn--active' : ''}`}
                                     onClick={() => this.setState({ view: 'unsolved' })}
                                 >
-                                    ⏳ In Progress ({unsolved.length})
+                                    ⏳ Unsolved ({unsolved.length})
                                 </button>
                             </div>
 
